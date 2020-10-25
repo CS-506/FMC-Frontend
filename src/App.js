@@ -1,29 +1,18 @@
-/**
- * FMC-frontend/src/App.js
- * 
- * Manages mapping from url address to page components.
- * 
- * Author(s):
- * 		Jerry Yu, Roxin Liu
- */
-
-import React from "react";
+import React from 'react';
+import './App.css';
 import {
-	BrowserRouter as Router,
-	Route,
+  BrowserRouter as Router,
+  Route,
 } from "react-router-dom";
-
-import HomeView from "./components/HomeView"
+import Home from "./components/Home"
+import Login from "./components/Login"
 
 export default function App() {
-	return (
-		<Router>
-			<Route
-				exact path="/"
-				render={ props => {
-					return <HomeView />;
-				}}
-			/>
-		</Router>
-	);
+  return (
+      <Router>
+        <Route exact path="/" component={Home} />
+        <Route exact path="/login" component={Login} />
+      </Router>
+    
+  );
 }
