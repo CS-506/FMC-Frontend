@@ -7,15 +7,12 @@ import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
+import Button from '@material-ui/core/Button';
 
-import NavBar from "./TopBar";
 
 const drawerWidth = 240;
 
@@ -32,6 +29,8 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerPaper: {
     width: drawerWidth,
+    background: '#9c0000',
+    color: 'white'
   },
   drawerContainer: {
     overflow: 'auto',
@@ -57,7 +56,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   searchIcon: {
-    padding: theme.spacing(0, 2),
+    padding: theme.spacing(1, 20),
+    marginRight: 0,
     height: '100%',
     position: 'absolute',
     pointerEvents: 'none',
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    paddingLeft: `calc(1em + ${theme.spacing(1)}px)`,
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('md')]: {
@@ -95,49 +95,66 @@ export default function ClippedDrawer() {
                 </Typography>
                 <div className={classes.search}>
                     <div className={classes.searchIcon}>
-                    <SearchIcon />
+                      <SearchIcon />
                     </div>
                     <InputBase
-                    placeholder="Search…"
-                    classes={{
-                        root: classes.inputRoot,
-                        input: classes.inputInput,
-                    }}
-                    inputProps={{ 'aria-label': 'search' }}
+                      placeholder="Search…"
+                      classes={{
+                          root: classes.inputRoot,
+                          input: classes.inputInput,
+                      }}
+                      inputProps={{ 'aria-label': 'search' }}
                     />
                 </div>
             </Toolbar>
         </AppBar>
         <div className={classes.grow} />
         
-
-
         <Drawer
             className={classes.drawer}
             variant="permanent"
-            classes={{
-            paper: classes.drawerPaper,
-            }}
+            classes={{paper: classes.drawerPaper,}}
+            style={{ background: '#ff5131' }}
         >
         <Toolbar />
         <div className={classes.drawerContainer}>
+          <br/><br/>
           <List>
-            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
+            <div className={classes.search}>
+              <InputBase
+                placeholder="Subject..."
+                classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                }}
+                inputProps={{ 'aria-label': 'search' }}
+              />
+            </div>
+            <br/>
+            <div className={classes.search}>
+              <InputBase 
+                placeholder="Instructor..."
+                classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                }}
+                inputProps={{ 'aria-label': 'search' }}
+              />
+            </div>
+            <br/>
+            <Button
+              variant="contained"
+              style={{background: '#ff5131', marginLeft: 120}}
+              className={classes.searchButton}
+              /*href="/register"*/
+            >
+              Search 
+            </Button>
           </List>
+          
+          <br/><br/>
           <Divider />
-          <List>
-            {['All mail', 'Trash', 'Spam'].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
+          
         </div>
       </Drawer>
       
