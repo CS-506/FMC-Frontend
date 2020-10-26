@@ -3,6 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import { 
     Typography, Paper, Grid, TextField, MenuItem
 } from "@material-ui/core/";
+import {
+    XYPlot
+} from "react-vis";
 
 import NavBar from "./NavBar";
 
@@ -13,8 +16,21 @@ const useStyles = makeStyles(theme => ({
     },
     contents: {
         flexGrow: 1,
-        paddingTop: theme.spacing(10),
-        paddingLeft: theme.spacing(35),
+        paddingTop: theme.spacing(11),
+        paddingLeft: theme.spacing(37),
+        paddingRight: theme.spacing(7),
+    },
+    unit: {
+        paddingTop: theme.spacing(1),
+        paddingBottom: theme.spacing(1),
+    },
+    chart_area: {
+        padding: theme.spacing(1),
+        border: "1px solid black",
+        height: "500px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
     },
 }));
 
@@ -22,8 +38,7 @@ export default function CourseView(props) {
     const classes = useStyles();
 
     /* INPUT STATES ************************************************/
-
-    // course object
+// course object
     const [course, setCourse] = React.useState();
     // id of instructor currently displayed
     const [iid, setIid] = React.useState(0);
@@ -43,8 +58,6 @@ export default function CourseView(props) {
 
 
     React.useEffect(() => {
-        console.log("React.useEffect");
-
         /* Dummy course object */
         const courseInfo = {
             cid: 3214232,
@@ -71,8 +84,7 @@ export default function CourseView(props) {
             { year: 2018, period: "Spring" },
             { year: 2018, period: "Fall" },
             { year: 2017, period: "Fall" }
-        ];
-        setSemesters(semesterInfo);
+        ]; setSemesters(semesterInfo);
 
         setLoading(false);
     }, []);
@@ -131,16 +143,32 @@ export default function CourseView(props) {
         );
     }
 
+    function DistroCharts() {
+        return (
+            <div>
+                <h4>Grade distribution charts</h4>
+                <div className={classes.chart_area}>
+                    <p className={classes.chart_elem}>Loading...</p>
+                </div>
+            </div>
+        );
+    }
+
     function Main() {
         return (
             <Paper className={classes.contents}>
-                <Typography variant="h4">
-                    {course.subject} {course.code}
-                </Typography>
-                <Typography variant="h6">
-                    {course.title}
-                </Typography>
+                <div className={classes.unit}>
+                    <Typography variant="h4">
+                        {course.subject} {course.code}
+                    </Typography>
+                    <Typography variant="h6">
+                        {course.title}
+                    </Typography>
+                </div>
+
                 <hr />
+                
+                <div className={classes.unit}>
                 <Grid container spacing={2}>
                     <Grid item md={6}>
                         <InstructorSelect />
@@ -149,6 +177,13 @@ export default function CourseView(props) {
                         <SemesterSelect />
                     </Grid>                    
                 </Grid>
+                </div>
+
+                <hr />
+
+                <DistroCharts />
+
+                <br />
             </Paper>
         );
     }
