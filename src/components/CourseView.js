@@ -4,8 +4,11 @@ import {
     Typography, Paper, Grid, TextField, MenuItem
 } from "@material-ui/core/";
 import {
-    XYPlot
+    XYPlot,
+    VerticalGridLines, HorizontalGridLines,
+    XAxis, YAxis, VerticalBarSeries, LineSeries,
 } from "react-vis";
+import 'react-vis/dist/style.css';
 
 import NavBar from "./NavBar";
 
@@ -26,7 +29,8 @@ const useStyles = makeStyles(theme => ({
     },
     chart_area: {
         padding: theme.spacing(1),
-        border: "1px solid black",
+        paddingRight: theme.spacing(3),
+        // border: "1px solid black",
         height: "500px",
         display: "flex",
         alignItems: "center",
@@ -98,6 +102,7 @@ export default function CourseView(props) {
             <TextField
                 id="instructor-select" 
                 select
+                fullWidth
                 label="Instructor"
                 value={iid}
                 onChange={iidChange}
@@ -123,6 +128,7 @@ export default function CourseView(props) {
             <TextField
                 id="semester-select" 
                 select
+                fullWidth
                 label="Semester"
                 value={sem}
                 onChange={semChange}
@@ -143,15 +149,66 @@ export default function CourseView(props) {
         );
     }
 
-    function DistroCharts() {
+    function GPADistroChart() {
+        /* Dummy GPA distribution data */
+        const data = [
+            {x: "A", y: 0.45},
+            {x: "AB", y: 0.13},
+            {x: "B", y: 0.3},
+            {x: "BC", y: 0.03},
+            {x: "C", y: 0.01},
+            {x: "CD", y: 0},
+            {x: "D", y: 0.01},
+            {x: "F", y: 0.01},
+          ];
         return (
             <div>
-                <h4>Grade distribution charts</h4>
+                <h4>Overall Grade Distribution</h4>
                 <div className={classes.chart_area}>
-                    <p className={classes.chart_elem}>Loading...</p>
+                    <XYPlot     
+                        xType="ordinal" 
+                        height={470} width={500}
+                    >
+                        <XAxis />
+                        <YAxis tickFormat={v => `${v * 100}%`}/>
+                        <VerticalGridLines />
+                        <HorizontalGridLines style={{ fontSize: "10pt" }}/>
+                        <VerticalBarSeries data={data} color="darkred" />
+                    </XYPlot>
                 </div>
             </div>
         );
+    }
+
+    function GPATrendChart() {
+        /* Dummy GPA trend data */
+        const data = [
+            {x: "FA 17", y: 3.58},
+            {x: "SP 18", y: 3.13},
+            {x: "FA 18", y: 3.3},
+            {x: "SP 19", y: 3.03},
+            {x: "FA 19", y: 3.01},
+            {x: "SP 20", y: 3.33},
+          ];
+        return (
+            <div>
+                <h4>Historical GPA Trend</h4>
+                <div className={classes.chart_area}>
+                    <XYPlot 
+                        xType="ordinal" 
+                        height={470} width={500}
+                        yDomain={[1.0, 4.0]}
+                    >
+                        <XAxis />
+                        <YAxis />
+                        <VerticalGridLines />
+                        <HorizontalGridLines style={{ fontSize: "10pt" }}/>
+                        <LineSeries data={data} color="darkred" />
+                    </XYPlot>
+                </div>
+            </div>
+        );
+
     }
 
     function Main() {
@@ -181,7 +238,18 @@ export default function CourseView(props) {
 
                 <hr />
 
-                <DistroCharts />
+                <div className={classes.unit}>
+                <Grid container spacing={4}>
+                    <Grid item md={6}>
+                        <GPADistroChart />
+                    </Grid>
+                    <Grid item md={6}>
+                        <GPATrendChart />
+                    </Grid>
+                </Grid>
+                </div>
+
+                <hr />
 
                 <br />
             </Paper>
