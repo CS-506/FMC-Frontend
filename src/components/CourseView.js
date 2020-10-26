@@ -1,7 +1,7 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles";
 import { 
-    Typography, Paper, Grid, Select
+    Typography, Paper, Grid, TextField, MenuItem
 } from "@material-ui/core/";
 
 import NavBar from "./NavBar";
@@ -25,10 +25,17 @@ export default function CourseView(props) {
 
     // course object
     const [course, setCourse] = React.useState();
+    // id of instructor currently displayed
+    const [iid, setIid] = React.useState(0);
     // instructors who have taught this course previously
     const [instructors, setInstructors] = React.useState([]);
+    // semester currently displayed
+    const [sem, setSem] = React.useState(0);
     // semesters in which this course was offered
     const [semesters, setSemesters] = React.useState([]);
+
+    const iidChange = event => setIid(Number(event.target.value));
+    const semChange = event => setSem(Number(event.target.value));
 
 
     /* PAGE STATES *************************************************/
@@ -46,8 +53,27 @@ export default function CourseView(props) {
             subject:" COMP SCI",
             code: 537
         };
-
         setCourse(courseInfo);
+
+        /* Dummy instructors list */
+        const instructorInfo = [
+            { iid: 1, name: "Remzi Arpaci-Dusseau" },
+            { iid: 2, name: "Andrea Arpaci-Dusseau" },
+            { iid: 3, name: "Mike Swift" },
+            { iid: 4, name: "Shivaram Venkataraman" }
+        ];
+        setInstructors(instructorInfo);
+
+        /* Dummy semesters list */
+        const semesterInfo = [
+            { year: 2019, period: "Spring" },
+            { year: 2019, period: "Fall" },
+            { year: 2018, period: "Spring" },
+            { year: 2018, period: "Fall" },
+            { year: 2017, period: "Fall" }
+        ];
+        setSemesters(semesterInfo);
+
         setLoading(false);
     }, []);
 
@@ -57,9 +83,23 @@ export default function CourseView(props) {
      */
     function InstructorSelect() {
         return (
-            <Typography variant="h6">
-                Instructor Selection.
-            </Typography>
+            <TextField
+                id="instructor-select" 
+                select
+                label="Instructor"
+                value={iid}
+                onChange={iidChange}
+                helperText="Select an instructor who taugth this course"
+            >
+                <MenuItem value={0} key={0}>
+                    All instructors
+                </MenuItem>
+                {instructors?.map(item => (
+                    <MenuItem value={item.iid} key={item.iid}>
+                        {item.name}
+                    </MenuItem>
+                ))}
+            </TextField>
         );
     }
 
@@ -68,9 +108,26 @@ export default function CourseView(props) {
      */
     function SemesterSelect() {
         return (
-            <Typography variant="h6">
-                Semester selection.
-            </Typography>
+            <TextField
+                id="semester-select" 
+                select
+                label="Semester"
+                value={sem}
+                onChange={semChange}
+                helperText="Select a semester where this course was offered"
+            >
+                <MenuItem value={0} key={0}>
+                    All semesters
+                </MenuItem>
+                {semesters?.map(item => (
+                    <MenuItem 
+                        value={semesters.indexOf(item)} 
+                        key={semesters.indexOf(item)}
+                    >
+                        {item.period + " " + item.year}
+                    </MenuItem>
+                ))}
+            </TextField>
         );
     }
 
