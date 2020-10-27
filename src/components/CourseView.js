@@ -2,8 +2,12 @@ import React from "react"
 import axios from "axios"
 import { makeStyles } from "@material-ui/core/styles";
 import { 
-    Typography, Paper, Grid, TextField, MenuItem
+    Typography, Paper, Grid, TextField, MenuItem, InputAdornment,
 } from "@material-ui/core/";
+import {
+    PeopleAlt as InstructorIcon,
+    DateRange as SemesterIcon,
+} from "@material-ui/icons"
 import {
     XYPlot,
     VerticalGridLines, HorizontalGridLines,
@@ -151,7 +155,14 @@ export default function CourseView(props) {
                 label="Instructor"
                 value={iid}
                 onChange={iidChange}
-                helperText="Select an instructor who taugth this course"
+                helperText="Select an instructor who taught this course"
+                InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <InstructorIcon />
+                        </InputAdornment>
+                    ),
+                }}
             >
                 <MenuItem value={0} key={0}>
                     All instructors
@@ -178,6 +189,13 @@ export default function CourseView(props) {
                 value={sem}
                 onChange={semChange}
                 helperText="Select a semester where this course was offered"
+                InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <SemesterIcon />
+                        </InputAdornment>
+                    ),
+                }}
             >
                 <MenuItem value={0} key={0}>
                     All semesters
@@ -253,7 +271,27 @@ export default function CourseView(props) {
                 </div>
             </div>
         );
+    }
 
+    function Charts() {
+        return (
+            <div className={classes.unit}>
+            <Grid container spacing={4}>
+                <Grid item md={6}>
+                    <GPADistroChart />
+                </Grid>
+                <Grid item md={6}>
+                    <GPATrendChart />
+                </Grid>
+            </Grid>
+            </div>
+        );
+    }
+
+    function DataDisplay() {
+        return (
+            <Charts />
+        );
     }
 
     function Main() {
@@ -287,19 +325,9 @@ export default function CourseView(props) {
 
                 <hr />
 
-                <div className={classes.unit}>
-                <Grid container spacing={4}>
-                    <Grid item md={6}>
-                        <GPADistroChart />
-                    </Grid>
-                    <Grid item md={6}>
-                        <GPATrendChart />
-                    </Grid>
-                </Grid>
-                </div>
+                <DataDisplay />
 
                 <hr />
-
                 <br />
             </Paper>
         );
