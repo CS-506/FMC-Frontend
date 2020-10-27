@@ -1,4 +1,5 @@
 import React from "react"
+import axios from "axios"
 import { makeStyles } from "@material-ui/core/styles";
 import { 
     Typography, Paper, Grid, TextField, MenuItem
@@ -42,8 +43,8 @@ export default function CourseView(props) {
     const classes = useStyles();
 
     /* INPUT STATES ************************************************/
-// course object
-    const [course, setCourse] = React.useState();
+    // course object
+    const [course, setCourse] = React.useState(null);
     // id of instructor currently displayed
     const [iid, setIid] = React.useState(0);
     // instructors who have taught this course previously
@@ -52,6 +53,8 @@ export default function CourseView(props) {
     const [sem, setSem] = React.useState(0);
     // semesters in which this course was offered
     const [semesters, setSemesters] = React.useState([]);
+    // sections offered in the past
+    const [sections, setSections] = React.useState([]);
 
     const iidChange = event => setIid(Number(event.target.value));
     const semChange = event => setSem(Number(event.target.value));
@@ -60,26 +63,68 @@ export default function CourseView(props) {
     /* PAGE STATES *************************************************/
     const [isLoading, setLoading] = React.useState(true);
 
+    /**
+     * Parse section array fetched from backend.
+     */
+    function parseSections(sects) {
+        console.log("Parsing sections: ");
+        console.log(sects);
+        setSections(sects);
+    }
+
+    /**
+     * Fetch course information from backend corresopnding to
+     * the given course id of this page, and store it in state.
+     */
+    const loadCourse = React.useCallback((courseId) => {
+        axios.get("/admin/course/get/" + courseId)
+            .then((res) => {
+                console.log(res.data);
+                setCourse(res.data);
+            })
+            .catch((err) => {
+                alert("Unknown error.");
+            });
+    }, []);
+
+    /**
+     * Fetch list of instructors who have taught this course in the past.
+     */
+    const loadInstructors = React.useCallback((courseId) => {
+        axios.get("/coursesection/instructorname/course/" + courseId)
+            .then((res) => {
+                console.log(res);
+                let instructorInfo = [];
+                for (let i = 0; i < res.data.length; i++) {
+                    let inst = {
+                        iid: res.data[i][0],
+                        name: (res.data[i][1] + " " + res.data[i][3]),
+                    };
+                    instructorInfo.push(inst);
+                }
+                setInstructors(instructorInfo);
+            })
+            .catch((err) => {
+                alert("Unknown error.");
+            });
+    }, []);
+
+    const loadSections = React.useCallback((courseId) => {
+        axios.get("/coursesection/section/" + courseId)
+            .then((res) => {
+                parseSections(res.data);
+            })
+            .catch((err) => {
+                alert("Unknown error.");
+            });
+    }, [])
 
     React.useEffect(() => {
-        /* Dummy course object */
-        const courseInfo = {
-            cid: 3214232,
-            title: "Introduction to Operating Systems",
-            dept: "Computer Sciences",
-            subject:" COMP SCI",
-            code: 537
-        };
-        setCourse(courseInfo);
-
-        /* Dummy instructors list */
-        const instructorInfo = [
-            { iid: 1, name: "Remzi Arpaci-Dusseau" },
-            { iid: 2, name: "Andrea Arpaci-Dusseau" },
-            { iid: 3, name: "Mike Swift" },
-            { iid: 4, name: "Shivaram Venkataraman" }
-        ];
-        setInstructors(instructorInfo);
+        /* Fixed dummy course placeholder value */
+        const cid = 3;
+        loadCourse(cid);
+        loadInstructors(cid);
+        loadSections(cid);
 
         /* Dummy semesters list */
         const semesterInfo = [
@@ -91,7 +136,7 @@ export default function CourseView(props) {
         ]; setSemesters(semesterInfo);
 
         setLoading(false);
-    }, []);
+    }, [loadSections, loadInstructors, loadCourse]);
 
 
     /**
@@ -214,14 +259,18 @@ export default function CourseView(props) {
     function Main() {
         return (
             <Paper className={classes.contents}>
-                <div className={classes.unit}>
-                    <Typography variant="h4">
-                        {course.subject} {course.code}
-                    </Typography>
-                    <Typography variant="h6">
-                        {course.title}
-                    </Typography>
-                </div>
+                {course?
+                    <div className={classes.unit}>
+                        <Typography variant="h4">
+                            {course.subject.toUpperCase()} {course.code}
+                        </Typography>
+                        <Typography variant="h6">
+                            {course.name}
+                        </Typography>
+                    </div>
+                    :
+                    <Typography variant="h4">Loading...</Typography>
+                }
 
                 <hr />
                 
