@@ -61,7 +61,7 @@ export default function CourseView(props) {
     // sections offered in the past
     const [sections, setSections] = React.useState([]);
 
-    const iidChange = event => setIid(Number(event.target.value));
+    const iidChange = event => setIid(event.target.value);
     const semChange = event => setSem(Number(event.target.value));
 
 
@@ -98,7 +98,6 @@ export default function CourseView(props) {
     const loadInstructors = React.useCallback((courseId) => {
         axios.get("/coursesection/instructorname/course/" + courseId)
             .then((res) => {
-                console.log(res);
                 let instructorInfo = [];
                 for (let i = 0; i < res.data.length; i++) {
                     let inst = {
@@ -115,14 +114,19 @@ export default function CourseView(props) {
     }, []);
 
     const loadSections = React.useCallback((courseId) => {
-        axios.get("/coursesection/section/" + courseId)
+        let url = "/coursesection/section/" 
+                    + courseId + "/"
+                    + (iid == 0 ? "instructor_all" : iid)
+                    + "/year_all/semester_all";
+        console.log(url);
+        axios.get(url)
             .then((res) => {
                 parseSections(res.data);
             })
             .catch((err) => {
                 alert("Unknown error.");
             });
-    }, [])
+    }, [iid])
 
     React.useEffect(() => {
         /* Fixed dummy course placeholder value */
