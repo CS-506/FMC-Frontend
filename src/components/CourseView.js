@@ -113,6 +113,45 @@ export default function CourseView(props) {
             });
     }, []);
 
+    /**
+     * Extract all unique semesters from a list
+     */
+    function filterSemesters(sems) {
+        let uniqsems = [];
+        for (let i = 0; i < sems.length; i++) {
+            let sem = {
+                year: sems[i][1],
+                semester: sems[i][2],
+            };
+            let unique = true;
+            for (let j = 0; j < uniqsems.length; j++) {
+                if (uniqsems[j].year === sem.year 
+                        && uniqsems[j].semester === sem.semester) {
+                    unique = false;
+                    break;
+                }
+            }
+            if (unique)
+                uniqsems.push(sem);
+        }
+        return uniqsems;
+    }
+
+    /**
+     * Fetch list of semesters in which this course has been offered.
+     */
+    const loadSemesters = React.useCallback((courseId) => {
+        axios.get("/coursesection/yearsemester/course/" + courseId)
+            .then((res) => {
+                const sems = filterSemesters(res.data);
+                setSemesters(sems);
+            })
+            .catch((err) => {
+                console.log(err);
+                alert("Unknown error whilst retrieving semesters.");
+            });
+    }, []);
+
     const loadSections = React.useCallback((courseId) => {
         let url = "/coursesection/section/" 
                     + courseId + "/"
@@ -133,19 +172,11 @@ export default function CourseView(props) {
         const cid = 3;
         loadCourse(cid);
         loadInstructors(cid);
+        loadSemesters(cid);
         loadSections(cid);
 
-        /* Dummy semesters list */
-        const semesterInfo = [
-            { year: 2019, period: "Spring" },
-            { year: 2019, period: "Fall" },
-            { year: 2018, period: "Spring" },
-            { year: 2018, period: "Fall" },
-            { year: 2017, period: "Fall" }
-        ]; setSemesters(semesterInfo);
-
         setLoading(false);
-    }, [loadSections, loadInstructors, loadCourse]);
+    }, [loadSemesters, loadSections, loadInstructors, loadCourse]);
 
 
     /**
@@ -210,7 +241,7 @@ export default function CourseView(props) {
                         value={semesters.indexOf(item)} 
                         key={semesters.indexOf(item)}
                     >
-                        {item.period + " " + item.year}
+                        {item.semester + " " + item.year}
                     </MenuItem>
                 ))}
             </TextField>
