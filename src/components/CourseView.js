@@ -1,8 +1,9 @@
 import React from "react"
 import axios from "axios"
-import { makeStyles } from "@material-ui/core/styles";
+import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { 
     Typography, Paper, Grid, TextField, MenuItem, InputAdornment,
+    Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
 } from "@material-ui/core/";
 import {
     PeopleAlt as InstructorIcon,
@@ -275,7 +276,6 @@ export default function CourseView(props) {
 
     function Charts() {
         return (
-            <div className={classes.unit}>
             <Grid container spacing={4}>
                 <Grid item md={6}>
                     <GPADistroChart />
@@ -284,13 +284,96 @@ export default function CourseView(props) {
                     <GPATrendChart />
                 </Grid>
             </Grid>
-            </div>
+        );
+    }
+
+    const StyledTableCell = withStyles((theme) => ({
+        head: {
+            backgroundColor: theme.palette.common.black,
+            color: theme.palette.common.white,
+        },
+        body: {
+            fontSize: 14,
+        },
+    }))(TableCell);
+    
+    const StyledTableRow = withStyles((theme) => ({
+        root: {
+            '&:nth-of-type(odd)': {
+                backgroundColor: theme.palette.action.hover,
+            },
+        },
+    }))(TableRow);
+
+    function createData(semester, section, instructor, carbs, protein) {
+        return { semester, section, instructor, carbs, protein };
+    }
+
+    function getInstructorName(iid) {
+        for (let i = 0; i < instructors.length; i++) {
+            if (instructors[i].iid == iid)
+                return instructors[i].name;
+        }
+        return "";
+    }
+
+    function compileData() {
+        let rows = []
+        for (let i = 0; i < sections.length; i++) {
+            const entry = createData(
+                            sections[i].semester + " " + sections[i].year,
+                            sections[i].section_code,
+                            getInstructorName(sections[i].instructorId),
+                            0,
+                            0);
+            rows.push(entry);
+        }
+        console.log(rows);
+        return rows;
+    }
+
+    function SectionTable() {
+        const rows = compileData();
+        return (
+            <TableContainer component={Paper}>
+            <Table className={classes.table} aria-label="customized table">
+                <TableHead>
+                <TableRow>
+                    <StyledTableCell>Semester</StyledTableCell>
+                    <StyledTableCell>Section</StyledTableCell>
+                    <StyledTableCell>Instructor</StyledTableCell>
+                    <StyledTableCell align="right">Carbs&nbsp;(g)</StyledTableCell>
+                    <StyledTableCell align="right">Protein&nbsp;(g)</StyledTableCell>
+                </TableRow>
+                </TableHead>
+                <TableBody>
+                {rows.map((row) => (
+                    <StyledTableRow key={rows.indexOf(row)}>
+                    <StyledTableCell component="th" scope="row">
+                        {row.semester}
+                    </StyledTableCell>
+                    <StyledTableCell>{row.section}</StyledTableCell>
+                    <StyledTableCell>{row.instructor}</StyledTableCell>
+                    <StyledTableCell align="right">{row.carbs}</StyledTableCell>
+                    <StyledTableCell align="right">{row.protein}</StyledTableCell>
+                    </StyledTableRow>
+                ))}
+                </TableBody>
+            </Table>
+            </TableContainer>
         );
     }
 
     function DataDisplay() {
         return (
-            <Charts />
+            <div>
+            <Charts className={classes.unit} />
+            <br />
+            <hr />
+            <br />
+            <SectionTable className={classes.unit} />
+            <br />
+            </div>
         );
     }
 
