@@ -142,12 +142,20 @@ export default function CourseView(props) {
             });
     }, []);
 
+    /**
+     * Fetch list of sections satisfying the filter parameters
+     * (instructor and semester). 
+     * Note that when using the sem state value to index the semesters
+     * array, the value is decremented by one. See comments above 
+     * SemesterSelect() for reason of doing so.
+     */
     const loadSections = React.useCallback((courseId) => {
         let url = "/coursesection/section/" 
                     + courseId + "/"
                     + (iid == 0 ? "instructor_all" : iid)
                     + (sem == 0 ? "/year_all/sem_all" 
-                      : "/" + semesters[sem].year + "/" + semesters[sem].semester);
+                      : "/" + semesters[sem-1].year 
+                      + "/" + semesters[sem-1].semester);
         axios.get(url)
             .then((res) => {
                 setSections(res.data);
@@ -204,6 +212,10 @@ export default function CourseView(props) {
 
     /**
      * Drop-down selection of semesters.
+     * NOTE: the mapped key/value are incremented by 1 to avoid collision
+     * with the 0 used for "All semesters". This means that when using the
+     * value of the Select component to index into the semesters array, 
+     * the value should be decremented by 1 in non-zero cases.
      */
     function SemesterSelect() {
         return (
@@ -228,8 +240,8 @@ export default function CourseView(props) {
                 </MenuItem>
                 {semesters?.map(item => (
                     <MenuItem 
-                        value={semesters.indexOf(item)} 
-                        key={semesters.indexOf(item)}
+                        value={semesters.indexOf(item) + 1} 
+                        key={semesters.indexOf(item) + 1}
                     >
                         {item.semester + " " + item.year}
                     </MenuItem>
