@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function Home() {
+export default function Search() {
     const classes = useStyles();
 
     return (
