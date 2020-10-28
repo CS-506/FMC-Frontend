@@ -69,15 +69,6 @@ export default function CourseView(props) {
     const [isLoading, setLoading] = React.useState(true);
 
     /**
-     * Parse section array fetched from backend.
-     */
-    function parseSections(sects) {
-        console.log("Parsing sections: ");
-        console.log(sects);
-        setSections(sects);
-    }
-
-    /**
      * Fetch course information from backend corresopnding to
      * the given course id of this page, and store it in state.
      */
@@ -147,7 +138,6 @@ export default function CourseView(props) {
                 setSemesters(sems);
             })
             .catch((err) => {
-                console.log(err);
                 alert("Unknown error whilst retrieving semesters.");
             });
     }, []);
@@ -156,16 +146,16 @@ export default function CourseView(props) {
         let url = "/coursesection/section/" 
                     + courseId + "/"
                     + (iid == 0 ? "instructor_all" : iid)
-                    + "/year_all/semester_all";
-        console.log(url);
+                    + (sem == 0 ? "/year_all/sem_all" 
+                      : "/" + semesters[sem].year + "/" + semesters[sem].semester);
         axios.get(url)
             .then((res) => {
-                parseSections(res.data);
+                setSections(res.data);
             })
             .catch((err) => {
                 alert("Unknown error.");
             });
-    }, [iid])
+    }, [iid, sem]);
 
     React.useEffect(() => {
         /* Fixed dummy course placeholder value */
@@ -363,7 +353,6 @@ export default function CourseView(props) {
                             0);
             rows.push(entry);
         }
-        console.log(rows);
         return rows;
     }
 
