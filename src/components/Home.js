@@ -9,15 +9,18 @@ import {
     Button,
     InputBase,
 } from "@material-ui/core/";
-import { red } from '@material-ui/core/colors';
-
-
+import { red, white } from '@material-ui/core/colors';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
+        borderColor: "red",
       },
     title: {
+    },
+    searchBox: {
+        outlineColor: red,
+        padding: theme.spacing(3),
     },
     inputRoot: {
         color: 'inherit',
@@ -32,10 +35,13 @@ const useStyles = makeStyles((theme) => ({
           width: '20ch',
         },
     },
+    searchButton: {
+        color: 'white',
+    },
 }));
 
 export default function Home() {
-    const classes = makeStyles();
+    const classes = useStyles();
 
     return (
         <div className={classes.root}>
@@ -45,7 +51,7 @@ export default function Home() {
                 direction="column"
                 alignItems="center"
                 justify="center"
-                style={{ minHeight: '80vh' }}
+                style={{ minHeight: '100vh' }}
             >
                 <Grid item xs={12}>
                     <Typography className={classes.title} variant="h3">
@@ -53,8 +59,9 @@ export default function Home() {
                     </Typography>
                 </Grid>
                 <br/>
-                <Grid container spacing={3}>
-                    <Grid item xs={12}>
+                <Grid container spacing={0}>
+                    <Grid item xs={3}></Grid>
+                    <Grid item xs={6}>
                         <div className={classes.search}>
                             <TextField
                                 className={classes.searchbox}
@@ -70,21 +77,64 @@ export default function Home() {
                             />
                         </div>
                     </Grid>
-                    <Grid item xs={6}>
-
+                    <Grid item xs={3}></Grid>
+                </Grid>
+                <Grid item xs={12}>
+                    <Button
+                        className={classes.searchButton}
+                        variant="contained"
+                        style={{background: '#c40d02'}}
+                        
+                        textPrimary
+                        /*href="/register"*/
+                    >
+                        Search Course!
+                    </Button>
+                </Grid>
+                <br/>
+                <Grid container spacing={0}>
+                    <Grid item xs={3}></Grid>
+                    <Grid item xs={3}>
+                        <TextField
+                            className={classes.searchbox}
+                            placeholder="Subject..."
+                            classes={{
+                                root: classes.inputRoot,
+                                input: classes.inputInput,
+                            }}
+                            inputProps={{ 'aria-label': 'search' }}
+                            variant="outlined"
+                            
+                            autoComplete
+                        />
                     </Grid>
-                    <Grid item xs={6}>
-                        <Button
-                            variant="contained"
-                            style={{background: '#d50000', marginLeft: 120}}
-                            className={classes.searchButton}
-                            /*href="/register"*/
-                        >
-                            Search 
-                        </Button>
+                    <Grid item xs={3}>
+                        <TextField
+                            className={classes.searchbox}
+                            placeholder="Instructor..."
+                            classes={{
+                                root: classes.inputRoot,
+                                input: classes.inputInput,
+                            }}
+                            inputProps={{ 'aria-label': 'search' }}
+                            variant="outlined"
+                            
+                            autoComplete
+                        />
                     </Grid>
                 </Grid>
-                
+                <Grid item xs={12}>
+                    <Button
+                        className={classes.searchButton}
+                        variant="contained"
+                        style={{background: '#c40d02'}}
+                        
+                        textPrimary
+                        /*href="/register"*/
+                    >
+                        Search by filters!
+                    </Button>
+                </Grid>
                     
                 
             </Grid>
