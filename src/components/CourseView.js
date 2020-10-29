@@ -165,6 +165,28 @@ export default function CourseView(props) {
             });
     }, []);
 
+    function sortSection(sect1, sect2) {
+        const sem1 = {
+            year: sect1.year,
+            semester: sect1.semester,
+        };
+        const sem2 = {
+            year: sect2.year,
+            semester: sect2.semester,
+        };
+        let ret = sortSemesters(sem1, sem2);
+        if (ret === 0) {
+            return sect1.section_code - sect2.section_code;
+        } else {
+            return ret;
+        }
+    }
+
+    function processSections(sects) {
+        sects.sort(sortSection);
+        setSections(sects);
+    }
+
     /**
      * Fetch list of sections satisfying the filter parameters
      * (instructor and semester). 
@@ -181,7 +203,7 @@ export default function CourseView(props) {
                       + "/" + semesters[sem-1].semester);
         axios.get(url)
             .then((res) => {
-                setSections(res.data);
+                processSections(res.data);
             })
             .catch((err) => {
                 alert("Unknown error.");
