@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useReducer } from 'react';
 import { createMuiTheme, 
     makeStyles 
 } from '@material-ui/core/styles';
@@ -8,6 +8,7 @@ import {
     TextField,
     Button,
     InputBase,
+    Link,
 } from "@material-ui/core/";
 import { red, white } from '@material-ui/core/colors';
 
@@ -22,26 +23,42 @@ const useStyles = makeStyles((theme) => ({
         outlineColor: red,
         padding: theme.spacing(3),
     },
-    inputRoot: {
-        color: 'inherit',
-    },
-    inputInput: {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(1)}px)`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        [theme.breakpoints.up('md')]: {
-          width: '20ch',
-        },
-    },
     searchButton: {
         color: 'white',
     },
 }));
 
+
+// Create context object
+export const AppContext = React.createContext();
+
+// Set up Initial State
+const initialState = {
+    currKeyWord: ''
+};
+
+function reducer(state, action) {
+    switch (action.type) {
+        case 'UPDATE_INPUT':
+            return {
+                currKeyWord: action.data
+            };
+        default:
+            return initialState;
+    }
+}
+
+
+
 export default function Home() {
     const classes = useStyles();
+
+    const [state, dispatch] = useReducer(reducer, initialState);
+    const [keyWord, setKeyWord] = useState("");
+
+    function newSearch(newKeyWord) {
+        setKeyWord(newKeyWord)
+    }
 
     return (
         <div className={classes.root}>
@@ -63,18 +80,17 @@ export default function Home() {
                     <Grid item xs={3}></Grid>
                     <Grid item xs={6}>
                         <div className={classes.search}>
-                            <TextField
-                                className={classes.searchbox}
-                                placeholder="Search…"
-                                classes={{
-                                    root: classes.inputRoot,
-                                    input: classes.inputInput,
-                                }}
-                                inputProps={{ 'aria-label': 'search' }}
-                                variant="outlined"
-                                fullWidth
-                                autoComplete
-                            />
+                            <AppContext.Provider value={{ state, dispatch }}>
+                                <TextField
+                                    className={classes.searchbox}
+                                    placeholder="Search…"
+                                    variant="outlined"
+                                    fullWidth
+                                    autoComplete
+                                    value={keyWord}
+                                    onChange={e => newSearch(e.target.value)}
+                                />
+                            </AppContext.Provider>
                         </div>
                     </Grid>
                     <Grid item xs={3}></Grid>
@@ -83,10 +99,11 @@ export default function Home() {
                     <Button
                         className={classes.searchButton}
                         variant="contained"
-                        style={{background: '#c40d02'}}
-                        
+                        style={{background: '#c40d02', textDecoration: 'none'}}                        
                         textPrimary
-                        /*href="/register"*/
+                        component={Link}
+                        to="/Search"
+                        href="/Search"
                     >
                         Search Course!
                     </Button>
@@ -98,13 +115,8 @@ export default function Home() {
                         <TextField
                             className={classes.searchbox}
                             placeholder="Subject..."
-                            classes={{
-                                root: classes.inputRoot,
-                                input: classes.inputInput,
-                            }}
-                            inputProps={{ 'aria-label': 'search' }}
                             variant="outlined"
-                            
+                            fullWidth
                             autoComplete
                         />
                     </Grid>
@@ -112,13 +124,8 @@ export default function Home() {
                         <TextField
                             className={classes.searchbox}
                             placeholder="Instructor..."
-                            classes={{
-                                root: classes.inputRoot,
-                                input: classes.inputInput,
-                            }}
-                            inputProps={{ 'aria-label': 'search' }}
                             variant="outlined"
-                            
+                            fullWidth
                             autoComplete
                         />
                     </Grid>
