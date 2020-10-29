@@ -6,6 +6,7 @@ import {
     Paper,
     List,
 } from "@material-ui/core/";
+import { Link } from 'react-router-dom';
 import NavBar from "./NavBar";
 
 const useStyles = makeStyles(theme => ({
@@ -26,14 +27,14 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function Home() {
+export default function Search() {
     const classes = useStyles();
 
     // search keywords:
-    const [keywords, setKeyWords] = React.useState();
+    const [keywords, setKeyWords] = React.useState('');
+
     // course object:
     const [course, setCourse] = React.useState();
-
 
     // course list:
     const courseList = [
@@ -60,13 +61,14 @@ export default function Home() {
         },
     ]
 
+    function setSearchState(newKeyWords) {
+        setKeyWords(keywords => newKeyWords);
+    }
     // PAGE STATES: 
     const [isLoading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
         console.log("React.useEffect");
-
-        
         setLoading(false);
     }, []);
 
@@ -86,14 +88,19 @@ export default function Home() {
                         Search Result for ...
                     </Typography>
                     {courseList.map(c => (
-                        <Paper className={classes.paper} style={{ padding:10 }}>
-                            <Typography variant="h5">
-                                {c.title}
-                            </Typography>
-                            <Typography>
-                                {c.subject} {c.code}
-                            </Typography>
-                        </Paper>
+                        <Link to="/CourseView" style={{ textDecoration: 'none' }}>
+                            <Paper
+                                className={classes.paper} 
+                                style={{ padding:10 }}
+                            >
+                                <Typography variant="h5">
+                                    {c.title}
+                                </Typography>
+                                <Typography>
+                                    {c.subject} {c.code}
+                                </Typography>
+                            </Paper>
+                        </Link>
                     ))}
                 </div>
             </main>
