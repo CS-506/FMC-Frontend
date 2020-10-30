@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, sendData } from 'react';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   searchIcon: {
-    padding: theme.spacing(1, 20),
+    padding: theme.spacing(1, 2),
     marginRight: 0,
     height: '100%',
     position: 'absolute',
@@ -71,17 +71,44 @@ const useStyles = makeStyles((theme) => ({
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(1)}px)`,
+    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('md')]: {
       width: '20ch',
     },
   },
+  inputInput2: {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(1)}px)`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('md')]: {
+      width: '20ch',
+    },
+  }
 }));
 
 export default function ClippedDrawer() {
   const classes = useStyles();
+
+  const [keyWord, setKeyWord] = useState("");
+
+  function newSearch(newKeyWord) {
+      setKeyWord(newKeyWord)
+  }
+
+  class Child1 extends React.Component{sendData = () => {
+    this.props.parentCallback("Hey Popsie, How’s it going?");
+    };
+
+    render() { 
+      return (
+        sendData(this.props)
+      );
+    }
+  };
 
   return (
     <div className={classes.root}>
@@ -104,8 +131,12 @@ export default function ClippedDrawer() {
                           input: classes.inputInput,
                       }}
                       inputProps={{ 'aria-label': 'search' }}
+                      value={keyWord}
+                      onChange={e => newSearch(e.target.value)}
+                      
                     />
                 </div>
+              <p>{keyWord}</p>
             </Toolbar>
         </AppBar>
         <div className={classes.grow} />
@@ -114,7 +145,7 @@ export default function ClippedDrawer() {
             className={classes.drawer}
             variant="permanent"
             classes={{paper: classes.drawerPaper,}}
-            style={{ background: '#ff5131' }}
+            style={{ background: "#b8bec4" }}
         >
         <Toolbar />
         <div className={classes.drawerContainer}>
@@ -125,7 +156,7 @@ export default function ClippedDrawer() {
                 placeholder="Subject..."
                 classes={{
                     root: classes.inputRoot,
-                    input: classes.inputInput,
+                    input: classes.inputInput2,
                 }}
                 inputProps={{ 'aria-label': 'search' }}
               />
@@ -136,7 +167,7 @@ export default function ClippedDrawer() {
                 placeholder="Instructor..."
                 classes={{
                     root: classes.inputRoot,
-                    input: classes.inputInput,
+                    input: classes.inputInput2,
                 }}
                 inputProps={{ 'aria-label': 'search' }}
               />

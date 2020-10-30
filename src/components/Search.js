@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import { 
     Typography,
@@ -8,6 +8,7 @@ import {
 } from "@material-ui/core/";
 import { Link } from 'react-router-dom';
 import NavBar from "./NavBar";
+import { AppContext } from './Home';
 
 const useStyles = makeStyles(theme => ({
     navbar: {
@@ -27,11 +28,40 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function Search() {
+export default function Search(props) {
     const classes = useStyles();
 
+    
     // search keywords:
-    const [keywords, setKeyWords] = React.useState('');
+    const [keyWord, setKeyWord] = React.useState("No keyWord");
+
+    //const [state, dispatch] = useContext(AppContext);
+    /*
+    const changeInputValue = (newValue) => {
+        dispatch({ type: 'UPDATE_INPUT', data: newValue,});
+    };
+    */
+    function newSearch(newKeyWord) {
+        setKeyWord(newKeyWord)
+    }
+    class Parent extends React.Component {
+        state = { message: "" }
+        callbackFunction = (childData) => {
+            this.setState({message: childData})
+        };
+        render() {
+            return (
+                <div>
+                     <NavBar parentCallback = {this.callbackFunction}/>
+                     <Typography variant="h5">
+                        Search Result for {props.name}
+                        {this.state.message}
+                    </Typography>
+                </div>
+            );
+        }
+    }
+
 
     // course object:
     const [course, setCourse] = React.useState();
@@ -61,9 +91,7 @@ export default function Search() {
         },
     ]
 
-    function setSearchState(newKeyWords) {
-        setKeyWords(keywords => newKeyWords);
-    }
+    
     // PAGE STATES: 
     const [isLoading, setLoading] = React.useState(true);
 
@@ -76,7 +104,6 @@ export default function Search() {
         <div className = {classes.root}>
             
             <div>
-                {/*<NavBar className={classes.navbar} position="fixed" title="Find My Course" />*/}
                 <NavBar/>
             </div>
             <div>
@@ -85,8 +112,9 @@ export default function Search() {
             <main className = {classes.contents}>
                 <div>
                     <Typography variant="h5">
-                        Search Result for ...
+                        Search Result for  {keyWord}
                     </Typography>
+                    {/*<Parent />*/}
                     {courseList.map(c => (
                         <Link to="/CourseView" style={{ textDecoration: 'none' }}>
                             <Paper

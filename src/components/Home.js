@@ -101,8 +101,6 @@ export default function Home() {
                         variant="contained"
                         style={{background: '#c40d02', textDecoration: 'none'}}                        
                         textPrimary
-                        component={Link}
-                        to="/Search"
                         href="/Search"
                     >
                         Search Course!
