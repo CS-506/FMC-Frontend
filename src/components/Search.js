@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 import { 
     Typography,
@@ -31,43 +32,8 @@ const useStyles = makeStyles(theme => ({
 export default function Search(props) {
     const classes = useStyles();
 
-    
-    // search keywords:
-    const [keyWord, setKeyWord] = React.useState("No keyWord");
-
-    //const [state, dispatch] = useContext(AppContext);
-    /*
-    const changeInputValue = (newValue) => {
-        dispatch({ type: 'UPDATE_INPUT', data: newValue,});
-    };
-    */
-    function newSearch(newKeyWord) {
-        setKeyWord(newKeyWord)
-    }
-    class Parent extends React.Component {
-        state = { message: "" }
-        callbackFunction = (childData) => {
-            this.setState({message: childData})
-        };
-        render() {
-            return (
-                <div>
-                     <NavBar parentCallback = {this.callbackFunction}/>
-                     <Typography variant="h5">
-                        Search Result for {props.name}
-                        {this.state.message}
-                    </Typography>
-                </div>
-            );
-        }
-    }
-
-
-    // course object:
-    const [course, setCourse] = React.useState();
-
     // course list:
-    const courseList = [
+    const initList = [
         {   
             cid: 3214232,
             title: "Introduction to Operating Systems",
@@ -89,17 +55,73 @@ export default function Search(props) {
             subject:" COMP SCI",
             code: 564
         },
-    ]
+    ];
 
+    // search keywords:
+    const [keyWord, setKeyWord] = React.useState("No keyWord");
+    // course list:
+    const [courseList, setList] = React.useState(initList);
+    // course object:
+    const [course, setCourse] = React.useState();
+
+    //const [state, dispatch] = useContext(AppContext);
+    /*
+    const changeInputValue = (newValue) => {
+        dispatch({ type: 'UPDATE_INPUT', data: newValue,});
+    };
+    */
+    function newSearch(newKeyWord) {
+        setKeyWord(newKeyWord)
+    }
+
+
+    
+
+    // Fetch course info from backend given the course id:
+    const loadCourse = React.useCallback((courseId) => {
+        axios.get("/admin/course/get/" + courseId)
+            .then((res) => {
+                console.log(res.data);
+                setCourse(res.data);
+            })
+            .catch((err) => {
+                alert("Course Loading Error.");
+            });
+        if (course) {
+            setList(courseList.concat(course));
+        }
+    }, []);
     
     // PAGE STATES: 
     const [isLoading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
-        console.log("React.useEffect");
+        const cid = 3214232;
+        loadCourse(cid);
         setLoading(false);
-    }, []);
+    }, [loadCourse]);
 
+    function DisplayCourses() {
+        return (
+            <div >
+                {courseList.map(cItem => (
+                    <Link to="/course" style={{ textDecoration: 'none' }}>
+                        <Paper
+                            className={classes.paper} 
+                            style={{ padding:10 }}
+                        >
+                            <Typography variant="h5">
+                                {cItem.title}
+                            </Typography>
+                            <Typography>
+                                {cItem.subject} {cItem.code}
+                            </Typography>
+                        </Paper>
+                    </Link>
+                ))}
+            </div>
+        );
+    }
     return (
         <div className = {classes.root}>
             
@@ -114,26 +136,10 @@ export default function Search(props) {
                     <Typography variant="h5">
                         Search Result for  {keyWord}
                     </Typography>
-                    {/*<Parent />*/}
-                    {courseList.map(c => (
-                        <Link to="/CourseView" style={{ textDecoration: 'none' }}>
-                            <Paper
-                                className={classes.paper} 
-                                style={{ padding:10 }}
-                            >
-                                <Typography variant="h5">
-                                    {c.title}
-                                </Typography>
-                                <Typography>
-                                    {c.subject} {c.code}
-                                </Typography>
-                            </Paper>
-                        </Link>
-                    ))}
+
+                    <DisplayCourses />
                 </div>
             </main>
-            
-            
             
         </div>
         
