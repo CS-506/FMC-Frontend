@@ -79,7 +79,7 @@ export default function CourseView(props) {
                 setCourse(res.data);
             })
             .catch((err) => {
-                alert("Unknown error.");
+                alert("Failed to fetch course information.");
             });
     }, []);
 
@@ -100,7 +100,7 @@ export default function CourseView(props) {
                 setInstructors(instructorInfo);
             })
             .catch((err) => {
-                alert("Unknown error.");
+                alert("Failed to fetch list of instructors.");
             });
     }, []);
 
@@ -161,7 +161,7 @@ export default function CourseView(props) {
                 setSemesters(sems);
             })
             .catch((err) => {
-                alert("Unknown error whilst retrieving semesters.");
+                alert("Failed to fetch list of semesters.");
             });
     }, []);
 
@@ -206,7 +206,7 @@ export default function CourseView(props) {
                 processSections(res.data);
             })
             .catch((err) => {
-                alert("Unknown error.");
+                alert("Failed to fetch list of sections.");
             });
     }, [iid, sem]);
 
