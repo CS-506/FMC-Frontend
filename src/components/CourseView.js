@@ -110,7 +110,7 @@ export default function CourseView(props) {
      * Spring < Fall in the same year, for the present time we will assume
      * that semester is either "spring" or "fall".
      */
-    function sortSemesters(sem1, sem2) {
+    function semcomp(sem1, sem2) {
         if (sem1.year != sem2.year) {
             return (sem1.year - sem2.year);
         } else {
@@ -146,7 +146,7 @@ export default function CourseView(props) {
         }
 
         // semesters are shown in reverse chronological order (recent -> past)
-        uniqsems.sort(sortSemesters);
+        uniqsems.sort(semcomp);
         uniqsems.reverse();
         return uniqsems;
     }
@@ -165,7 +165,7 @@ export default function CourseView(props) {
             });
     }, []);
 
-    function sortSection(sect1, sect2) {
+    function sectcomp(sect1, sect2) {
         const sem1 = {
             year: sect1.year,
             semester: sect1.semester,
@@ -174,7 +174,7 @@ export default function CourseView(props) {
             year: sect2.year,
             semester: sect2.semester,
         };
-        let ret = sortSemesters(sem1, sem2);
+        let ret = semcomp(sem1, sem2);
         if (ret === 0) {
             return sect1.section_code - sect2.section_code;
         } else {
@@ -183,7 +183,7 @@ export default function CourseView(props) {
     }
 
     function processSections(sects) {
-        sects.sort(sortSection);
+        sects.sort(sectcomp);
         setSections(sects);
     }
 
