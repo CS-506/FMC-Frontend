@@ -63,6 +63,9 @@ export default function Search(props) {
     const [courseList, setList] = React.useState(initList);
     // course object:
     const [course, setCourse] = React.useState();
+    // search result:
+    const [result, saveResult] = React.useState();
+
 
     //const [state, dispatch] = useContext(AppContext);
     /*
@@ -70,14 +73,8 @@ export default function Search(props) {
         dispatch({ type: 'UPDATE_INPUT', data: newValue,});
     };
     */
-    function newSearch(newKeyWord) {
-        setKeyWord(newKeyWord)
-    }
 
-
-    
-
-    // Fetch course info from backend given the course id:
+    // Fetch one course info from backend given the course id:
     const loadCourse = React.useCallback((courseId) => {
         axios.get("/admin/course/get/" + courseId)
             .then((res) => {
@@ -87,38 +84,85 @@ export default function Search(props) {
             .catch((err) => {
                 alert("Course Loading Error.");
             });
-        if (course) {
-            setList(courseList.concat(course));
-        }
+        
+        setList(courseList.concat(course));
+        
     }, []);
     
+
+    // Search course info from backend given the entry:
+    const searchCourse = React.useCallback((currKeyWord) => {
+        const paramSearch = `/coursesearch/search/${currKeyWord}/ / / / /`;
+        console.log("from searchCourse func:" + paramSearch);
+        axios.get(paramSearch)
+            .then((res) => {
+                console.log(res.data);
+                saveResult(res.data);
+            })
+            .catch((err) => {
+                alert("Search Loading Error.");
+            });
+        
+    }, []);
+
     // PAGE STATES: 
     const [isLoading, setLoading] = React.useState(true);
 
+
     React.useEffect(() => {
-        const cid = 3214232;
-        loadCourse(cid);
+        const currKeyWord = "comp sci";
+        setKeyWord(currKeyWord);
+        searchCourse(currKeyWord);
         setLoading(false);
     }, [loadCourse]);
 
+    
+    function DisplaySearch() {
+        return (
+            <div>
+                {result ?
+                    <Link to="/course" style={{ textDecoration: 'none' }}>
+                        <Paper
+                            className={classes.paper} 
+                            style={{ padding:10, paddingLeft:20}}
+                        >
+                            <Typography variant="h5">
+                                {result[1][3]}
+                            </Typography>
+                            <Typography variant="subtitle1">
+                                {result[1][1]} {result[1][2]}
+                            </Typography>
+                        </Paper>
+                    </Link>
+                    :<Typography variant="h5">Search Loading...</Typography>
+                }
+            </div>
+        );
+    }
     function DisplayCourses() {
         return (
+            isLoading ?
+            <Typography variant="h3">
+                Please wait...
+            </Typography>
+            :
             <div >
-                {courseList.map(cItem => (
+                {course ?
                     <Link to="/course" style={{ textDecoration: 'none' }}>
                         <Paper
                             className={classes.paper} 
                             style={{ padding:10 }}
                         >
                             <Typography variant="h5">
-                                {cItem.title}
+                                {course.name}
                             </Typography>
                             <Typography>
-                                {cItem.subject} {cItem.code}
+                                {course.subject} {course.code}
                             </Typography>
                         </Paper>
                     </Link>
-                ))}
+                    :<Typography variant="h4">Loading...</Typography>
+                }
             </div>
         );
     }
@@ -134,10 +178,10 @@ export default function Search(props) {
             <main className = {classes.contents}>
                 <div>
                     <Typography variant="h5">
-                        Search Result for  {keyWord}
+                        Search Result for  "{keyWord}"
                     </Typography>
 
-                    <DisplayCourses />
+                    <DisplaySearch />
                 </div>
             </main>
             
