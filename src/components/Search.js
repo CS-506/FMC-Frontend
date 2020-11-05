@@ -29,21 +29,25 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function Search(props) {
+export default function Search({ key }) {
     const classes = useStyles();
 
     // search keywords:
-    const [keyWord, setKeyWord] = React.useState("No keyWord");
+    const [keyWord, setKeyWord] = React.useState("");
     // search result:
     const [result, saveResult] = React.useState([]);
 
 
-    //const [state, dispatch] = useContext(AppContext);
+    const [state, setState] = React.useState(key);
     /*
     const changeInputValue = (newValue) => {
         dispatch({ type: 'UPDATE_INPUT', data: newValue,});
     };
-    */    
+    */ 
+      
+    function setKey(key) {
+        this.setKeyWord(key);
+    };
 
     // Search course info from backend given the entry:
     const searchCourse = React.useCallback((currKeyWord) => {
@@ -71,7 +75,7 @@ export default function Search(props) {
         setLoading(false);
     }, [setKeyWord, searchCourse]);
 
-    
+
     function DisplaySearch() {
         return (
             <div>
@@ -98,11 +102,11 @@ export default function Search(props) {
         <div className = {classes.root}>
             
             <div>
-                <NavBar/>
-            </div>
-            <div>
+                <NavBar setKey={setKey}/>
                 
             </div>
+            <Typography> From Search.js: {state} </Typography>
+            
             <main className = {classes.contents}>
                 <div>
                     <Typography variant="h5">

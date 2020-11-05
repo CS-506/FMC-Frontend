@@ -11,6 +11,7 @@ import {
     Link,
 } from "@material-ui/core/";
 import { red, white } from '@material-ui/core/colors';
+import Search from './Search';
 
 const useStyles = makeStyles((theme) => ({
     root: {

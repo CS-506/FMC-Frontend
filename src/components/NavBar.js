@@ -1,4 +1,5 @@
 import React, { useState, sendData } from 'react';
+import ReactDOM from 'react-dom';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -12,7 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
-
+import Search from './Search';
 
 const drawerWidth = 240;
 
@@ -90,6 +91,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+
+
 export default function ClippedDrawer() {
   const classes = useStyles();
 
@@ -99,22 +102,13 @@ export default function ClippedDrawer() {
       setKeyWord(newKeyWord)
   }
 
-  class Child1 extends React.Component{sendData = () => {
-    this.props.parentCallback("Hey Popsie, How’s it going?");
-    };
-
-    render() { 
-      return (
-        sendData(this.props)
-      );
-    }
-  };
+  function sendData() {
+    this.props.parentCallback(keyWord);
+  }
 
   return (
     <div className={classes.root}>
         <CssBaseline />
-        {/*<NavBar className={classes.navbar} position="fixed"/>*/}
-        
         <AppBar position="fixed" className={classes.navbar} style={{ background: '#d50000' }}>
             <Toolbar>
                 <Typography variant="h6" noWrap>
@@ -137,10 +131,12 @@ export default function ClippedDrawer() {
                     />
                 </div>
               <p>{keyWord}</p>
+              <sendData />
             </Toolbar>
         </AppBar>
         <div className={classes.grow} />
-        
+        <inputSearch key={keyWord} />
+
         <Drawer
             className={classes.drawer}
             variant="permanent"
@@ -188,7 +184,7 @@ export default function ClippedDrawer() {
           
         </div>
       </Drawer>
-      
+    
     </div>
   );
 }
