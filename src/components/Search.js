@@ -33,21 +33,13 @@ export default function Search({ key }) {
     const classes = useStyles();
 
     // search keywords:
-    const [keyWord, setKeyWord] = React.useState("");
+    const [keyWord, setKeyWord] = React.useState(" ");
+    // search keywords:
+    const [confirmedKeyWord, setConfKeyWord] = React.useState("");
     // search result:
     const [result, saveResult] = React.useState([]);
-
-
-    const [state, setState] = React.useState(key);
-    /*
-    const changeInputValue = (newValue) => {
-        dispatch({ type: 'UPDATE_INPUT', data: newValue,});
-    };
-    */ 
-      
-    function setKey(key) {
-        this.setKeyWord(key);
-    };
+    
+    const [buttonCheck, buttonClick] = React.useState(false);
 
     // Search course info from backend given the entry:
     const searchCourse = React.useCallback((currKeyWord) => {
@@ -64,17 +56,21 @@ export default function Search({ key }) {
         
     }, []);
 
-    // PAGE STATES: 
-    const [isLoading, setLoading] = React.useState(true);
 
+    // Update keyWord from NavBar's search box:
+    function transferKey(key) {
+        setKeyWord(key);
+        
+        // Initiate search every time keyWord changes:
+        searchCourse(keyWord);
+    };
 
+    /*
     React.useEffect(() => {
-        const currKeyWord = "comp sci";
-        setKeyWord(currKeyWord);
-        searchCourse(currKeyWord);
-        setLoading(false);
-    }, [setKeyWord, searchCourse]);
-
+        searchCourse(keyWord);
+        setLoading(false);  
+    }, [searchCourse]);
+    */
 
     function DisplaySearch() {
         return (
@@ -102,10 +98,8 @@ export default function Search({ key }) {
         <div className = {classes.root}>
             
             <div>
-                <NavBar setKey={setKey}/>
-                
+                <NavBar sendKey={transferKey}/>
             </div>
-            <Typography> From Search.js: {state} </Typography>
             
             <main className = {classes.contents}>
                 <div>

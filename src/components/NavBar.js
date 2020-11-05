@@ -13,7 +13,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
-import Search from './Search';
 
 const drawerWidth = 240;
 
@@ -66,8 +65,13 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  searchButton: {
+    background: '#ff5131',
+    variant: "contained",
+  },
   inputRoot: {
     color: 'inherit',
+    variant: "contained",
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
@@ -92,20 +96,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-
-export default function ClippedDrawer() {
+export default function NavBar(props) {
   const classes = useStyles();
 
-  const [keyWord, setKeyWord] = useState("");
-
-  function newSearch(newKeyWord) {
-      setKeyWord(newKeyWord)
+  const [keyWord, setKeyWord] = React.useState(" ");
+  
+  function saveKey(newKeyWord) {
+    setKeyWord(newKeyWord);
   }
-
-  function sendData() {
-    this.props.parentCallback(keyWord);
+  
+  function sendKeyCaller() {
+    props.sendKey(keyWord);
   }
-
+  
   return (
     <div className={classes.root}>
         <CssBaseline />
@@ -125,17 +128,20 @@ export default function ClippedDrawer() {
                           input: classes.inputInput,
                       }}
                       inputProps={{ 'aria-label': 'search' }}
-                      value={keyWord}
-                      onChange={e => newSearch(e.target.value)}
+                      onChange={e => saveKey(e.target.value)}
                       
                     />
                 </div>
-              <p>{keyWord}</p>
-              <sendData />
+                <Button
+                  style={{ marginLeft: 10}}
+                  className={classes.searchButton}
+                  onClick={() => sendKeyCaller()}
+                >
+                  Search 
+                </Button>
             </Toolbar>
         </AppBar>
         <div className={classes.grow} />
-        <inputSearch key={keyWord} />
 
         <Drawer
             className={classes.drawer}
@@ -170,10 +176,8 @@ export default function ClippedDrawer() {
             </div>
             <br/>
             <Button
-              variant="contained"
-              style={{background: '#ff5131', marginLeft: 120}}
+              style={{ marginLeft: 125}}
               className={classes.searchButton}
-              /*href="/register"*/
             >
               Search 
             </Button>
