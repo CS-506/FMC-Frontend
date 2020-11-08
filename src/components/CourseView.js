@@ -190,7 +190,6 @@ export default function CourseView(props) {
     function processSections(sects) {
         sects.sort(sectcomp);
         setSections(sects);
-        setChartReady(false);
     }
 
     /**
@@ -403,8 +402,10 @@ export default function CourseView(props) {
         },
     }))(TableRow);
 
-    function createData(semester, section, instructor, carbs, protein) {
-        return { semester, section, instructor, carbs, protein };
+    function createData(semester, section, instructor, 
+                            a, ab, b, bc, c, d, f, gpa) {
+        return { semester, section, instructor, 
+                  a, ab, b, bc, c, d, f, gpa };
     }
 
     function getInstructorName(iid) {
@@ -422,8 +423,11 @@ export default function CourseView(props) {
                             sections[i].semester + " " + sections[i].year,
                             sections[i].section_code,
                             getInstructorName(sections[i].instructorId),
-                            0,
-                            0);
+                            sections[i].a_num, sections[i].ab_num, 
+                            sections[i].b_num, sections[i].bc_num,
+                            sections[i].c_num, sections[i].d_num,
+                            sections[i].f_num,
+                            sections[i].avg_gpa);
             rows.push(entry);
         }
         return rows;
@@ -439,8 +443,14 @@ export default function CourseView(props) {
                     <StyledTableCell>Semester</StyledTableCell>
                     <StyledTableCell>Section</StyledTableCell>
                     <StyledTableCell>Instructor</StyledTableCell>
-                    <StyledTableCell align="right">Carbs&nbsp;(g)</StyledTableCell>
-                    <StyledTableCell align="right">Protein&nbsp;(g)</StyledTableCell>
+                    <StyledTableCell align="right">A</StyledTableCell>
+                    <StyledTableCell align="right">AB</StyledTableCell>
+                    <StyledTableCell align="right">B</StyledTableCell>
+                    <StyledTableCell align="right">BC</StyledTableCell>
+                    <StyledTableCell align="right">C</StyledTableCell>
+                    <StyledTableCell align="right">D</StyledTableCell>
+                    <StyledTableCell align="right">F</StyledTableCell>
+                    <StyledTableCell align="right">GPA</StyledTableCell>
                 </TableRow>
                 </TableHead>
                 <TableBody>
@@ -451,8 +461,30 @@ export default function CourseView(props) {
                     </StyledTableCell>
                     <StyledTableCell>{row.section}</StyledTableCell>
                     <StyledTableCell>{row.instructor}</StyledTableCell>
-                    <StyledTableCell align="right">{row.carbs}</StyledTableCell>
-                    <StyledTableCell align="right">{row.protein}</StyledTableCell>
+                    <StyledTableCell align="right">
+                        {row.a ? row.a + "%" : ""}
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                        {row.ab ? row.ab + "%" : ""}
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                        {row.b ? row.b + "%" : ""}
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                        {row.bc ? row.bc + "%" : ""}
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                        {row.c ? row.c + "%" : ""}
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                        {row.d ? row.d + "%" : ""}
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                        {row.f ? + row.f + "%" : ""}
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                        {row.gpa}
+                    </StyledTableCell>
                     </StyledTableRow>
                 ))}
                 </TableBody>
