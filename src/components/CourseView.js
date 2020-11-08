@@ -67,6 +67,7 @@ export default function CourseView(props) {
 
     /* PAGE STATES *************************************************/
     const [isLoading, setLoading] = React.useState(true);
+    const [chartReady, setChartReady] = React.useState(false);
 
     /**
      * Fetch course information from backend corresopnding to
@@ -182,9 +183,14 @@ export default function CourseView(props) {
         }
     }
 
+    /**
+     * Process section information retrieved from backend.
+     * Also triggers graph regeneration.
+     */
     function processSections(sects) {
         sects.sort(sectcomp);
         setSections(sects);
+        setChartReady(false);
     }
 
     /**
@@ -311,6 +317,8 @@ export default function CourseView(props) {
             <div>
                 <h4>Overall Grade Distribution</h4>
                 <div className={classes.chart_area}>
+                {
+                    chartReady ? 
                     <XYPlot     
                         xType="ordinal" 
                         height={470} width={500}
@@ -321,6 +329,9 @@ export default function CourseView(props) {
                         <HorizontalGridLines style={{ fontSize: "10pt" }}/>
                         <VerticalBarSeries data={data} color="darkred" />
                     </XYPlot>
+                    :
+                    "Please wait..."
+                }
                 </div>
             </div>
         );
@@ -340,6 +351,8 @@ export default function CourseView(props) {
             <div>
                 <h4>Historical GPA Trend</h4>
                 <div className={classes.chart_area}>
+                {
+                    chartReady ?
                     <XYPlot 
                         xType="ordinal" 
                         height={470} width={500}
@@ -351,6 +364,9 @@ export default function CourseView(props) {
                         <HorizontalGridLines style={{ fontSize: "10pt" }}/>
                         <LineSeries data={data} color="darkred" />
                     </XYPlot>
+                    :
+                    "Please wait..."
+                }
                 </div>
             </div>
         );
