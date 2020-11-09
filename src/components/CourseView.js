@@ -75,7 +75,6 @@ export default function CourseView(props) {
     const loadCourse = React.useCallback((courseId) => {
         axios.get("/admin/course/get/" + courseId)
             .then((res) => {
-                console.log(res.data);
                 setCourse(res.data);
             })
             .catch((err) => {
@@ -268,7 +267,6 @@ export default function CourseView(props) {
             chartData.datasets[0].data.push(distro[i]);
         }
 
-        console.log(chartData);
         return chartData;
     }
 
