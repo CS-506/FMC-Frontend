@@ -65,8 +65,8 @@ export default function CourseView(props) {
 
     /* PAGE STATES *************************************************/
     const [isLoading, setLoading] = React.useState(true);
-    const [gpaTrendData, setGPATrendData] = React.useState([]);
-    const [gradeDistData, setGradeDistData] = React.useState([]);
+    const [gpaTrendData, setGPATrendData] = React.useState(null);
+    const [gradeDistData, setGradeDistData] = React.useState(null);
 
     /**
      * Fetch course information from backend corresopnding to
@@ -206,8 +206,8 @@ export default function CourseView(props) {
             labels: [],
             datasets: [{
                 fill: false,
-                lineTension: 0.5,
-                backgroundColor: 'rgba(75,192,192,1)',
+                lineTension: 0.4,
+                backgroundColor: "darkred",
                 data: [],
             }]
         }
@@ -229,7 +229,6 @@ export default function CourseView(props) {
                 end++;
             }
         }
-        console.log(chartData);
         return chartData;
     }
 
@@ -238,7 +237,7 @@ export default function CourseView(props) {
      */
     function compileGradeDistribution(sects) {
         if (sects.length === 0) 
-            return [];  // empty array = "No data available"
+            return null;  // null -> "No data available"
 
         let distro = [ 0, 0, 0, 0, 0, 0, 0 ];
 
@@ -246,8 +245,7 @@ export default function CourseView(props) {
             labels: ["A", "AB", "B", "BC", "C", "D", "F"],
             datasets: [{
                 fill: false,
-                lineTension: 0.5,
-                backgroundColor: 'rgba(75,192,192,1)',
+                backgroundColor: "darkred",
                 data: [],
             }]
         }
@@ -265,7 +263,8 @@ export default function CourseView(props) {
         
         // calculate average percentage and add to dataset
         for (let i = 0; i < distro.length; i++) {
-            distro[i] = distro[i] ? (distro[i] / sects.length) / 100 : 0;
+            distro[i] = distro[i] ? (distro[i] / sects.length) : 0;
+            distro[i] = Math.round(distro[i] * 1e2) / 1e2;
             chartData.datasets[0].data.push(distro[i]);
         }
 
@@ -396,19 +395,38 @@ export default function CourseView(props) {
     }
 
     function GPADistroChart() {
+        let yAxisMax = 50;
+        if (gradeDistData) {
+            let yMax = Math.max(...gradeDistData.datasets[0].data);
+            yAxisMax = yMax > 90 ? 100 : (yMax + 10);
+        }
+        const chartOptions = {
+            maintainAspectRatio: false,
+            legend: {
+                display: false
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        callback: function(value, index, values) {
+                            return (value + "%");
+                        },
+                        suggestedMax: yAxisMax,
+                    }
+                }]
+            },
+        }
         return (
             <div>
                 <h4>Overall Grade Distribution</h4>
                 <div className={classes.chart_area}>
                 {
-                    (gradeDistData.length !== 0) ? 
+                    (gradeDistData) ? 
                     <Bar 
                         data={gradeDistData}
-                        options={{
-                            legend: {
-                                display: false
-                            }
-                        }}
+                        width={400}
+                        height={300}
+                        options={chartOptions}
                     />
                     :
                     "No data available."
@@ -419,19 +437,31 @@ export default function CourseView(props) {
     }
 
     function GPATrendChart() {
+        const chartOptions = {
+            maintainAspectRatio: false,
+            legend: {
+                display: false
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        suggestedMin: 2.0,
+                        suggestedMax: 4.0
+                    }
+                }]
+            },
+        }
         return (
             <div>
                 <h4>Historical GPA Trend</h4>
                 <div className={classes.chart_area}>
                 {
-                    (gpaTrendData.length !== 0) ?
+                    (gpaTrendData) ?
                     <Line 
                         data={gpaTrendData}
-                        options={{
-                            legend: {
-                                display: false
-                            }
-                        }}
+                        width={400}
+                        height={300}
+                        options={chartOptions}
                     />
                     :
                     "No data available."
