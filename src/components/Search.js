@@ -120,6 +120,7 @@ export default function Search(props) {
                     <Link 
                         to={addrConcat(resultItem[0]).toString()} 
                         style={{ textDecoration: 'none' }}
+                        key={result.indexOf(resultItem)}
                     >
                         <Paper
                             className={classes.paper} 
