@@ -9,7 +9,6 @@ import {
     PeopleAlt as InstructorIcon,
     DateRange as SemesterIcon,
 } from "@material-ui/icons"
-import 'react-vis/dist/style.css';
 import {
     Line, Bar
 } from "react-chartjs-2";
