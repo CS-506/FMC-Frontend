@@ -9,12 +9,10 @@ import {
     PeopleAlt as InstructorIcon,
     DateRange as SemesterIcon,
 } from "@material-ui/icons"
-import {
-    XYPlot,
-    VerticalGridLines, HorizontalGridLines,
-    XAxis, YAxis, VerticalBarSeries, LineSeries,
-} from "react-vis";
 import 'react-vis/dist/style.css';
+import {
+    Line, Bar
+} from "react-chartjs-2";
 
 import NavBar from "./NavBar";
 
@@ -67,7 +65,6 @@ export default function CourseView(props) {
 
     /* PAGE STATES *************************************************/
     const [isLoading, setLoading] = React.useState(true);
-    const [chartReady, setChartReady] = React.useState(false);
     const [gpaTrendData, setGPATrendData] = React.useState([]);
     const [gradeDistData, setGradeDistData] = React.useState([]);
 
@@ -205,8 +202,15 @@ export default function CourseView(props) {
      *        this is required for this function to work.
      */
     function compileGPATrend(sects) {
-        let chartData = [];
-        setChartReady(false);
+        let chartData = {
+            labels: [],
+            datasets: [{
+                fill: false,
+                lineTension: 0.5,
+                backgroundColor: 'rgba(75,192,192,1)',
+                data: [],
+            }]
+        }
 
         let start = 0;
         let end = 0;
@@ -216,11 +220,8 @@ export default function CourseView(props) {
             if (i === sects.length - 1 
                     || sectcomp(sects[i], sects[i + 1]) !== 0) {
                 let avg = gpa / (end - start + 1);
-                let ent = {
-                    x: sects[i].semester + " " + sects[i].year,
-                    y: avg,
-                };
-                chartData.push(ent);
+                chartData.labels.push(sects[i].semester + " " + sects[i].year);
+                chartData.datasets[0].data.push(avg);
                 start = i + 1;
                 end = start;
                 gpa = 0;
@@ -241,6 +242,16 @@ export default function CourseView(props) {
 
         let distro = [ 0, 0, 0, 0, 0, 0, 0 ];
 
+        let chartData = {
+            labels: ["A", "AB", "B", "BC", "C", "D", "F"],
+            datasets: [{
+                fill: false,
+                lineTension: 0.5,
+                backgroundColor: 'rgba(75,192,192,1)',
+                data: [],
+            }]
+        }
+
         // sum up all percentages
         for (let i = 0; i < sects.length; i++) {
             distro[0] += sects[i].a_num;
@@ -252,20 +263,11 @@ export default function CourseView(props) {
             distro[6] += sects[i].f_num;
         }
         
-        // calculate average percentage
-        for (let i = 0; i < distro.length; i++)
-            distro[i] = (distro[i] / sects.length) / 100.00;
-
-        // tabulate
-        let chartData = [
-            { x: "A", y: distro[0] ? distro[0] : 0 },
-            { x: "AB", y: distro[1] ? distro[1] : 0 },
-            { x: "B", y: distro[2] ? distro[2] : 0 },
-            { x: "BC", y: distro[3] ? distro[3] : 0 },
-            { x: "C", y: distro[4] ? distro[4] : 0 },
-            { x: "D", y: distro[5] ? distro[5] : 0 },
-            { x: "F", y: distro[6] ? distro[6] : 0 },
-        ];
+        // calculate average percentage and add to dataset
+        for (let i = 0; i < distro.length; i++) {
+            distro[i] = distro[i] ? (distro[i] / sects.length) / 100 : 0;
+            chartData.datasets[0].data.push(distro[i]);
+        }
 
         console.log(chartData);
         return chartData;
@@ -400,16 +402,14 @@ export default function CourseView(props) {
                 <div className={classes.chart_area}>
                 {
                     (gradeDistData.length !== 0) ? 
-                    <XYPlot     
-                        xType="ordinal" 
-                        height={470} width={500}
-                    >
-                        <XAxis />
-                        <YAxis tickFormat={v => `${v * 100}%`}/>
-                        <VerticalGridLines />
-                        <HorizontalGridLines style={{ fontSize: "10pt" }}/>
-                        <VerticalBarSeries data={gradeDistData} color="darkred" />
-                    </XYPlot>
+                    <Bar 
+                        data={gradeDistData}
+                        options={{
+                            legend: {
+                                display: false
+                            }
+                        }}
+                    />
                     :
                     "No data available."
                 }
@@ -425,17 +425,14 @@ export default function CourseView(props) {
                 <div className={classes.chart_area}>
                 {
                     (gpaTrendData.length !== 0) ?
-                    <XYPlot 
-                        xType="ordinal" 
-                        height={470} width={500}
-                        yDomain={[1.0, 4.0]}
-                    >
-                        <XAxis />
-                        <YAxis />
-                        <VerticalGridLines />
-                        <HorizontalGridLines style={{ fontSize: "10pt" }}/>
-                        <LineSeries data={gpaTrendData} color="darkred" />
-                    </XYPlot>
+                    <Line 
+                        data={gpaTrendData}
+                        options={{
+                            legend: {
+                                display: false
+                            }
+                        }}
+                    />
                     :
                     "No data available."
                 }
