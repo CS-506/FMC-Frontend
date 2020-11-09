@@ -16,7 +16,10 @@ export default function App() {
         <Route exact path="/login" component={Login} />
         <Route exact path="/Search" component={SearchPage} />
         <Route 
-          exact path="/course" 
+          exact path="/course_:id" 
+          render={ props => {
+            return <CourseView />;
+          }}
           component={CourseView}
         />
       </Router>

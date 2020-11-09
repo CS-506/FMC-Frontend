@@ -304,7 +304,7 @@ export default function CourseView(props) {
     }, [iid, sem]);
 
     React.useEffect(() => {
-        const cid = 3;
+        const cid = Number(props.match.params.id);
         loadCourse(cid);
         loadSectionsAll(cid);
         loadInstructors(cid);
@@ -313,8 +313,7 @@ export default function CourseView(props) {
     }, []);
 
     React.useEffect(() => {
-        /* Fixed dummy course placeholder value */
-        const cid = 3;
+        const cid = Number(props.match.params.id);
         loadSections(cid);
     }, [loadSemesters, loadSections, loadInstructors, loadCourse]);
 
