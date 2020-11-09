@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function Search({ key }) {
+export default function Search(props) {
     const classes = useStyles();
 
     // search keywords:
@@ -45,7 +45,7 @@ export default function Search({ key }) {
     // Search course info from backend given the entry:
     const searchByKeyWord = React.useCallback((currKeyWord) => {
         const paramSearch = `/coursesearch/search/${currKeyWord}/ / / / /`;
-        console.log("from searchCourse func:" + paramSearch);
+        console.log("Command for search controller: " + paramSearch);
         axios.get(paramSearch)
             .then((res) => {
                 console.log(res.data);
@@ -57,9 +57,9 @@ export default function Search({ key }) {
         
     }, []);
 
-    const searchByFilter = React.useCallback((currKeySubj, currKeyFilter) => {
-        const paramSearch = `/coursesearch/search/ /${currKeySubj}/${currKeyFilter}/ / /`;
-        console.log("from searchCourse func:" + paramSearch);
+    const searchByFilter = React.useCallback((currKeyWord, currKeySubj, currKeyFilter) => {
+        const paramSearch = `/coursesearch/search/${currKeyWord}/${currKeySubj}/${currKeyFilter}/ / /`;
+        console.log("Command for search controller: " + paramSearch);
         axios.get(paramSearch)
             .then((res) => {
                 console.log(res.data);
@@ -93,21 +93,34 @@ export default function Search({ key }) {
         setKeyInsturctor(keyInst);
         
         // Initiate search every time filters changes:
-        searchByFilter(keySubj, keyInst);
+        // Two options:
+        // Search within the previous search result of keyWord:
+        searchByFilter(keyWord, keySubj, keyInst);
+        // Search with empty keyWord:
+        //searchByFilter(" ", keySubj, keyInst);
     }
 
     // As default,
     // Enter page with keyWord=" " and display all courses:
     React.useEffect(() => {
+        //setKeyWord(this.props.location);
         searchByKeyWord(keyWord);
     }, [searchByKeyWord]);
     
-
+    function addrConcat(cid) {
+        var newAddr = "/course_";
+        newAddr = newAddr.concat(cid);
+        return newAddr;
+    }
     function DisplaySearch() {
         return (
             <div>
                 {result.map(resultItem => (
-                    <Link to="/course" style={{ textDecoration: 'none' }}>
+                    
+                    <Link 
+                        to={addrConcat(resultItem[0]).toString()} 
+                        style={{ textDecoration: 'none' }}
+                    >
                         <Paper
                             className={classes.paper} 
                             style={{ padding:10, paddingLeft:20}}

@@ -55,10 +55,20 @@ export default function Home() {
     const classes = useStyles();
 
     const [state, dispatch] = useReducer(reducer, initialState);
-    const [keyWord, setKeyWord] = useState("");
+    const [keyWord, setKeyWord] = React.useState(" ");
+    const [keySubject, setKeySubject] = React.useState(" ");
+    const [keyInsturctor, setKeyInsturctor] = React.useState(" ");
 
-    function newSearch(newKeyWord) {
-        setKeyWord(newKeyWord)
+    function saveKey(newKeyWord) {
+        setKeyWord(newKeyWord);
+    }
+
+    function saveSubj(newSubj) {
+        setKeySubject(newSubj);
+    }
+
+    function saveInst(newInst) {
+        setKeyInsturctor(newInst);
     }
 
     return (
@@ -84,12 +94,11 @@ export default function Home() {
                             <AppContext.Provider value={{ state, dispatch }}>
                                 <TextField
                                     className={classes.searchbox}
-                                    placeholder="Search…"
+                                    placeholder="Course..."
                                     variant="outlined"
                                     fullWidth
                                     autoComplete
-                                    value={keyWord}
-                                    onChange={e => newSearch(e.target.value)}
+                                    onChange={e => saveKey(e.target.value)}
                                 />
                             </AppContext.Provider>
                         </div>
@@ -97,15 +106,20 @@ export default function Home() {
                     <Grid item xs={3}></Grid>
                 </Grid>
                 <Grid item xs={12}>
-                    <Button
-                        className={classes.searchButton}
-                        variant="contained"
-                        style={{background: '#c40d02', textDecoration: 'none'}}                        
-                        textPrimary
-                        href="/Search"
+                    <Link 
+                        href="/Search" 
+                        style={{textDecoration: 'none'}}
+                        data={keyWord}
                     >
-                        Search Course!
-                    </Button>
+                        <Button
+                            className={classes.searchButton}
+                            variant="contained"
+                            style={{background: '#c40d02', textDecoration: 'none'}}                        
+                            textPrimary
+                        >
+                            Search Course!
+                        </Button>
+                    </Link>
                 </Grid>
                 <br/>
                 <Grid container spacing={0}>
@@ -117,6 +131,7 @@ export default function Home() {
                             variant="outlined"
                             fullWidth
                             autoComplete
+                            onChange={e => saveSubj(e.target.value)}
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -126,6 +141,7 @@ export default function Home() {
                             variant="outlined"
                             fullWidth
                             autoComplete
+                            onChange={e => saveInst(e.target.value)}
                         />
                     </Grid>
                 </Grid>
