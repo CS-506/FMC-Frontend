@@ -32,89 +32,104 @@ const useStyles = makeStyles(theme => ({
 export default function Search(props) {
     const classes = useStyles();
 
-    // course list:
-    const initList = [
-        {   
-            cid: 3214232,
-            title: "Introduction to Operating Systems",
-            dept: "Computer Sciences",
-            subject:" COMP SCI",
-            code: 537
-        },
-        {
-            cid: 3214233,
-            title: "Software Engineering",
-            dept: "Computer Sciences",
-            subject:" COMP SCI",
-            code: 506
-        },
-        {
-            cid: 3214234,
-            title: "Database Management",
-            dept: "Computer Sciences",
-            subject:" COMP SCI",
-            code: 564
-        },
-    ];
-
     // search keywords:
-    const [keyWord, setKeyWord] = React.useState("No keyWord");
-    // course list:
-    const [courseList, setList] = React.useState(initList);
-    // course object:
-    const [course, setCourse] = React.useState();
-
-    //const [state, dispatch] = useContext(AppContext);
-    /*
-    const changeInputValue = (newValue) => {
-        dispatch({ type: 'UPDATE_INPUT', data: newValue,});
-    };
-    */
-    function newSearch(newKeyWord) {
-        setKeyWord(newKeyWord)
-    }
-
-
+    const [keyWord, setKeyWord] = React.useState(" ");
+    // search filters:
+    const [keySubject, setKeySubject] = React.useState(" ");
+    const [keyInsturctor, setKeyInsturctor] = React.useState(" ");
+    // search result:
+    const [result, saveResult] = React.useState([]);
     
+    const [buttonCheck, buttonClick] = React.useState(false);
 
-    // Fetch course info from backend given the course id:
-    const loadCourse = React.useCallback((courseId) => {
-        axios.get("/admin/course/get/" + courseId)
+    // Search course info from backend given the entry:
+    const searchByKeyWord = React.useCallback((currKeyWord) => {
+        const paramSearch = `/coursesearch/search/${currKeyWord}/ / / / /`;
+        console.log("Command for search controller: " + paramSearch);
+        axios.get(paramSearch)
             .then((res) => {
                 console.log(res.data);
-                setCourse(res.data);
+                saveResult(res.data);
             })
             .catch((err) => {
-                alert("Course Loading Error.");
+                alert("Search Loading Error.");
             });
-        if (course) {
-            setList(courseList.concat(course));
-        }
+        
     }, []);
-    
-    // PAGE STATES: 
-    const [isLoading, setLoading] = React.useState(true);
 
+    const searchByFilter = React.useCallback((currKeyWord, currKeySubj, currKeyFilter) => {
+        const paramSearch = `/coursesearch/search/${currKeyWord}/${currKeySubj}/${currKeyFilter}/ / /`;
+        console.log("Command for search controller: " + paramSearch);
+        axios.get(paramSearch)
+            .then((res) => {
+                console.log(res.data);
+                saveResult(res.data);
+            })
+            .catch((err) => {
+                alert("Search Loading Error.");
+            });
+        
+    }, []);
+
+
+
+    // Update keyWord from NavBar's search box:
+    function transferKey(key) {
+        // Let default key be " " 
+        // so that controller returns all courses instead of none:
+        if (key == "") {
+            key = " ";
+        }
+        // Store the keyWord passed:
+        setKeyWord(key);
+        
+        // Initiate search every time keyWord changes:
+        searchByKeyWord(key);
+    };
+
+    function transferFilter(keySubj, keyInst) {
+        // Store the filters passed:
+        setKeySubject(keySubj);
+        setKeyInsturctor(keyInst);
+        
+        // Initiate search every time filters changes:
+        // Two options:
+        // Search within the previous search result of keyWord:
+        searchByFilter(keyWord, keySubj, keyInst);
+        // Search with empty keyWord:
+        //searchByFilter(" ", keySubj, keyInst);
+    }
+
+    // As default,
+    // Enter page with keyWord=" " and display all courses:
     React.useEffect(() => {
-        const cid = 3214232;
-        loadCourse(cid);
-        setLoading(false);
-    }, [loadCourse]);
-
-    function DisplayCourses() {
+        //setKeyWord(this.props.location);
+        searchByKeyWord(keyWord);
+    }, [searchByKeyWord]);
+    
+    function addrConcat(cid) {
+        var newAddr = "/course_";
+        newAddr = newAddr.concat(cid);
+        return newAddr;
+    }
+    function DisplaySearch() {
         return (
-            <div >
-                {courseList.map(cItem => (
-                    <Link to="/course" style={{ textDecoration: 'none' }}>
+            <div>
+                {result.map(resultItem => (
+                    
+                    <Link 
+                        to={addrConcat(resultItem[0]).toString()} 
+                        style={{ textDecoration: 'none' }}
+                    >
                         <Paper
                             className={classes.paper} 
-                            style={{ padding:10 }}
+                            style={{ padding:10, paddingLeft:20}}
                         >
                             <Typography variant="h5">
-                                {cItem.title}
+                                {resultItem[3]}
                             </Typography>
-                            <Typography>
-                                {cItem.subject} {cItem.code}
+                            <Typography variant="subtitle1">
+                                {resultItem[1]} {resultItem[2]}
                             </Typography>
                         </Paper>
                     </Link>
@@ -122,22 +137,21 @@ export default function Search(props) {
             </div>
         );
     }
+    
     return (
         <div className = {classes.root}>
             
             <div>
-                <NavBar/>
+                <NavBar sendKey={transferKey} sendFilter={transferFilter}/>
             </div>
-            <div>
-                
-            </div>
+            
             <main className = {classes.contents}>
                 <div>
                     <Typography variant="h5">
-                        Search Result for  {keyWord}
+                        Search Result for  "{keyWord}"
                     </Typography>
 
-                    <DisplayCourses />
+                    <DisplaySearch />
                 </div>
             </main>
             

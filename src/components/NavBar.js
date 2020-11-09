@@ -1,4 +1,5 @@
 import React, { useState, sendData } from 'react';
+import ReactDOM from 'react-dom';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -12,7 +13,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
-
 
 const drawerWidth = 240;
 
@@ -65,8 +65,14 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  searchButton: {
+    background: '#e7e6e8',
+    variant: "contained",
+    color: "black",
+  },
   inputRoot: {
     color: 'inherit',
+    variant: "contained",
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
@@ -90,31 +96,37 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function ClippedDrawer() {
+
+export default function NavBar(props) {
   const classes = useStyles();
 
-  const [keyWord, setKeyWord] = useState("");
-
-  function newSearch(newKeyWord) {
-      setKeyWord(newKeyWord)
+  const [keyWord, setKeyWord] = React.useState(" ");
+  const [keySubject, setKeySubject] = React.useState(" ");
+  const [keyInsturctor, setKeyInsturctor] = React.useState(" ");
+  
+  function saveKey(newKeyWord) {
+    setKeyWord(newKeyWord);
   }
 
-  class Child1 extends React.Component{sendData = () => {
-    this.props.parentCallback("Hey Popsie, How’s it going?");
-    };
+  function saveSubj(newSubj) {
+    setKeySubject(newSubj);
+  }
 
-    render() { 
-      return (
-        sendData(this.props)
-      );
-    }
-  };
+  function saveInst(newInst) {
+    setKeyInsturctor(newInst);
+  }
+  
+  function sendKeyCaller() {
+    props.sendKey(keyWord);
+  }
 
+  function sendFilterCaller() {
+    props.sendFilter(keySubject, keyInsturctor);
+  }
+  
   return (
     <div className={classes.root}>
         <CssBaseline />
-        {/*<NavBar className={classes.navbar} position="fixed"/>*/}
-        
         <AppBar position="fixed" className={classes.navbar} style={{ background: '#d50000' }}>
             <Toolbar>
                 <Typography variant="h6" noWrap>
@@ -131,16 +143,20 @@ export default function ClippedDrawer() {
                           input: classes.inputInput,
                       }}
                       inputProps={{ 'aria-label': 'search' }}
-                      value={keyWord}
-                      onChange={e => newSearch(e.target.value)}
-                      
+                      onChange={e => saveKey(e.target.value)}
                     />
                 </div>
-              <p>{keyWord}</p>
+                <Button
+                  style={{ marginLeft: 10}}
+                  className={classes.searchButton}
+                  onClick={() => sendKeyCaller()}
+                >
+                  Search 
+                </Button>
             </Toolbar>
         </AppBar>
         <div className={classes.grow} />
-        
+
         <Drawer
             className={classes.drawer}
             variant="permanent"
@@ -159,6 +175,7 @@ export default function ClippedDrawer() {
                     input: classes.inputInput2,
                 }}
                 inputProps={{ 'aria-label': 'search' }}
+                onChange={e => saveSubj(e.target.value)}
               />
             </div>
             <br/>
@@ -170,14 +187,14 @@ export default function ClippedDrawer() {
                     input: classes.inputInput2,
                 }}
                 inputProps={{ 'aria-label': 'search' }}
+                onChange={e => saveInst(e.target.value)}
               />
             </div>
             <br/>
             <Button
-              variant="contained"
-              style={{background: '#ff5131', marginLeft: 120}}
+              style={{ marginLeft: 125}}
               className={classes.searchButton}
-              /*href="/register"*/
+              onClick={() => sendFilterCaller()}
             >
               Search 
             </Button>
@@ -188,7 +205,7 @@ export default function ClippedDrawer() {
           
         </div>
       </Drawer>
-      
+    
     </div>
   );
 }
