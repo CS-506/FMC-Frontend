@@ -66,8 +66,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
   },
   searchButton: {
-    background: '#ff5131',
+    background: '#e7e6e8',
     variant: "contained",
+    color: "black",
   },
   inputRoot: {
     color: 'inherit',
@@ -100,13 +101,27 @@ export default function NavBar(props) {
   const classes = useStyles();
 
   const [keyWord, setKeyWord] = React.useState(" ");
+  const [keySubject, setKeySubject] = React.useState(" ");
+  const [keyInsturctor, setKeyInsturctor] = React.useState(" ");
   
   function saveKey(newKeyWord) {
     setKeyWord(newKeyWord);
   }
+
+  function saveSubj(newSubj) {
+    setKeySubject(newSubj);
+  }
+
+  function saveInst(newInst) {
+    setKeyInsturctor(newInst);
+  }
   
   function sendKeyCaller() {
     props.sendKey(keyWord);
+  }
+
+  function sendFilterCaller() {
+    props.sendFilter(keySubject, keyInsturctor);
   }
   
   return (
@@ -129,7 +144,6 @@ export default function NavBar(props) {
                       }}
                       inputProps={{ 'aria-label': 'search' }}
                       onChange={e => saveKey(e.target.value)}
-                      
                     />
                 </div>
                 <Button
@@ -161,6 +175,7 @@ export default function NavBar(props) {
                     input: classes.inputInput2,
                 }}
                 inputProps={{ 'aria-label': 'search' }}
+                onChange={e => saveSubj(e.target.value)}
               />
             </div>
             <br/>
@@ -172,12 +187,14 @@ export default function NavBar(props) {
                     input: classes.inputInput2,
                 }}
                 inputProps={{ 'aria-label': 'search' }}
+                onChange={e => saveInst(e.target.value)}
               />
             </div>
             <br/>
             <Button
               style={{ marginLeft: 125}}
               className={classes.searchButton}
+              onClick={() => sendFilterCaller()}
             >
               Search 
             </Button>
