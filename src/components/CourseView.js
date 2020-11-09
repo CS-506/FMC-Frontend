@@ -58,8 +58,6 @@ export default function CourseView(props) {
     const [sem, setSem] = React.useState(0);
     // semesters in which this course was offered
     const [semesters, setSemesters] = React.useState([]);
-    // ALL sections offered in the past
-    const [allSections, setAllSections] = React.useState([]);
     // sections after filters are applied
     const [sections, setSections] = React.useState([]);
 
@@ -71,6 +69,7 @@ export default function CourseView(props) {
     const [isLoading, setLoading] = React.useState(true);
     const [chartReady, setChartReady] = React.useState(false);
     const [gpaTrendData, setGPATrendData] = React.useState([]);
+    const [gradeDistData, setGradeDistData] = React.useState([]);
 
     /**
      * Fetch course information from backend corresopnding to
@@ -98,7 +97,6 @@ export default function CourseView(props) {
         axios.get(url)
             .then((res) => {
                 let sects = processSections(res.data);
-                setAllSections(sects);
                 setGPATrendData(compileGPATrend(sects));
             })
             .catch((err) => {
@@ -235,6 +233,45 @@ export default function CourseView(props) {
     }
 
     /**
+     * Compile grade distribution data based on a list of sections.
+     */
+    function compileGradeDistribution(sects) {
+        if (sects.length === 0) 
+            return [];  // empty array = "No data available"
+
+        let distro = [ 0, 0, 0, 0, 0, 0, 0 ];
+
+        // sum up all percentages
+        for (let i = 0; i < sects.length; i++) {
+            distro[0] += sects[i].a_num;
+            distro[1] += sects[i].ab_num;
+            distro[2] += sects[i].b_num;
+            distro[3] += sects[i].bc_num;
+            distro[4] += sects[i].c_num;
+            distro[5] += sects[i].d_num;
+            distro[6] += sects[i].f_num;
+        }
+        
+        // calculate average percentage
+        for (let i = 0; i < distro.length; i++)
+            distro[i] = (distro[i] / sects.length) / 100.00;
+
+        // tabulate
+        let chartData = [
+            { x: "A", y: distro[0] ? distro[0] : 0 },
+            { x: "AB", y: distro[1] ? distro[1] : 0 },
+            { x: "B", y: distro[2] ? distro[2] : 0 },
+            { x: "BC", y: distro[3] ? distro[3] : 0 },
+            { x: "C", y: distro[4] ? distro[4] : 0 },
+            { x: "D", y: distro[5] ? distro[5] : 0 },
+            { x: "F", y: distro[6] ? distro[6] : 0 },
+        ];
+
+        console.log(chartData);
+        return chartData;
+    }
+
+    /**
      * Process section information retrieved from backend.
      * Also triggers graph regeneration.
      */
@@ -258,7 +295,9 @@ export default function CourseView(props) {
                       + "/" + semesters[sem-1].semester);
         axios.get(url)
             .then((res) => {
-                setSections(processSections(res.data));
+                let sects = processSections(res.data);
+                setSections(sects);
+                setGradeDistData(compileGradeDistribution(sects));
             })
             .catch((err) => {
                 alert("Failed to fetch list of sections.");
@@ -355,23 +394,12 @@ export default function CourseView(props) {
     }
 
     function GPADistroChart() {
-        /* Dummy GPA distribution data */
-        const data = [
-            {x: "A", y: 0.45},
-            {x: "AB", y: 0.13},
-            {x: "B", y: 0.3},
-            {x: "BC", y: 0.03},
-            {x: "C", y: 0.01},
-            {x: "CD", y: 0},
-            {x: "D", y: 0.01},
-            {x: "F", y: 0.01},
-          ];
         return (
             <div>
                 <h4>Overall Grade Distribution</h4>
                 <div className={classes.chart_area}>
                 {
-                    chartReady ? 
+                    (gradeDistData.length !== 0) ? 
                     <XYPlot     
                         xType="ordinal" 
                         height={470} width={500}
@@ -380,10 +408,10 @@ export default function CourseView(props) {
                         <YAxis tickFormat={v => `${v * 100}%`}/>
                         <VerticalGridLines />
                         <HorizontalGridLines style={{ fontSize: "10pt" }}/>
-                        <VerticalBarSeries data={data} color="darkred" />
+                        <VerticalBarSeries data={gradeDistData} color="darkred" />
                     </XYPlot>
                     :
-                    "Please wait..."
+                    "No data available."
                 }
                 </div>
             </div>
