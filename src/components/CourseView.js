@@ -58,7 +58,9 @@ export default function CourseView(props) {
     const [sem, setSem] = React.useState(0);
     // semesters in which this course was offered
     const [semesters, setSemesters] = React.useState([]);
-    // sections offered in the past
+    // ALL sections offered in the past
+    const [allSections, setAllSections] = React.useState([]);
+    // sections after filters are applied
     const [sections, setSections] = React.useState([]);
 
     const iidChange = event => setIid(event.target.value);
@@ -68,6 +70,7 @@ export default function CourseView(props) {
     /* PAGE STATES *************************************************/
     const [isLoading, setLoading] = React.useState(true);
     const [chartReady, setChartReady] = React.useState(false);
+    const [gpaTrendData, setGPATrendData] = React.useState([]);
 
     /**
      * Fetch course information from backend corresopnding to
@@ -83,6 +86,25 @@ export default function CourseView(props) {
                 alert("Failed to fetch course information.");
             });
     }, []);
+
+    /**
+     * Fetch all sections offered in the past. Should be called
+     * ONLY once when the page is first loaded. GPA trend data is
+     * derived from this data.
+     */
+    const loadSectionsAll = React.useCallback((courseId) => {
+        let url = "/coursesection/section/" 
+                    + courseId + "/inst_all/year_all/sem_all";
+        axios.get(url)
+            .then((res) => {
+                let sects = processSections(res.data);
+                setAllSections(sects);
+                setGPATrendData(compileGPATrend(sects));
+            })
+            .catch((err) => {
+                alert("Failed to fetch list of sections.");
+            });
+    })
 
     /**
      * Fetch list of instructors who have taught this course in the past.
@@ -175,12 +197,41 @@ export default function CourseView(props) {
             year: sect2.year,
             semester: sect2.semester,
         };
-        let ret = semcomp(sem1, sem2);
-        if (ret === 0) {
-            return sect1.section_code - sect2.section_code;
-        } else {
-            return ret;
+        return semcomp(sem1, sem2);
+    }
+
+    /**
+     * Compile historical GPA trend information for graphing.
+     * 
+     * sects: list of past sections sorted in CHRONOLOGICAL order --
+     *        this is required for this function to work.
+     */
+    function compileGPATrend(sects) {
+        let chartData = [];
+        setChartReady(false);
+
+        let start = 0;
+        let end = 0;
+        let gpa = 0;
+        for (let i = 0; i < sects.length; i++) {
+            gpa += sects[i].avg_gpa;
+            if (i === sects.length - 1 
+                    || sectcomp(sects[i], sects[i + 1]) !== 0) {
+                let avg = gpa / (end - start + 1);
+                let ent = {
+                    x: sects[i].semester + " " + sects[i].year,
+                    y: avg,
+                };
+                chartData.push(ent);
+                start = i + 1;
+                end = start;
+                gpa = 0;
+            } else {
+                end++;
+            }
         }
+        console.log(chartData);
+        return chartData;
     }
 
     /**
@@ -188,8 +239,7 @@ export default function CourseView(props) {
      * Also triggers graph regeneration.
      */
     function processSections(sects) {
-        sects.sort(sectcomp);
-        setSections(sects);
+        return sects.sort(sectcomp);
     }
 
     /**
@@ -208,7 +258,7 @@ export default function CourseView(props) {
                       + "/" + semesters[sem-1].semester);
         axios.get(url)
             .then((res) => {
-                processSections(res.data);
+                setSections(processSections(res.data));
             })
             .catch((err) => {
                 alert("Failed to fetch list of sections.");
@@ -216,14 +266,18 @@ export default function CourseView(props) {
     }, [iid, sem]);
 
     React.useEffect(() => {
-        /* Fixed dummy course placeholder value */
         const cid = 3;
         loadCourse(cid);
+        loadSectionsAll(cid);
         loadInstructors(cid);
         loadSemesters(cid);
-        loadSections(cid);
-
         setLoading(false);
+    }, []);
+
+    React.useEffect(() => {
+        /* Fixed dummy course placeholder value */
+        const cid = 3;
+        loadSections(cid);
     }, [loadSemesters, loadSections, loadInstructors, loadCourse]);
 
 
@@ -337,21 +391,12 @@ export default function CourseView(props) {
     }
 
     function GPATrendChart() {
-        /* Dummy GPA trend data */
-        const data = [
-            {x: "FA 17", y: 3.58},
-            {x: "SP 18", y: 3.13},
-            {x: "FA 18", y: 3.3},
-            {x: "SP 19", y: 3.03},
-            {x: "FA 19", y: 3.01},
-            {x: "SP 20", y: 3.33},
-          ];
         return (
             <div>
                 <h4>Historical GPA Trend</h4>
                 <div className={classes.chart_area}>
                 {
-                    chartReady ?
+                    (gpaTrendData.length !== 0) ?
                     <XYPlot 
                         xType="ordinal" 
                         height={470} width={500}
@@ -361,10 +406,10 @@ export default function CourseView(props) {
                         <YAxis />
                         <VerticalGridLines />
                         <HorizontalGridLines style={{ fontSize: "10pt" }}/>
-                        <LineSeries data={data} color="darkred" />
+                        <LineSeries data={gpaTrendData} color="darkred" />
                     </XYPlot>
                     :
-                    "Please wait..."
+                    "No data available."
                 }
                 </div>
             </div>
