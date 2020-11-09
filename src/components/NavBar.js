@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     color: 'white'
   },
   drawerContainer: {
-    overflow: 'auto',
+    // overflow: 'auto',
   },
   content: {
     flexGrow: 1,
