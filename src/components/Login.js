@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.palette.primary.main,
   },
 }));
 
@@ -87,7 +87,7 @@ export default function Login(props) {
                 </Avatar>
                 <Typography component="h1" variant="h5">
                   Log In
-          </Typography>
+                </Typography>
                 <hr />
                 <br />
 
@@ -149,7 +149,7 @@ export default function Login(props) {
                         href="/register"
                       >
                         REGISTER
-                </Button>
+                      </Button>
                     </Grid>
 
                     <Grid item sm={12} md={6}>
@@ -161,7 +161,7 @@ export default function Login(props) {
                         fullWidth
                       >
                         LOG IN
-                </Button>
+                      </Button>
                     </Grid>
                   </Grid>
                 </form>
