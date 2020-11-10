@@ -210,7 +210,7 @@ export default function Registration(props) {
                   disabled={awaitVerification}
                   helperText={"Please set a password. " 
                         + "Your password must contain more than 8 characters."}
-                  onChange={passwordHandler}
+                  onChange={password2Handler}
                 />
               }
               </Grid>
