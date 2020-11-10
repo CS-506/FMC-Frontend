@@ -57,8 +57,13 @@ export default function Registration(props) {
   const emailHandler = event => setEmail(event.target.value);
   const [password, setPassword] = React.useState("");
   const passwordHandler = event => setPassword(event.target.value);
+  const [password2, setPassword2] = React.useState("");
+  const password2Handler = event => setPassword2(event.target.value);
+  const [code, setCode] = React.useState("");
+  const codeHandler = event => setCode(event.target.value);
 
   /* Page states */
+  const [awaitVerification, setAwaitVerification] = React.useState(false);
   const [showAlert, setShowAlert] = React.useState(false); 
   const [alertSeverity, setAlertSeverity] = React.useState("info");
   const [alertText, setAlertText] = React.useState("");
@@ -69,9 +74,44 @@ export default function Registration(props) {
     setShowAlert(true);
   }
 
+  function verifyHandler() {
+    alert("success", "Account verified successfully.");
+  }
+
+  function cancelHandler() {
+    setAwaitVerification(false);
+  }
+
   function registerHandler() {
     // test AlertPopup Prop
     alert("success", "Alert module test passed: alert message body.");
+    setAwaitVerification(true);
+  }
+
+  function VerificationCode() {
+    return ( awaitVerification ?
+      <div>
+        <TextField
+          name="code"
+          id="code"
+          value={code}
+          label="Verification code."
+          variant="standard"
+          required
+          disabled={!awaitVerification}
+          helperText="Pleae enter your verification code."
+          onChange={codeHandler}
+        />
+        <br />
+        <Button
+          color="default"
+        >
+          RESEND
+        </Button>
+      </div>
+      :
+      null
+    );
   }
 
   return (
@@ -114,7 +154,7 @@ export default function Registration(props) {
           <br />
 
           <form className={classes.form}>
-            <Grid container spacing={4}>
+            <Grid container spacing={2}>
               <Grid item sm={12}>
                 <TextField
                   name="email"
@@ -126,6 +166,10 @@ export default function Registration(props) {
                   fullWidth
                   helperText="Please enter UW-Madison email address"
                   onChange={emailHandler}
+                  InputProps={{
+                    // read-only when awaiting verification
+                    readOnly: awaitVerification,
+                  }}
                 />
               </Grid>
 
@@ -134,13 +178,45 @@ export default function Registration(props) {
                   name="password"
                   id="password"
                   value={password}
-                  label="password"
+                  label="Password"
                   type="password"
                   variant="outlined"
                   required
                   fullWidth
                   onChange={passwordHandler}
+                  InputProps={{
+                    // read-only when awaiting verification
+                    readOnly: awaitVerification,
+                  }}
                 />
+              </Grid>
+
+              <Grid item sm={12}>
+              {
+                // Don't show password confirmation box 
+                // when awaiting verification
+                awaitVerification ?
+                null
+                :
+                <TextField
+                  name="password2"
+                  id="password2"
+                  value={password2}
+                  label="Confirm password"
+                  type="password"
+                  variant="outlined"
+                  required
+                  fullWidth
+                  disabled={awaitVerification}
+                  helperText={"Please set a password. " 
+                        + "Your password must contain more than 8 characters."}
+                  onChange={passwordHandler}
+                />
+              }
+              </Grid>
+
+              <Grid item sm={12} align="center">
+                <VerificationCode />
               </Grid>
 
               <Grid item sm={12}>
@@ -150,24 +226,34 @@ export default function Registration(props) {
               <Grid item sm={12}>
                 <Button
                   variant="contained"
-                  color="primary"
+                  color={awaitVerification? "secondary" : "primary"}
                   className={classes.register}
                   fullWidth
-                  onClick={registerHandler}
+                  onClick={awaitVerification? verifyHandler: registerHandler}
                 >
-                  REGISTER
+                  { awaitVerification ? "VERIFY" : "REGISTER" }
                 </Button>
               </Grid>
 
               <Grid item sm={12}>
-                <Button
-                  color="default"
-                  className={classes.login}
-                  href="/login"
-                  fullWidth
-                >
-                  I already have an account
-              </Button>
+                {
+                  awaitVerification ?
+                  <Button
+                    color="default"
+                    onClick={cancelHandler}
+                    fullWidth
+                  >
+                    Cancel
+                  </Button>
+                  :
+                  <Button
+                    color="default"
+                    href="/login"
+                    fullWidth
+                  >
+                    I already have an account
+                  </Button>
+                }
               </Grid>
             </Grid>
           </form>
