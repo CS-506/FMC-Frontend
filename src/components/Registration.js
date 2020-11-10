@@ -1,10 +1,12 @@
 import React from 'react';
 import {
-  makeStyles, TextField, Button, Avatar,
-  Typography, Grid, CssBaseline, Paper,
+  makeStyles, TextField, Button, Avatar, IconButton,
+  Typography, Grid, CssBaseline, Paper, Collapse
 } from "@material-ui/core/";
+import Alert from "@material-ui/lab/Alert"
 import {
   LockOutlined as LockOutlinedIcon,
+  Close as CloseIcon,
 } from "@material-ui/icons/";
 import bgImage from "./img/login_bg.jpg";
 
@@ -51,10 +53,26 @@ export default function Registration(props) {
   const classes = useStyles();
 
   /* Login States and handlers*/
-  let [email, setEmail] = React.useState("");
+  const [email, setEmail] = React.useState("");
   const emailHandler = event => setEmail(event.target.value);
   const [password, setPassword] = React.useState("");
   const passwordHandler = event => setPassword(event.target.value);
+
+  /* Page states */
+  const [showAlert, setShowAlert] = React.useState(false); 
+  const [alertSeverity, setAlertSeverity] = React.useState("info");
+  const [alertText, setAlertText] = React.useState("");
+
+  function alert(severity, text) {
+    setAlertSeverity(severity);
+    setAlertText(text);
+    setShowAlert(true);
+  }
+
+  function registerHandler() {
+    // test AlertPopup Prop
+    alert("success", "Alert module test passed: alert message body.");
+  }
 
   return (
     <div className={classes.root}>
@@ -63,6 +81,7 @@ export default function Registration(props) {
         <div className={classes.desktop}>
         <div className={classes.window}>
         <Paper className={classes.paper}>
+
 
           <div className={classes.paper}>
           <Avatar className={classes.avatar}>
@@ -73,6 +92,26 @@ export default function Registration(props) {
           </Typography>
           <br />
           <hr />
+
+          <Collapse in={showAlert}>
+            <Alert
+              severity={alertSeverity}
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => { setShowAlert(false); }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {alertText}
+            </Alert>
+          </Collapse>
+
+          <br />
 
           <form className={classes.form}>
             <Grid container spacing={4}>
@@ -114,7 +153,7 @@ export default function Registration(props) {
                   color="primary"
                   className={classes.register}
                   fullWidth
-                  href="/register"
+                  onClick={registerHandler}
                 >
                   REGISTER
                 </Button>

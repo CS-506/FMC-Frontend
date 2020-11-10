@@ -1,10 +1,12 @@
 import React from 'react';
 import {
-  makeStyles, TextField, Button, Avatar,
-  Typography, Grid, CssBaseline, Paper,
+  makeStyles, TextField, Button, Avatar, IconButton,
+  Typography, Grid, CssBaseline, Paper, Collapse,
 } from "@material-ui/core/";
+import Alert from "@material-ui/lab/Alert"
 import {
   LockOutlined as LockOutlinedIcon,
+  Close as CloseIcon,
 } from "@material-ui/icons/";
 import bgImage from "./img/login_bg.jpg";
 
@@ -56,9 +58,19 @@ export default function Login(props) {
   const [password, setPassword] = React.useState("");
   const passwordHandler = event => setPassword(event.target.value);
 
+  /* Page states */
+  const [showAlert, setShowAlert] = React.useState(false); 
+  const [alertSeverity, setAlertSeverity] = React.useState("info");
+  const [alertText, setAlertText] = React.useState("");
+
+  function alert(severity, text) {
+    setAlertSeverity(severity);
+    setAlertText(text);
+    setShowAlert(true);
+  }
+
   const loginHandler = variables => {
-    console.log("LOG IN!");
-    console.log("Email: " + email + " Password: " + password);
+    alert("success", "ALERT ALERT ALERT: alert test successful.");
   }
 
   return (
@@ -77,6 +89,26 @@ export default function Login(props) {
             Log In
           </Typography>
           <hr />
+          <br />
+
+          <Collapse in={showAlert}>
+            <Alert
+              severity={alertSeverity}
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => { setShowAlert(false); }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {alertText}
+            </Alert>
+          </Collapse>
+
           <br />
 
           <form className={classes.form}>
