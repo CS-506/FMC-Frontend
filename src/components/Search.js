@@ -33,10 +33,10 @@ export default function Search(props) {
     const classes = useStyles();
 
     // search keywords:
-    const [keyWord, setKeyWord] = React.useState(" ");
+    const [keyWord, setKeyWord] = React.useState(props.location.state.keyWord);
     // search filters:
-    const [keySubject, setKeySubject] = React.useState(" ");
-    const [keyInsturctor, setKeyInsturctor] = React.useState(" ");
+    const [keySubject, setKeySubject] = React.useState(props.location.state.keySubject);
+    const [keyInstructor, setKeyInstructor] = React.useState(props.location.state.keyInstructor);
     // search result:
     const [result, saveResult] = React.useState([]);
     
@@ -90,7 +90,7 @@ export default function Search(props) {
     function transferFilter(keySubj, keyInst) {
         // Store the filters passed:
         setKeySubject(keySubj);
-        setKeyInsturctor(keyInst);
+        setKeyInstructor(keyInst);
         
         // Initiate search every time filters changes:
         // Two options:
@@ -104,7 +104,7 @@ export default function Search(props) {
     // Enter page with keyWord=" " and display all courses:
     React.useEffect(() => {
         //setKeyWord(this.props.location);
-        searchByKeyWord(keyWord);
+        searchByFilter(keyWord, keySubject, keyInstructor);
     }, [searchByKeyWord]);
     
     function addrConcat(cid) {
@@ -118,7 +118,15 @@ export default function Search(props) {
                 {result.map(resultItem => (
                     
                     <Link 
-                        to={addrConcat(resultItem[0]).toString()} 
+                        to={{
+                            pathname: addrConcat(resultItem[0]).toString(),
+                            state: {
+                            "keyWord": keyWord, 
+                            "keySubject": keySubject, 
+                            "keyInstructor": keyInstructor,
+                            },
+                        }}
+                        
                         style={{ textDecoration: 'none' }}
                         key={result.indexOf(resultItem)}
                     >
@@ -138,12 +146,15 @@ export default function Search(props) {
             </div>
         );
     }
-    
     return (
         <div className = {classes.root}>
             
             <div>
-                <NavBar sendKey={transferKey} sendFilter={transferFilter}/>
+                <NavBar 
+                    sendKey={transferKey} 
+                    sendFilter={transferFilter} 
+                    atSearchPage={true}
+                />
             </div>
             
             <main className = {classes.contents}>

@@ -12,6 +12,7 @@ import {
 import {
     Line, Bar
 } from "react-chartjs-2";
+import { Link as RouterLink } from 'react-router-dom';
 
 import NavBar from "./NavBar";
 
@@ -651,11 +652,11 @@ export default function CourseView(props) {
             <Main />
         );
     }
-
+    
     return (
         <div className = {classes.root}>
             <div>
-                <NavBar/>
+                <NavBar atSerachPage={false} />
             </div>
             <LoadMain />
         </div>

@@ -8,10 +8,10 @@ import {
     TextField,
     Button,
     InputBase,
-    Link,
 } from "@material-ui/core/";
 import { red, white } from '@material-ui/core/colors';
 import Search from './Search';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -97,7 +97,6 @@ export default function Home() {
                                     placeholder="Course..."
                                     variant="outlined"
                                     fullWidth
-                                    autoComplete
                                     onChange={e => saveKey(e.target.value)}
                                 />
                             </AppContext.Provider>
@@ -107,9 +106,15 @@ export default function Home() {
                 </Grid>
                 <Grid item xs={12}>
                     <Link 
-                        href="/Search" 
-                        style={{textDecoration: 'none'}}
-                        data={keyWord}
+                        to={{
+                            pathname: '/Search',
+                            state: { 
+                                "keyWord": keyWord,
+                                "keySubject": " ", 
+                                "keyInstructor": " ",
+                            }
+                        }}
+                        style={{ textDecoration: 'none' }}
                     >
                         <Button
                             className={classes.searchButton}
@@ -121,43 +126,7 @@ export default function Home() {
                         </Button>
                     </Link>
                 </Grid>
-                <br/>
-                <Grid container spacing={0}>
-                    <Grid item xs={3}></Grid>
-                    <Grid item xs={3}>
-                        <TextField
-                            className={classes.searchbox}
-                            placeholder="Subject..."
-                            variant="outlined"
-                            fullWidth
-                            autoComplete
-                            onChange={e => saveSubj(e.target.value)}
-                        />
-                    </Grid>
-                    <Grid item xs={3}>
-                        <TextField
-                            className={classes.searchbox}
-                            placeholder="Instructor..."
-                            variant="outlined"
-                            fullWidth
-                            autoComplete
-                            onChange={e => saveInst(e.target.value)}
-                        />
-                    </Grid>
-                </Grid>
-                <Grid item xs={12}>
-                    <Button
-                        className={classes.searchButton}
-                        variant="contained"
-                        style={{background: '#c40d02'}}
-                        
-                        textPrimary
-                        /*href="/register"*/
-                    >
-                        Search by filters!
-                    </Button>
-                </Grid>
-                    
+                
                 
             </Grid>
         </div>

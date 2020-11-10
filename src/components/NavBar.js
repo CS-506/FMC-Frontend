@@ -13,6 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -102,7 +103,7 @@ export default function NavBar(props) {
 
   const [keyWord, setKeyWord] = React.useState(" ");
   const [keySubject, setKeySubject] = React.useState(" ");
-  const [keyInsturctor, setKeyInsturctor] = React.useState(" ");
+  const [keyInstructor, setKeyInstructor] = React.useState(" ");
   
   function saveKey(newKeyWord) {
     setKeyWord(newKeyWord);
@@ -113,15 +114,21 @@ export default function NavBar(props) {
   }
 
   function saveInst(newInst) {
-    setKeyInsturctor(newInst);
+    setKeyInstructor(newInst);
   }
   
   function sendKeyCaller() {
-    props.sendKey(keyWord);
+    if (props.atSearchPage)
+      props.sendKey(keyWord);
   }
 
   function sendFilterCaller() {
-    props.sendFilter(keySubject, keyInsturctor);
+    if (props.atSearchPage)
+      props.sendFilter(keySubject, keyInstructor);
+  }
+
+  function wait() {
+    console.log(keyWord);
   }
   
   return (
@@ -137,7 +144,8 @@ export default function NavBar(props) {
                       <SearchIcon />
                     </div>
                     <InputBase
-                      placeholder="Search…"
+                      //placeholder= {(keyWord==""||keyWord==" ") ? "Search..." : keyWord} 
+                      placeholder="Search..."
                       classes={{
                           root: classes.inputRoot,
                           input: classes.inputInput,
@@ -146,13 +154,24 @@ export default function NavBar(props) {
                       onChange={e => saveKey(e.target.value)}
                     />
                 </div>
-                <Button
-                  style={{ marginLeft: 10}}
-                  className={classes.searchButton}
-                  onClick={() => sendKeyCaller()}
+                <Link to={{
+                    pathname: '/Search',
+                    state: {
+                      "keyWord": keyWord, 
+                      "keySubject": " ", 
+                      "keyInstructor": " ",
+                    },
+                  }}
+                  style={{ textDecoration: 'none' }}
                 >
-                  Search 
-                </Button>
+                  <Button
+                    style={{ marginLeft: 10}}
+                    className={classes.searchButton}
+                    onClick={() => sendKeyCaller()}
+                  >
+                    Search 
+                  </Button>
+                </Link>
             </Toolbar>
         </AppBar>
         <div className={classes.grow} />
@@ -169,6 +188,7 @@ export default function NavBar(props) {
           <List>
             <div className={classes.search}>
               <InputBase
+                //placeholder={ (keySubject==""||keySubject==" ") ? "Subject..." : keySubject }
                 placeholder="Subject..."
                 classes={{
                     root: classes.inputRoot,
@@ -181,6 +201,7 @@ export default function NavBar(props) {
             <br/>
             <div className={classes.search}>
               <InputBase 
+                //placeholder= { (keyInstructor==""||keyInstructor==" ") ? "Instructor..." : keyInstructor }
                 placeholder="Instructor..."
                 classes={{
                     root: classes.inputRoot,
@@ -191,13 +212,26 @@ export default function NavBar(props) {
               />
             </div>
             <br/>
-            <Button
-              style={{ marginLeft: 125}}
-              className={classes.searchButton}
-              onClick={() => sendFilterCaller()}
+            <Link to={{
+                pathname: '/Search',
+                state: {
+                  "keyWord": " ", 
+                  "keySubject": keySubject, 
+                  "keyInstructor": keyInstructor,
+                },
+              }}
+              style={{ textDecoration: 'none' }}
             >
-              Search 
-            </Button>
+              <Button
+                style={{ marginLeft: 15}}
+                className={classes.searchButton}
+                onClick={() => sendFilterCaller()}
+                width='20ch'
+              >
+                {"Filter current results"}
+              </Button>
+            </Link>
+            
           </List>
           
           <br/><br/>
