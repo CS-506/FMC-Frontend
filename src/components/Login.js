@@ -51,14 +51,14 @@ export default function Login(props) {
   const classes = useStyles();
 
   /* Login States and handlers*/
-  let [username, setUsername] = React.useState("");
-  const usernameHandler = event => setUsername(event.target.value);
+  let [email, setEmail] = React.useState("");
+  const emailHandler = event => setEmail(event.target.value);
   const [password, setPassword] = React.useState("");
   const passwordHandler = event => setPassword(event.target.value);
 
   const loginHandler = variables => {
     console.log("LOG IN!");
-    console.log("Username: " + username + " Password: " + password);
+    console.log("Email: " + email + " Password: " + password);
   }
 
   return (
@@ -83,14 +83,14 @@ export default function Login(props) {
             <Grid container spacing={4}>
               <Grid item sm={12}>
                 <TextField
-                  name="username"
-                  id="username"
-                  value={username}
-                  label="Username"
+                  name="email"
+                  id="email"
+                  value={email}
+                  label="Email"
                   variant="outlined"
                   required
                   fullWidth
-                  onChange={usernameHandler}
+                  onChange={emailHandler}
                 />
               </Grid>
 
@@ -99,7 +99,7 @@ export default function Login(props) {
                   name="password"
                   id="password"
                   value={password}
-                  label="password"
+                  label="Password"
                   type="password"
                   variant="outlined"
                   required
