@@ -8,6 +8,7 @@ import {
   LockOutlined as LockOutlinedIcon,
   Close as CloseIcon,
 } from "@material-ui/icons/";
+import isEmail from "validator/lib/isEmail";
 import bgImage from "./img/login_bg.jpg";
 
 const useStyles = makeStyles(theme => ({
@@ -74,6 +75,10 @@ export default function Registration(props) {
     setShowAlert(true);
   }
 
+  function clearAlert() {
+    setShowAlert(false);
+  }
+
   function verifyHandler() {
     alert("success", "Account verified successfully.");
   }
@@ -83,8 +88,43 @@ export default function Registration(props) {
   }
 
   function registerHandler() {
-    // test AlertPopup Prop
-    alert("success", "Alert module test passed: alert message body.");
+    clearAlert();
+    if (email === "") {
+      alert("warning", "Please enter your email address.");
+      return;
+    }
+
+    if (!isEmail(email)) {
+      alert("warning", "Invalid email address.");
+      setPassword2("");
+      return;
+    }
+
+    if (!email.endsWith("wisc.edu")) {
+      alert("warning", "Please use a UW-Madison email address.");
+      setPassword2("");
+      return;
+    }
+
+    if (password === "") {
+      alert("warning", "Please set a password.");
+      return;
+    }
+    if (password.length < 8) {
+      alert("warning", "Password must be at least 8 characters.");
+      return;
+    }
+    if (password.length > 32) {
+      alert("warning", "Password cannot be longer than 32 characters.");
+      return;
+    }
+    if (password2 !== password) {
+      alert("warning", "Password mismatch. Please retype confirmation.");
+      return;
+    }
+
+    alert("success", "A verification code has been sent to " + email + ". "
+            + "Please enter the code in the field below.");
     setAwaitVerification(true);
   }
 
@@ -95,7 +135,7 @@ export default function Registration(props) {
           name="code"
           id="code"
           value={code}
-          label="Verification code."
+          label="Verification code"
           variant="standard"
           required
           disabled={!awaitVerification}
@@ -164,6 +204,7 @@ export default function Registration(props) {
                   variant="outlined"
                   required
                   fullWidth
+                  autoFocus
                   helperText="Please enter UW-Madison email address"
                   onChange={emailHandler}
                   InputProps={{
@@ -208,19 +249,19 @@ export default function Registration(props) {
                   required
                   fullWidth
                   disabled={awaitVerification}
-                  helperText={"Please set a password. " 
-                        + "Your password must contain more than 8 characters."}
+                  helperText={"Please set a password. Your password must " 
+                        + "contain at least 8 and no more than 32 characters."}
                   onChange={password2Handler}
                 />
               }
               </Grid>
 
-              <Grid item sm={12} align="center">
-                <VerificationCode />
-              </Grid>
-
               <Grid item sm={12}>
                 <hr />
+              </Grid>
+
+              <Grid item sm={12} align="center">
+                <VerificationCode />
               </Grid>
 
               <Grid item sm={12}>
@@ -231,7 +272,7 @@ export default function Registration(props) {
                   fullWidth
                   onClick={awaitVerification? verifyHandler: registerHandler}
                 >
-                  { awaitVerification ? "VERIFY" : "REGISTER" }
+                  { awaitVerification ? "VERIFY EMAIL" : "CONFIRM" }
                 </Button>
               </Grid>
 
@@ -239,6 +280,7 @@ export default function Registration(props) {
                 {
                   awaitVerification ?
                   <Button
+                    variant="contained"
                     color="default"
                     onClick={cancelHandler}
                     fullWidth
