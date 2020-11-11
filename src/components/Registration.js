@@ -87,42 +87,33 @@ export default function Registration(props) {
     setAwaitVerification(false);
   }
 
-  function registerHandler() {
+  function validateFormData() {
     clearAlert();
     if (email === "") {
       alert("warning", "Please enter your email address.");
-      return;
-    }
-
-    if (!isEmail(email)) {
+    } else if (!isEmail(email)) {
       alert("warning", "Invalid email address.");
       setPassword2("");
-      return;
-    }
-
-    if (!email.endsWith("wisc.edu")) {
+    } else if (!email.endsWith("wisc.edu")) {
       alert("warning", "Please use a UW-Madison email address.");
       setPassword2("");
-      return;
-    }
-
-    if (password === "") {
+    } else if (password === "") {
       alert("warning", "Please set a password.");
-      return;
-    }
-    if (password.length < 8) {
+    } else if (password.length < 8) {
       alert("warning", "Password must be at least 8 characters.");
-      return;
-    }
-    if (password.length > 32) {
+    } else if (password.length > 32) {
       alert("warning", "Password cannot be longer than 32 characters.");
-      return;
-    }
-    if (password2 !== password) {
+    } else if (password2 !== password) {
       alert("warning", "Password mismatch. Please retype confirmation.");
-      return;
+    } else {
+      return true;
     }
+    return false;
+  }
 
+  function registerHandler() {
+    if (!validateFormData())
+      return;
     alert("success", "A verification code has been sent to " + email + ". "
             + "Please enter the code in the field below.");
     setAwaitVerification(true);
