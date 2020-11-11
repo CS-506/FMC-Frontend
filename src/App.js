@@ -8,11 +8,8 @@ import Login from "./components/Login";
 import CourseView from "./components/CourseView";
 import HomePage from "./components/Home";
 import SearchPage from "./components/Search";
-<<<<<<< HEAD
 import ProfilePage from "./components/Profile";
-=======
 import Registration from "./components/Registration";
->>>>>>> feat/comment_section
 
 export default function App() {
   return (

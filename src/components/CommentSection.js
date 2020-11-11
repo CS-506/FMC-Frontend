@@ -2,8 +2,10 @@ import React from "react";
 import axios from "axios";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import {
-  Typography,
+  Typography, 
+  Paper,
 } from "@material-ui/core";
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   unit: {
@@ -14,7 +16,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function CommentSection(props) {
   const classes = useStyles();
-  const [RC, setRC] = React.useState();
+  const [rc, setRC] = React.useState();
 
   React.useEffect(() => {
     setRC(props.rc);
@@ -25,7 +27,6 @@ export default function CommentSection(props) {
       to={{ pathname: 'course_' }}
       
       style={{ textDecoration: 'none' }}
-      key={user.RC.indexOf(rcItem)}
     >
       <Paper
         className={classes.paper} 
@@ -33,12 +34,12 @@ export default function CommentSection(props) {
         md={3}
       >
         <Typography variant="subtitle1">
-            {rcItem.subject} {rcItem.code}<br/> 
-            {rcItem.name} 
+            {rc.subject} {rc.code}<br/> 
+            {rc.name} 
         </Typography>
         <Typography>
-          Rating: {rcItem.rate} <br/> 
-          Comment: {rcItem.comment}
+          Rating: {rc.rate} <br/> 
+          Comment: {rc.comment}
         </Typography>
       </Paper>
     </Link>

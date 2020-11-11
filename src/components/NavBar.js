@@ -13,6 +13,11 @@ import ListItemText from '@material-ui/core/ListItemText';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import IconButton from '@material-ui/core/iconbutton';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import Grid from "@material-ui/core/Grid";
 import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -94,6 +99,9 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       width: '20ch',
     },
+  },
+  menuButton: {
+    justify: 'flex-end',
   }
 }));
 
@@ -104,7 +112,11 @@ export default function NavBar(props) {
   const [keyWord, setKeyWord] = React.useState(" ");
   const [keySubject, setKeySubject] = React.useState(" ");
   const [keyInstructor, setKeyInstructor] = React.useState(" ");
-  
+
+  const auth = true;
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
   function saveKey(newKeyWord) {
     setKeyWord(newKeyWord);
   }
@@ -127,51 +139,125 @@ export default function NavBar(props) {
       props.sendFilter(keySubject, keyInstructor);
   }
 
-  function wait() {
-    console.log(keyWord);
-  }
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+      setAnchorEl(null);
+  };
   
   return (
     <div className={classes.root}>
         <CssBaseline />
-        <AppBar position="fixed" className={classes.navbar} style={{ background: '#d50000' }}>
+        <AppBar 
+          position="fixed" 
+          className={classes.navbar} 
+          style={{ background: '#d50000' }}
+        >
             <Toolbar>
-                <Typography variant="h6" noWrap>
-                    Find My Course
-                </Typography>
-                <div className={classes.search}>
-                    <div className={classes.searchIcon}>
-                      <SearchIcon />
+              <Grid container justify="space-between">
+
+                <Grid item >
+
+                  <Grid container style={{marginTop: 5}}>
+                    
+                    <Grid item>
+                      <Typography variant="h6" noWrap>
+                        Find My Course
+                      </Typography>
+                    </Grid>
+
+                    <Grid item>
+                      <div className={classes.search}>
+                        <div className={classes.searchIcon}>
+                          <SearchIcon />
+                        </div>
+                        <InputBase
+                          //placeholder= {(keyWord==""||keyWord==" ") ? "Search..." : keyWord} 
+                          placeholder="Search..."
+                          classes={{
+                              root: classes.inputRoot,
+                              input: classes.inputInput,
+                          }}
+                          inputProps={{ 'aria-label': 'search' }}
+                          onChange={e => saveKey(e.target.value)}
+                        />
+                      </div>
+                    </Grid>
+
+                    <Grid item> 
+                      <Link to={{
+                          pathname: '/Search',
+                          state: {
+                            "keyWord": keyWord, 
+                            "keySubject": " ", 
+                            "keyInstructor": " ",
+                          },
+                        }}
+                        style={{ textDecoration: 'none' }}
+                      >
+                        <Button
+                          style={{ marginLeft: 10}}
+                          className={classes.searchButton}
+                          onClick={() => sendKeyCaller()}
+                        >
+                          Search 
+                        </Button>
+                      </Link>
+                    </Grid>
+
+                  </Grid>
+                </Grid>
+
+                <Grid item>
+                  {auth && (
+                    <div className={classes.menuButton}>
+                      <IconButton
+                          aria-label="account of current user"
+                          aria-controls="menu-appbar"
+                          aria-haspopup="true"
+                          onClick={handleMenu}
+                          color="inherit"
+                          transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                          }}
+                      >
+                          <AccountCircle />
+                      </IconButton>
+                      <Menu
+                          id="menu-appbar"
+                          anchorEl={anchorEl}
+                          anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                          }}
+                          keepMounted
+                          transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                          }}
+                          open={open}
+                          onClose={handleClose}
+                      >
+                          <MenuItem onClick={handleClose}>
+                              <Link to="/Profile" 
+                                style={{ textDecoration: 'none' }}
+                              >
+                                  Profile
+                              </Link>
+                          </MenuItem>
+                          
+                          <MenuItem onClick={() => props.logout()}>
+                              Log out 
+                          </MenuItem>
+                      </Menu>
                     </div>
-                    <InputBase
-                      //placeholder= {(keyWord==""||keyWord==" ") ? "Search..." : keyWord} 
-                      placeholder="Search..."
-                      classes={{
-                          root: classes.inputRoot,
-                          input: classes.inputInput,
-                      }}
-                      inputProps={{ 'aria-label': 'search' }}
-                      onChange={e => saveKey(e.target.value)}
-                    />
-                </div>
-                <Link to={{
-                    pathname: '/Search',
-                    state: {
-                      "keyWord": keyWord, 
-                      "keySubject": " ", 
-                      "keyInstructor": " ",
-                    },
-                  }}
-                  style={{ textDecoration: 'none' }}
-                >
-                  <Button
-                    style={{ marginLeft: 10}}
-                    className={classes.searchButton}
-                    onClick={() => sendKeyCaller()}
-                  >
-                    Search 
-                  </Button>
-                </Link>
+                  )}
+                </Grid>
+              </Grid>
+                
             </Toolbar>
         </AppBar>
         <div className={classes.grow} />

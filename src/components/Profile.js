@@ -29,6 +29,9 @@ const useStyles = makeStyles(theme => ({
     profilePic: {
         backgroundImage: pfImage,
     },
+    rcPaper: {
+        flexGrow: 1,
+    }
 
 }));
 
@@ -49,7 +52,7 @@ export default function Profile(props) {
         name: "Operating System",
         cid: 1,
         rate: 5,
-        comment: "Nice Professor."
+        comment: "Professor is nice."
     }
     const userInit = {
         firstname: "Badger",
@@ -131,32 +134,31 @@ export default function Profile(props) {
         return (
             <div>
                 <Grid container spacing={3}>
+                    {user.RC.map(rcItem => (
                     <Grid item md={6}>
-                        {user.RC.map(rcItem => (
-                            <Link 
-                                to={{ pathname: 'course_' }}
-                                
-                                style={{ textDecoration: 'none' }}
-                                key={user.RC.indexOf(rcItem)}
+                        <Link 
+                            to={{ pathname: 'course_' }}
+                            
+                            style={{ textDecoration: 'none' }}
+                            key={user.RC.indexOf(rcItem)}
+                        >
+                            <Paper
+                                className={classes.rcPaper} 
+                                style={{ padding:10, paddingLeft:20}}
+                                md={3}
                             >
-                                <Paper
-                                    className={classes.paper} 
-                                    style={{ padding:10, paddingLeft:20}}
-                                    md={3}
-                                >
-                                    <Typography variant="subtitle1">
-                                        {rcItem.subject} {rcItem.code}<br/> 
-                                        {rcItem.name} 
-                                    </Typography>
-                                    <Typography>
-                                            Rating: {rcItem.rate} <br/> 
-                                            Comment: {rcItem.comment}
-                                    </Typography>
-                                </Paper>
-                            </Link>
-                        ))
-                        }
+                                <Typography variant="subtitle2">
+                                    {rcItem.subject} {rcItem.code}<br/> 
+                                    {rcItem.name} 
+                                </Typography>
+                                <Typography variant="body2">
+                                        Rating: {rcItem.rate} <br/> 
+                                        Comment: {rcItem.comment}
+                                </Typography>
+                            </Paper>
+                        </Link>
                     </Grid>
+                    ))}
                 </Grid>
                 
             </div>
