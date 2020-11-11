@@ -14,6 +14,7 @@ import {
 } from "react-chartjs-2";
 
 import NavBar from "./NavBar";
+import CommentSection from "./CommentSection";
 
 const useStyles = makeStyles(theme => ({
   navbar: {
@@ -638,6 +639,9 @@ export default function CourseView(props) {
         <DataDisplay />
 
         <hr />
+        <br />
+
+        <CommentSection />
         <br />
       </Paper>
     );
