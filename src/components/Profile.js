@@ -9,17 +9,10 @@ import pfImage from "./img/default_avatar.jpg";
 import NavBar from "./NavBar"
 import Button from "@material-ui/core/Button";
 import Alert from "@material-ui/lab/Alert";
-import { Link as RouterLink } from 'react-router-dom';
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
 import IconButton from "@material-ui/core/IconButton";
-import ViewIcon from "@material-ui/icons/PageviewOutlined"
 import Collapse from "@material-ui/core/Collapse";
 import CloseIcon from '@material-ui/icons/Close';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
     contents: {
@@ -42,9 +35,32 @@ const useStyles = makeStyles(theme => ({
 export default function Profile(props) {
     const classes = useStyles();
 
-    const [user, setProfile] = React.useState([]);
-    const [hiveList, setHiveList] = React.useState([]);
-    const [apiaryList, setApiaryList] = React.useState([]);
+    const rc1 = {
+        subject: "COMP SCI",
+        code: "506",
+        name: "Software Engineering",
+        cid: 0,
+        rate: 5,
+        comment: "Thanks to my awesome teammates"
+    }
+    const rc2 = {
+        subject: "COMP SCI",
+        code: "537",
+        name: "Operating System",
+        cid: 1,
+        rate: 5,
+        comment: "Nice Professor."
+    }
+    const userInit = {
+        firstname: "Badger",
+        lastname: "Penrose",
+        description: "Hello World. \nThat nobel prize seems lit.",
+        email: "bPenrose@wisc.edu",
+        phone: "777-888-9999",
+        RC: [rc1, rc2],        
+    };
+
+    const [user, setProfile] = React.useState(userInit);
 
     const [showAlert, setShowAlert] = React.useState(false);
     const [alertSeverity, setAlertSeverity] = React.useState("warning");
@@ -109,36 +125,40 @@ export default function Profile(props) {
         return () => { isMounted = false; };
     }, []);
     */
+    
 
     function RCTable() {
         return (
             <div>
-                <TableContainer
-                    component={Paper} style={{marginTop:5}}
-                    >
-                    <Table className={classes.table} aria-label="simple table">
-                        <TableHead>
-                        <TableRow>
-                            <TableCell align="center">Hive ID</TableCell>
-                            <TableCell align="center">Health</TableCell>
-                            <TableCell align="center">Honey Stores</TableCell>
-                            <TableCell align="center">Profit</TableCell>
-                        </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {hiveList?.map(item => {
-                                return (
-                                <TableRow key={item.hiveId}>
-                                    <TableCell align="center">{item.hiveId}</TableCell>
-                                    <TableCell align="center">{item.health}</TableCell>
-                                    <TableCell align="center">{item.numHoneyStore}</TableCell>
-                                    <TableCell align="center">{item.losses}</TableCell>
-                                </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                <Grid container spacing={3}>
+                    <Grid item md={6}>
+                        {user.RC.map(rcItem => (
+                            <Link 
+                                to={{ pathname: 'course_' }}
+                                
+                                style={{ textDecoration: 'none' }}
+                                key={user.RC.indexOf(rcItem)}
+                            >
+                                <Paper
+                                    className={classes.paper} 
+                                    style={{ padding:10, paddingLeft:20}}
+                                    md={3}
+                                >
+                                    <Typography variant="subtitle1">
+                                        {rcItem.subject} {rcItem.code}<br/> 
+                                        {rcItem.name} 
+                                    </Typography>
+                                    <Typography>
+                                            Rating: {rcItem.rate} <br/> 
+                                            Comment: {rcItem.comment}
+                                    </Typography>
+                                </Paper>
+                            </Link>
+                        ))
+                        }
+                    </Grid>
+                </Grid>
+                
             </div>
         );
     }
@@ -186,7 +206,7 @@ export default function Profile(props) {
                             <Button variant="contained"
                                 className={classes.register}
                                 style={{color:'white', backgroundColor: '#ffc107'}}
-                                component={RouterLink}
+                                component={Link}
                                 to="/ProfileEditor"
                             >
                                 Edit Profile
@@ -195,7 +215,7 @@ export default function Profile(props) {
                     </Grid>             
 
                         <Typography component="h1" variant="h5" style={{marginBottom:20}}>
-                            Welcome, {user.firstname} ~
+                            Welcome, {user.lastname} ~
                         </Typography>
 
                     <Grid container spacing={3}>
@@ -223,7 +243,7 @@ export default function Profile(props) {
                             <Paper className={classes.paper} style={{padding:10}}>
                                 <Grid container> 
                                     <Grid item xs={6}>
-                                        <Typography variant="h5">
+                                        <Typography variant="h5" style={{padding:5}}>
                                             My Rating and Comments
                                         </Typography>
                                     </Grid>
@@ -231,10 +251,10 @@ export default function Profile(props) {
                                         <Button variant="contained"
                                             className={classes.register}
                                             style={{color:'white', backgroundColor: '#ffc107'}}
-                                            component={RouterLink}
+                                            component={Link}
                                             to="/hives"
                                         >
-                                            Manage Hives
+                                            Manage
                                         </Button>
                                     </Grid>
                                 </Grid>
