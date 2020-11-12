@@ -8,6 +8,7 @@ import {
   LockOutlined as LockOutlinedIcon,
   Close as CloseIcon,
 } from "@material-ui/icons/";
+import isEmail from "validator/lib/isEmail";
 import bgImage from "./img/login_bg.jpg";
 
 const useStyles = makeStyles(theme => ({
@@ -69,8 +70,39 @@ export default function Login(props) {
     setShowAlert(true);
   }
 
+  function clearAlert() {
+    setShowAlert(false);
+  }
+
+  function validateFormData() {
+    clearAlert();
+    if (email === "") {
+      alert("warning", "Please enter your email address.");
+    } else if (!isEmail(email)) {
+      alert("warning", "Invalid email address.");
+    } else if (!email.endsWith("wisc.edu")) {
+      alert("warning", "Please use a UW-Madison email address.");
+    } else if (password === "") {
+      alert("warning", "Please enter your password.");
+    } else {
+      return true;
+    }
+    return false;
+  }
+
   const loginHandler = variables => {
-    alert("success", "ALERT ALERT ALERT: alert test successful.");
+    if (!validateFormData())
+      return;
+    
+    const loginData = {
+      username: email,
+      email: email,
+      password: password,
+    };
+
+    props.auth(loginData);
+    alert("success", "Success. Redirecting...");
+    props.history.push("/Search");
   }
 
   return (
