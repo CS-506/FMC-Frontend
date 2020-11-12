@@ -12,20 +12,90 @@ import ProfilePage from "./components/Profile";
 import Registration from "./components/Registration";
 
 export default function App() {
+  const [loginStat, setLoginStat] = React.useState("NOT_LOGGED_IN");
+  const [userData, setUserData] = React.useState(null);
+
+  function authenticate(loginUser) {
+    setLoginStat("LOGGED_IN");
+    setUserData(loginUser);
+    localStorage.setItem("locLoginStat", "LOGGED_IN");
+    localStorage.setItem("locUser", JSON.stringify(loginUser));
+  }
+
+  function logout() {
+    localStorage.clear("locLoginStat");
+    localStorage.clear("locUser");
+    setLoginStat("NOT_LOGGED_IN");
+    setUserData(null);
+  }
+
+  React.useEffect(() => {
+    const locLoginStat = localStorage.getItem("locLoginStat");
+    const locUser = localStorage.getItem("locUser");
+    if (locLoginStat === "LOGGED_IN") {
+      setLoginStat(locLoginStat);
+      setUserData(JSON.parse(locUser));
+    }
+  }, [])
+
   return (
       <Router>
-        <Route exact path="/" component={HomePage} />
-        <Route exact path="/login" component={Login} />
-        <Route exact path="/register" component={Registration} />
-        <Route exact path="/Search" component={SearchPage} />
-        <Route exact path="/Profile" component={ProfilePage} />
+        <Route 
+          exact path="/login"
+          render={ props => (
+            <Login {...props}
+              loginStat={loginStat}
+              user={userData}
+              auth={authenticate}
+              logout={logout}
+            />
+          )}
+        />
+        <Route 
+          exact path="/register"
+          render={ props => (
+            <Registration {...props}
+              loginStat={loginStat}
+              user={userData}
+              auth={authenticate}
+              logout={logout}
+            />
+          )}
+        />
+        <Route 
+          exact path="/Search"
+          render={ props => (
+            <SearchPage {...props}
+              loginStat={loginStat}
+              user={userData}
+              auth={authenticate}
+              logout={logout}
+            />
+          )}
+        />
+        <Route 
+          exact path="/Profile"
+          render={ props => (
+            <ProfilePage {...props}
+              loginStat={loginStat}
+              user={userData}
+              auth={authenticate}
+              logout={logout}
+            />
+          )}
+        />
         <Route 
           exact path="/course_:id" 
-          render={ props => {
-            return <CourseView />;
-          }}
-          component={CourseView}
+          render={ props => (
+            <CourseView {...props}
+              loginStat={loginStat}
+              user={userData}
+              auth={authenticate}
+              logout={logout}
+            />
+          )}
         />
+        <Route exact path="/" component={HomePage} />
       </Router>
     
   );
