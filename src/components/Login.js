@@ -10,6 +10,7 @@ import {
 } from "@material-ui/icons/";
 import isEmail from "validator/lib/isEmail";
 import bgImage from "./img/login_bg.jpg";
+import { Redirect } from 'react-router';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -60,6 +61,7 @@ export default function Login(props) {
   const passwordHandler = event => setPassword(event.target.value);
 
   /* Page states */
+  const [redirect, setRedirect] = React.useState(false);
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertSeverity, setAlertSeverity] = React.useState("info");
   const [alertText, setAlertText] = React.useState("");
@@ -102,11 +104,14 @@ export default function Login(props) {
 
     props.auth(loginData);
     alert("success", "Success. Redirecting...");
-    props.history.push("/Search");
+    setRedirect(true);
   }
 
   return (
     <div className={classes.root}>
+      {
+        redirect ? <Redirect to="/Search" /> : null
+      }
       <CssBaseline />
       <Grid item className={classes.image}>
         <div className={classes.desktop}>
