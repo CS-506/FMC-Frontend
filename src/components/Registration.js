@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from "axios";
 import {
   makeStyles, TextField, Button, Avatar, IconButton,
   Typography, Grid, CssBaseline, Paper, Collapse
@@ -114,6 +115,22 @@ export default function Registration(props) {
   function registerHandler() {
     if (!validateFormData())
       return;
+
+    const regdata = {
+      username: email,
+      firstName: "Test",
+      lastName: "User",
+      password: password,
+      email: email,
+      userType: "user",
+    };
+    axios.post("/user/add", regdata)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        alert("Failed to register.");
+      });
     alert("success", "A verification code has been sent to " + email + ". "
             + "Please enter the code in the field below.");
     setAwaitVerification(true);
