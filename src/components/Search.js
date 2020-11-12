@@ -1,15 +1,11 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 import { 
-    Typography,
-    Grid,
-    Paper,
-    List,
+    Typography, Paper,
 } from "@material-ui/core/";
 import { Link } from 'react-router-dom';
 import NavBar from "./NavBar";
-import { AppContext } from './Home';
 
 const useStyles = makeStyles(theme => ({
     navbar: {
@@ -33,10 +29,10 @@ export default function Search(props) {
     const classes = useStyles();
 
     // search keywords:
-    const [keyWord, setKeyWord] = React.useState(props.location.state.keyWord);
-    // search filters:
-    const [keySubject, setKeySubject] = React.useState(props.location.state.keySubject);
-    const [keyInstructor, setKeyInstructor] = React.useState(props.location.state.keyInstructor);
+    const [keyWord, setKeyWord] = React.useState(" ");
+    const [keySubject, setKeySubject] = React.useState(" ");
+    const [keyInstructor, setKeyInstructor] = React.useState(" ");
+
     // search result:
     const [result, saveResult] = React.useState([]);
     
@@ -54,7 +50,6 @@ export default function Search(props) {
             .catch((err) => {
                 alert("Search Loading Error.");
             });
-        
     }, []);
 
     const searchByFilter = React.useCallback((currKeyWord, currKeySubj, currKeyFilter) => {
@@ -68,10 +63,7 @@ export default function Search(props) {
             .catch((err) => {
                 alert("Search Loading Error.");
             });
-        
     }, []);
-
-
 
     // Update keyWord from NavBar's search box:
     function transferKey(key) {
@@ -103,7 +95,11 @@ export default function Search(props) {
     // As default,
     // Enter page with keyWord=" " and display all courses:
     React.useEffect(() => {
-        //setKeyWord(this.props.location);
+        if (props.location.state) {
+            setKeyWord(props.location.state.keyWord);
+            setKeySubject(props.location.state.keySubject);
+            setKeyInstructor(props.location.state.keyInstructor);
+        }
         searchByFilter(keyWord, keySubject, keyInstructor);
     }, [searchByKeyWord]);
     
@@ -166,8 +162,6 @@ export default function Search(props) {
                     <DisplaySearch />
                 </div>
             </main>
-            
         </div>
-        
     )
 }
