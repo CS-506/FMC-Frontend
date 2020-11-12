@@ -135,7 +135,7 @@ export default function Profile(props) {
             <div>
                 <Grid container spacing={3}>
                     {user.RC.map(rcItem => (
-                    <Grid item md={6}>
+                    <Grid item key={user.RC.indexOf(rcItem)} md={6}>
                         <Link 
                             to={{ pathname: 'course_' }}
                             

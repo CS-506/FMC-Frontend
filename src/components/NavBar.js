@@ -13,9 +13,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/menu';
+import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import IconButton from '@material-ui/core/iconbutton';
+import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Grid from "@material-ui/core/Grid";
 import { Link } from 'react-router-dom';
@@ -219,7 +219,7 @@ export default function NavBar(props) {
                           aria-haspopup="true"
                           onClick={handleMenu}
                           color="inherit"
-                          transformOrigin={{
+                          transformorigin={{
                             vertical: 'top',
                             horizontal: 'right',
                           }}
