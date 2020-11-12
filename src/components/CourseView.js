@@ -12,7 +12,6 @@ import {
 import {
   Line, Bar
 } from "react-chartjs-2";
-import { Link as RouterLink } from 'react-router-dom';
 
 import NavBar from "./NavBar";
 
@@ -34,7 +33,6 @@ const useStyles = makeStyles(theme => ({
   chart_area: {
     padding: theme.spacing(1),
     paddingRight: theme.spacing(3),
-    // border: "1px solid black",
     height: "500px",
     display: "flex",
     alignItems: "center",
