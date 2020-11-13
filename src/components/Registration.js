@@ -112,28 +112,56 @@ export default function Registration(props) {
     return false;
   }
 
+  function registerUser(regdata) {
+    axios.post("/user/add", regdata)
+      .then((res) => {
+        console.log(res);
+        alert("success", "A verification code has been sent to " + email + ". "
+                + "Please enter the code in the field below.");
+        setAwaitVerification(true);
+        return true;
+      })
+      .catch((err) => {
+        let errmsg = "ERROR " + err.response.status
+                       + ": Failed to register new account.";
+        alert("error", errmsg);
+      });
+    return false;
+  }
+
   function registerHandler() {
     if (!validateFormData())
       return;
 
     const regdata = {
-      username: email,
+      username: email.split("@")[0],
       firstName: "Test",
       lastName: "User",
       password: password,
       email: email,
       userType: "user",
     };
-    axios.post("/user/add", regdata)
+
+    axios.get("/user/verify/" + regdata.username)
       .then((res) => {
-        console.log(res);
+        if (res.data) {
+          if (registerUser(regdata)) {
+            alert("success", "New account registered successully.");
+          } else {
+            alert("error", "Registration failed.");
+          }
+        } else {
+          alert("warning", "Email already registered.");
+          setEmail("");
+          setPassword2("");
+        }
       })
       .catch((err) => {
-        alert("error", "Failed to register.");
+        let errmsg = "ERROR " + err.response.status
+                       + ": Failed to verify user name.";
+        alert("error", errmsg);
       });
-    alert("success", "A verification code has been sent to " + email + ". "
-            + "Please enter the code in the field below.");
-    setAwaitVerification(true);
+
   }
 
   function VerificationCode() {

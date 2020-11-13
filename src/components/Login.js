@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from "axios";
 import {
   makeStyles, TextField, Button, Avatar, IconButton,
   Typography, Grid, CssBaseline, Paper, Collapse,
@@ -97,14 +98,30 @@ export default function Login(props) {
       return;
     
     const loginData = {
-      username: email,
+      username: email.split("@")[0],
       email: email,
       password: password,
     };
 
-    props.auth(loginData);
-    alert("success", "Success. Redirecting...");
-    setRedirect(true);
+    axios.get("/user/login/" + loginData.username 
+                          + "/" + loginData.password)
+      .then((res) => {
+        console.log(res);
+        if (res.data) {
+          props.auth(loginData);
+          alert("success", "Success. Redirecting...");
+          setRedirect(true);
+        } else {
+          alert("error", "Email or password incorrect.");
+          setPassword("");
+        }
+      })
+      .catch((err) => {
+        let errmsg = "ERROR " + err.response.status
+                       + ": Failed to fetch data from server.";
+        alert("error", errmsg);
+        return;
+      });
   }
 
   return (
