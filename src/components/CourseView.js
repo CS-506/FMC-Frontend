@@ -2,7 +2,7 @@ import React from "react"
 import axios from "axios"
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import {
-  Typography, Paper, Grid, TextField, MenuItem, InputAdornment,
+  Typography, Paper, Grid, TextField, MenuItem, InputAdornment, Button,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
 } from "@material-ui/core/";
 import {
@@ -14,6 +14,7 @@ import {
 } from "react-chartjs-2";
 
 import NavBar from "./NavBar";
+import CommentEditor from "./CommentEditor";
 
 const useStyles = makeStyles(theme => ({
   navbar: {
@@ -38,6 +39,11 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center",
     justifyContent: "center",
   },
+  rcPaper: {
+    flexGrow: 1,
+    padding: 10,
+    paddingLeft: 20,
+  },
 }));
 
 export default function CourseView(props) {
@@ -56,6 +62,8 @@ export default function CourseView(props) {
   const [semesters, setSemesters] = React.useState([]);
   // sections after filters are applied
   const [sections, setSections] = React.useState([]);
+  // section comments
+  const [comments, setComments] = React.useState([]);
 
   const iidChange = event => setIid(event.target.value);
   const semChange = event => setSem(Number(event.target.value));
@@ -65,6 +73,7 @@ export default function CourseView(props) {
   const [isLoading, setLoading] = React.useState(true);
   const [gpaTrendData, setGPATrendData] = React.useState(null);
   const [gradeDistData, setGradeDistData] = React.useState(null);
+  const [showCommentEditor, setShowCommentEditor] = React.useState(false);
 
   /**
    * Fetch course information from backend corresopnding to
@@ -273,6 +282,7 @@ export default function CourseView(props) {
    * Also triggers graph regeneration.
    */
   function processSections(sects) {
+    console.log(sects);
     return sects.sort(sectcomp);
   }
 
@@ -301,6 +311,23 @@ export default function CourseView(props) {
       });
   }, [iid, sem]);
 
+  const loadComments = React.useCallback((courseId) => {
+    let url = "/coursesection/scomment/"
+      + courseId + "/"
+      + (iid == 0 ? "instructor_all" : iid)
+      + (sem == 0 ? "/year_all/sem_all"
+        : "/" + semesters[sem - 1].year
+        + "/" + semesters[sem - 1].semester);
+    axios.get(url)
+      .then((res) => {
+        console.log(res.data);
+        setComments(res.data);
+      })
+      .catch((err) => {
+        alert("Failed to fetch comments.");
+      })
+  }, [iid, sem]);
+
   React.useEffect(() => {
     const cid = Number(props.match.params.id);
     loadCourse(cid);
@@ -313,6 +340,7 @@ export default function CourseView(props) {
   React.useEffect(() => {
     const cid = Number(props.match.params.id);
     loadSections(cid);
+    loadComments(cid);
   }, [loadSemesters, loadSections, loadInstructors, loadCourse]);
 
 
@@ -590,6 +618,47 @@ export default function CourseView(props) {
     );
   }
 
+  function CommentSection() {
+    return (
+      <div>
+        <Typography variant="h5">
+          Comments
+        </Typography>
+        <br />
+        {
+          showCommentEditor ? 
+          <CommentEditor disable={setShowCommentEditor} key="comment-editor"/>
+          :
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setShowCommentEditor(true)}
+          >
+            Leave a comment
+          </Button>
+        }
+        <br /><br />
+        <Grid container spacing={3}>
+          {comments.map(cmt => (
+            <Grid item key={comments.indexOf(cmt)} md={6}>
+              <Paper
+                className={classes.rcPaper}
+                md={3}
+              >
+                <Typography variant="subtitle2">
+                  {cmt.time.split("T")[0]} #{cmt.sectionId}<br />
+                </Typography>
+                <Typography variant="body2">
+                  {cmt.comment}
+                </Typography>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      </div>
+    );
+  }
+
   function DataDisplay() {
     return (
       <div>
@@ -599,6 +668,9 @@ export default function CourseView(props) {
         <br />
         <SectionTable className={classes.unit} />
         <br />
+        <hr />
+        <br />
+        <CommentSection key="comment-section"/>
       </div>
     );
   }
@@ -633,7 +705,7 @@ export default function CourseView(props) {
         </div>
 
         <hr />
-        <DataDisplay />
+        <DataDisplay key="data-display"/>
       </Paper>
     );
   }
@@ -643,9 +715,9 @@ export default function CourseView(props) {
       isLoading ?
         <Typography variant="h3">
           Please wait...
-          </Typography>
+        </Typography>
         :
-        <Main />
+        <Main key="main"/>
     );
   }
 
@@ -654,7 +726,7 @@ export default function CourseView(props) {
       <div>
         <NavBar atSerachPage={false} />
       </div>
-      <LoadMain />
+      <LoadMain key="load-main" />
     </div>
   );
 }
