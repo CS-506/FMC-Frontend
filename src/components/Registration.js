@@ -129,7 +129,7 @@ export default function Registration(props) {
         console.log(res);
       })
       .catch((err) => {
-        alert("Failed to register.");
+        alert("error", "Failed to register.");
       });
     alert("success", "A verification code has been sent to " + email + ". "
             + "Please enter the code in the field below.");
