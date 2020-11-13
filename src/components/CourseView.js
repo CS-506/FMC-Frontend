@@ -634,7 +634,7 @@ export default function CourseView(props) {
           <CommentEditor 
             disable={disableComment} 
             sectionId={sections[0].sectionId}
-            userId={123456789}
+            userId={props.user.userId}
             key="comment-editor"
           />
           :
