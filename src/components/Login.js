@@ -93,6 +93,19 @@ export default function Login(props) {
     return false;
   }
 
+  function getUserId(username) {
+    axios.get("/user/get/username/" + username)
+      .then((res) => {
+        return res.data.userId;
+      }) 
+      .catch((err) => {
+        let errmsg = "ERROR " + err.response.status
+                       + ": Failed to fetch data from server.";
+        alert("error", errmsg);
+        return -1;
+      })
+  }
+
   const loginHandler = variables => {
     if (!validateFormData())
       return;
@@ -108,6 +121,11 @@ export default function Login(props) {
       .then((res) => {
         console.log(res);
         if (res.data) {
+          let userId = getUserId(loginData.username);
+          if (userId === -1)
+            return;
+
+          loginData.userId = userId;
           props.auth(loginData);
           alert("success", "Success. Redirecting...");
           setRedirect(true);
@@ -120,7 +138,6 @@ export default function Login(props) {
         let errmsg = "ERROR " + err.response.status
                        + ": Failed to fetch data from server.";
         alert("error", errmsg);
-        return;
       });
   }
 
