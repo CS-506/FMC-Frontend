@@ -93,10 +93,14 @@ export default function Login(props) {
     return false;
   }
 
-  function getUserId(username) {
-    axios.get("/user/get/username/" + username)
+  function setUserId(loginData) {
+    axios.get("/user/get/username/" + loginData.username)
       .then((res) => {
-        return res.data.userId;
+        console.log(res);
+        loginData.userId = res.data.userId;
+        props.auth(loginData);
+        alert("success", "Success. Redirecting...");
+        setRedirect(true);
       }) 
       .catch((err) => {
         let errmsg = "ERROR " + err.response.status
@@ -110,10 +114,11 @@ export default function Login(props) {
     if (!validateFormData())
       return;
     
-    const loginData = {
+    let loginData = {
       username: email.split("@")[0],
       email: email,
       password: password,
+      userId: 0,
     };
 
     axios.get("/user/login/" + loginData.username 
@@ -121,14 +126,7 @@ export default function Login(props) {
       .then((res) => {
         console.log(res);
         if (res.data) {
-          let userId = getUserId(loginData.username);
-          if (userId === -1)
-            return;
-
-          loginData.userId = userId;
-          props.auth(loginData);
-          alert("success", "Success. Redirecting...");
-          setRedirect(true);
+          setUserId(loginData);
         } else {
           alert("error", "Email or password incorrect.");
           setPassword("");
