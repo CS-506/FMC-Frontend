@@ -55,6 +55,7 @@ export default function Profile(props) {
         comment: "Professor is nice."
     }
     const userInit = {
+        userId: 1,
         firstname: "Badger",
         lastname: "Penrose",
         description: "Hello World. \nThat nobel prize seems lit.",
@@ -75,10 +76,27 @@ export default function Profile(props) {
         setShowAlert(true);
     }
 
-    /*
-    React.useEffect(() => {
-        let isMounted = true;
+    const fetchRC = React.useCallback((userId) => {
+        const paramSearch = `/user/comment/get/userid/${userId} `;
+        console.log("Command for fetchRC: " + paramSearch);
+        axios.get(paramSearch)
+            .then((res) => {
+                console.log(res.data);
+                saveResult(res.data);
+            })
+            .catch((err) => {
+                alert("Comments Loading Error.");
+            });
         
+    }, []);
+
+    
+    React.useEffect(() => {
+        
+        fetchRC(user['userId']);
+
+        let isMounted = true;
+        /*
         fetch("/api/user/" + props.user.username)
             .then(res => res.json())
             .then(data => {
@@ -92,6 +110,7 @@ export default function Profile(props) {
                     alertUser("error", errormsg);
                 console.log(err);
             });
+
         
         fetch("/api/hive/getHives/" + props.user.username)
             .then(res => res.json())
@@ -123,11 +142,12 @@ export default function Profile(props) {
                 return;
             });
                 
-
+        */
         console.log(user);
         return () => { isMounted = false; };
+        
     }, []);
-    */
+    
     
 
     function RCTable() {
@@ -160,7 +180,6 @@ export default function Profile(props) {
                     </Grid>
                     ))}
                 </Grid>
-                
             </div>
         );
     }
