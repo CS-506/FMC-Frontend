@@ -9,13 +9,25 @@ export default function CommentEditor(props) {
   const commentUpdate = event => setCommentText(event.target.value);
 
   function submitComment() {
-    console.log(commentText);
+    const comment = {
+      sectionId: props.sectionId,
+      userId: props.userId,
+      comment: commentText,
+    };
+    console.log(comment);
+    axios.post("/user/scomment/add", comment)
+      .then((res) => {
+        setCommentText("");
+        props.disable();
+      })
+      .catch((err) => {
+        alert("Failed to post comment.");
+      })
   }
 
   return (
     <div>
-      <Typography variant="h6">
-        Create a new comment
+      <Typography variant="h6"> Create a new comment
       </Typography>
 
       <Grid container spacing={2}>

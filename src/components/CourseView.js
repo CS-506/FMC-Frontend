@@ -223,8 +223,7 @@ export default function CourseView(props) {
     let gpa = 0;
     for (let i = 0; i < sects.length; i++) {
       gpa += sects[i].avg_gpa;
-      if (i === sects.length - 1
-        || sectcomp(sects[i], sects[i + 1]) !== 0) {
+      if (i === sects.length - 1 || sectcomp(sects[i], sects[i + 1]) !== 0) {
         let avg = gpa / (end - start + 1);
         chartData.labels.push(sects[i].semester + " " + sects[i].year);
         chartData.datasets[0].data.push(avg);
@@ -282,7 +281,6 @@ export default function CourseView(props) {
    * Also triggers graph regeneration.
    */
   function processSections(sects) {
-    console.log(sects);
     return sects.sort(sectcomp);
   }
 
@@ -618,7 +616,13 @@ export default function CourseView(props) {
     );
   }
 
+  function disableComment() {
+    setShowCommentEditor(false);
+    loadComments();
+  }
+
   function CommentSection() {
+    console.log(props);
     return (
       <div>
         <Typography variant="h5">
@@ -627,7 +631,12 @@ export default function CourseView(props) {
         <br />
         {
           showCommentEditor ? 
-          <CommentEditor disable={setShowCommentEditor} key="comment-editor"/>
+          <CommentEditor 
+            disable={disableComment} 
+            sectionId={sections[0].sectionId}
+            userId={123456789}
+            key="comment-editor"
+          />
           :
           <Button
             variant="contained"
