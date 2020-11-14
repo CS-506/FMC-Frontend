@@ -2,13 +2,15 @@ import React from "react"
 import axios from "axios"
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import {
-  Typography, Paper, Grid, TextField, MenuItem, InputAdornment, Button,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  Typography, Paper, Grid, TextField, MenuItem, InputAdornment, 
+  Button, IconButton, Table, TableBody, TableCell, TableContainer, 
+  TableHead, TableRow,
 } from "@material-ui/core/";
 import {
   PeopleAlt as InstructorIcon,
   DateRange as SemesterIcon,
-} from "@material-ui/icons"
+  DeleteForeverOutlined as DeleteIcon,
+} from "@material-ui/icons";
 import {
   Line, Bar
 } from "react-chartjs-2";
@@ -619,7 +621,7 @@ export default function CourseView(props) {
 
   function disableComment() {
     setShowCommentEditor(false);
-    loadComments();
+    loadComments(Number(props.match.params.id));
   }
 
   function leaveComment() {
@@ -630,7 +632,19 @@ export default function CourseView(props) {
     }
   }
 
+  function deleteComment(scid) {
+    axios.delete("/user/scomment/delete/id/" + scid)
+    .then((res) => {
+      console.log(res);
+      loadComments(Number(props.match.params.id));
+    })
+    .catch((err) => {
+      alert("Failed to delete comment.");
+    })
+  }
+
   function CommentSection() {
+    console.log(comments);
     return (
       <div>
         <Typography variant="h5">
@@ -663,11 +677,29 @@ export default function CourseView(props) {
                 md={3}
               >
                 <Typography variant="subtitle2">
-                  {cmt.time.split("T")[0]} #{cmt.sectionId}<br />
+                  {cmt.time.split("T")[0]} #{cmt.sectionId}
+                  {cmt.userId === props.user.userId ? " by you" : ""}
+                  <br />
                 </Typography>
                 <Typography variant="body2">
                   {cmt.comment}
                 </Typography>
+                {
+                  cmt.userId === props.user.userId ? (
+                    <IconButton
+                      aria-label="close"
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        deleteComment(cmt.scommentId)
+                      }}
+                    >
+                      <DeleteIcon fontSize="inherit" />
+                    </IconButton>
+                  ) : (
+                    null
+                  )
+                }
               </Paper>
             </Grid>
           ))}
@@ -688,6 +720,9 @@ export default function CourseView(props) {
         <hr />
         <br />
         <CommentSection key="comment-section"/>
+        <br />
+        <hr />
+        <br />
       </div>
     );
   }
