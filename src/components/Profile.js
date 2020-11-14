@@ -75,61 +75,6 @@ export default function Profile(props) {
     setShowAlert(true);
   }
 
-  /*
-  React.useEffect(() => {
-      let isMounted = true;
-      
-      fetch("/api/user/" + props.user.username)
-          .then(res => res.json())
-          .then(data => {
-              if (isMounted) 
-                  setProfile(data);
-          })
-          .catch(err => {
-              let errormsg = "ERROR " + err.response.status
-                              + ": Failed to fetch data from server.";
-              if (isMounted) 
-                  alertUser("error", errormsg);
-              console.log(err);
-          });
-      
-      fetch("/api/hive/getHives/" + props.user.username)
-          .then(res => res.json())
-          .then(data => {
-              if (isMounted) 
-                  setHiveList(data);
-          })
-          .catch(err => {
-              let errormsg = "ERROR " + err.response.status
-                              + ": Failed to fetch data from server.";
-              if (isMounted) 
-                  alertUser("error", errormsg);
-              console.log(err);
-              return;
-          });
-      
-      fetch( "/api/user/" + props.user.username + "/apiary")
-          .then(res => res.json())
-          .then(data => {
-              if (isMounted) 
-                  setApiaryList(data);
-          })
-          .catch(err => {
-              let errormsg = "ERROR " + err.response.status
-                              + ": Failed to fetch apiary from server.";
-              if (isMounted) 
-                  alertUser("error", errormsg);
-              console.log(err);
-              return;
-          });
-              
-
-      console.log(user);
-      return () => { isMounted = false; };
-  }, []);
-  */
-
-
   function RCTable() {
     return (
       <div>
