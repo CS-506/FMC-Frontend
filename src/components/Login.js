@@ -121,22 +121,24 @@ export default function Login(props) {
       userId: 0,
     };
 
-    axios.get("/user/login/" + loginData.username 
-                          + "/" + loginData.password)
-      .then((res) => {
-        console.log(res);
-        if (res.data) {
-          setUserId(loginData);
-        } else {
-          alert("error", "Email or password incorrect.");
-          setPassword("");
-        }
-      })
-      .catch((err) => {
-        let errmsg = "ERROR " + err.response.status
-                       + ": Failed to fetch data from server.";
-        alert("error", errmsg);
-      });
+    axios.post("/user/login", {
+      username: email.split("@")[0],
+      password: password,
+    })
+    .then((res) => {
+      console.log(res);
+      if (res.data) {
+        setUserId(loginData);
+      } else {
+        alert("error", "Email or password incorrect.");
+        setPassword("");
+      }
+    })
+    .catch((err) => {
+      let errmsg = "ERROR " + err.response.status
+                      + ": Failed to fetch data from server.";
+      alert("error", errmsg);
+    });
   }
 
   return (
