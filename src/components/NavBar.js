@@ -1,5 +1,4 @@
 import React, { useState, sendData } from 'react';
-import ReactDOM from 'react-dom';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -8,8 +7,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
@@ -145,6 +142,8 @@ export default function NavBar(props) {
   const handleClose = () => {
       setAnchorEl(null);
   };
+
+  console.log(props);
   
   return (
     <div className={classes.root}>
@@ -210,7 +209,7 @@ export default function NavBar(props) {
                 </Grid>
 
                 <Grid item>
-                  {auth && (
+                  {props.loginStat === "LOGGED_IN" ? (
                     <div className={classes.menuButton}>
                       <IconButton
                           aria-label="account of current user"
@@ -223,7 +222,7 @@ export default function NavBar(props) {
                             horizontal: 'right',
                           }}
                       >
-                          <AccountCircle />
+                        <AccountCircle />
                       </IconButton>
                       <Menu
                           id="menu-appbar"
@@ -253,10 +252,17 @@ export default function NavBar(props) {
                           </MenuItem>
                       </Menu>
                     </div>
+                  ) : (
+                    <Button
+                      variant="outlined"
+                      style={{ color: 'white' }}
+                      href="/login"
+                    >
+                      Log in 
+                    </Button>
                   )}
                 </Grid>
               </Grid>
-                
             </Toolbar>
         </AppBar>
         <div className={classes.grow} />

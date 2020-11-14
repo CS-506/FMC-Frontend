@@ -149,6 +149,9 @@ export default function Search(props) {
                 <NavBar 
                     sendKey={transferKey} 
                     sendFilter={transferFilter} 
+                    logout={props.logout}
+                    loginStat={props.loginStat}
+                    user={props.user}
                     atSearchPage={true}
                 />
             </div>

@@ -12,6 +12,7 @@ import {
 import {
   Line, Bar
 } from "react-chartjs-2";
+import { Redirect } from 'react-router';
 
 import NavBar from "./NavBar";
 import CommentEditor from "./CommentEditor";
@@ -70,6 +71,7 @@ export default function CourseView(props) {
 
 
   /* PAGE STATES *************************************************/
+  const [redirect, setRedirect] = React.useState(false);
   const [isLoading, setLoading] = React.useState(true);
   const [gpaTrendData, setGPATrendData] = React.useState(null);
   const [gradeDistData, setGradeDistData] = React.useState(null);
@@ -318,7 +320,6 @@ export default function CourseView(props) {
         + "/" + semesters[sem - 1].semester);
     axios.get(url)
       .then((res) => {
-        console.log(res.data);
         setComments(res.data);
       })
       .catch((err) => {
@@ -621,8 +622,15 @@ export default function CourseView(props) {
     loadComments();
   }
 
+  function leaveComment() {
+    if (props.loginStat === "LOGGED_IN") {
+      setShowCommentEditor(true);
+    } else {
+      setRedirect(true);
+    }
+  }
+
   function CommentSection() {
-    console.log(props);
     return (
       <div>
         <Typography variant="h5">
@@ -641,7 +649,7 @@ export default function CourseView(props) {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => setShowCommentEditor(true)}
+            onClick={leaveComment}
           >
             Leave a comment
           </Button>
@@ -732,8 +740,16 @@ export default function CourseView(props) {
 
   return (
     <div className={classes.root}>
+      {
+        redirect ? <Redirect to="/login" /> : null
+      }
       <div>
-        <NavBar atSerachPage={false} />
+        <NavBar 
+          atSerachPage={false} 
+          logout={props.logout}
+          loginStat={props.loginStat}
+          user={props.user}
+        />
       </div>
       <LoadMain key="load-main" />
     </div>
