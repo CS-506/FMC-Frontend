@@ -66,6 +66,7 @@ export default function Registration(props) {
 
   /* Page states */
   const [awaitVerification, setAwaitVerification] = React.useState(false);
+  const [verified, setVerified] = React.useState(false);
   const [showAlert, setShowAlert] = React.useState(false); 
   const [alertSeverity, setAlertSeverity] = React.useState("info");
   const [alertText, setAlertText] = React.useState("");
@@ -81,7 +82,37 @@ export default function Registration(props) {
   }
 
   function verifyHandler() {
-    alert("success", "Account verified successfully.");
+    axios.put("/user/verifyingUser/" + email.split("@")[0] + "/" + code)
+    .then((res) => {
+      if (res.data) {
+        console.log(res);
+        alert("success", "Your account has been verified!");
+        setAwaitVerification(false);
+        setVerified(true);
+      } else {
+        alert("warning", "Verifiaction failed.");
+      }
+    })
+    .catch((err) => {
+      let errmsg = "ERROR " + err.response.status
+                      + ": Failed to verify your code.";
+      alert("error", errmsg);
+    });
+  }
+
+  function verifyUser(username) {
+    axios.get("/user/sendVerification/" + username)
+    .then((res) => {
+      console.log(res);
+      alert("success", "A verification code has been sent to " + email + ". "
+              + "Please enter the code in the field below.");
+      setAwaitVerification(true);
+    })
+    .catch((err) => {
+      let errmsg = "ERROR " + err.response.status
+                      + ": Failed to send verification.";
+      alert("error", errmsg);
+    });
   }
 
   function cancelHandler() {
@@ -116,17 +147,13 @@ export default function Registration(props) {
     axios.post("/user/add", regdata)
       .then((res) => {
         console.log(res);
-        alert("success", "A verification code has been sent to " + email + ". "
-                + "Please enter the code in the field below.");
-        setAwaitVerification(true);
-        return true;
+        verifyUser(regdata.username);
       })
       .catch((err) => {
         let errmsg = "ERROR " + err.response.status
                        + ": Failed to register new account.";
         alert("error", errmsg);
       });
-    return false;
   }
 
   function registerHandler() {
@@ -139,17 +166,12 @@ export default function Registration(props) {
       lastName: "User",
       password: password,
       email: email,
-      userType: "user",
     };
 
     axios.get("/user/verify/" + regdata.username)
       .then((res) => {
         if (res.data) {
-          if (registerUser(regdata)) {
-            alert("success", "New account registered successully.");
-          } else {
-            alert("error", "Registration failed.");
-          }
+          registerUser(regdata);
         } else {
           alert("warning", "Email already registered.");
           setEmail("");
@@ -241,6 +263,7 @@ export default function Registration(props) {
                   required
                   fullWidth
                   autoFocus
+                  disabled={awaitVerification}
                   helperText="Please enter UW-Madison email address"
                   onChange={emailHandler}
                   InputProps={{
@@ -258,6 +281,7 @@ export default function Registration(props) {
                   label="Password"
                   type="password"
                   variant="outlined"
+                  disabled={awaitVerification}
                   required
                   fullWidth
                   onChange={passwordHandler}
@@ -306,6 +330,7 @@ export default function Registration(props) {
                   color={awaitVerification? "secondary" : "primary"}
                   className={classes.register}
                   fullWidth
+                  disabled={verified}
                   onClick={awaitVerification? verifyHandler: registerHandler}
                 >
                   { awaitVerification ? "VERIFY EMAIL" : "CONFIRM" }
@@ -329,7 +354,9 @@ export default function Registration(props) {
                     href="/login"
                     fullWidth
                   >
-                    I already have an account
+                    {
+                      verified || awaitVerification ? "Log in now" : "I already have an account"
+                    }
                   </Button>
                 }
               </Grid>
