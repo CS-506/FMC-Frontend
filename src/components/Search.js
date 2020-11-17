@@ -29,9 +29,11 @@ export default function Search(props) {
     const classes = useStyles();
 
     // search keywords:
-    const [keyWord, setKeyWord] = React.useState(" ");
-    const [keySubject, setKeySubject] = React.useState(" ");
-    const [keyInstructor, setKeyInstructor] = React.useState(" ");
+    const [keyWord, setKeyWord] = React.useState(props.location.state.keyWord);
+    // search filters:
+    const [keySubject, setKeySubject] = React.useState(props.location.state.keySubject);
+    const [keyInstructor, setKeyInstructor] = React.useState(props.location.state.keyInstructor);
+    
 
     // search result:
     const [result, saveResult] = React.useState([]);
@@ -95,11 +97,13 @@ export default function Search(props) {
     // As default,
     // Enter page with keyWord=" " and display all courses:
     React.useEffect(() => {
+        /*
         if (props.location.state) {
             setKeyWord(props.location.state.keyWord);
             setKeySubject(props.location.state.keySubject);
             setKeyInstructor(props.location.state.keyInstructor);
         }
+        */
         searchByFilter(keyWord, keySubject, keyInstructor);
     }, [searchByKeyWord]);
     
