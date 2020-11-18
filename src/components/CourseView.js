@@ -3,13 +3,12 @@ import axios from "axios"
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import {
   Typography, Paper, Grid, TextField, MenuItem, InputAdornment, 
-  Button, IconButton, Table, TableBody, TableCell, TableContainer, 
+  Button, Table, TableBody, TableCell, TableContainer, 
   TableHead, TableRow,
 } from "@material-ui/core/";
 import {
   PeopleAlt as InstructorIcon,
   DateRange as SemesterIcon,
-  DeleteForeverOutlined as DeleteIcon,
 } from "@material-ui/icons";
 import {
   Line, Bar
@@ -18,6 +17,7 @@ import { Redirect } from 'react-router';
 
 import NavBar from "./NavBar";
 import CommentEditor from "./CommentEditor";
+import CommentCard from "./CommentCard";
 
 const useStyles = makeStyles(theme => ({
   navbar: {
@@ -109,7 +109,7 @@ export default function CourseView(props) {
       .catch((err) => {
         alert("Failed to fetch list of sections.");
       });
-  })
+  }, [])
 
   /**
    * Fetch list of instructors who have taught this course in the past.
@@ -313,7 +313,8 @@ export default function CourseView(props) {
       });
   }, [iid, sem]);
 
-  const loadComments = React.useCallback((courseId) => {
+  const loadComments = React.useCallback(() => {
+    const courseId = Number(props.match.params.id);
     let url = "/coursesection/scomment/"
       + courseId + "/"
       + (iid == 0 ? "instructor_all" : iid)
@@ -341,7 +342,7 @@ export default function CourseView(props) {
   React.useEffect(() => {
     const cid = Number(props.match.params.id);
     loadSections(cid);
-    loadComments(cid);
+    loadComments();
   }, [loadSemesters, loadSections, loadInstructors, loadCourse]);
 
 
@@ -632,17 +633,6 @@ export default function CourseView(props) {
     }
   }
 
-  function deleteComment(scid) {
-    axios.delete("/user/scomment/delete/id/" + scid)
-    .then((res) => {
-      console.log(res);
-      loadComments(Number(props.match.params.id));
-    })
-    .catch((err) => {
-      alert("Failed to delete comment.");
-    })
-  }
-
   function CommentSection() {
     console.log(comments);
     return (
@@ -672,35 +662,11 @@ export default function CourseView(props) {
         <Grid container spacing={3}>
           {comments.map(cmt => (
             <Grid item key={comments.indexOf(cmt)} md={6}>
-              <Paper
-                className={classes.rcPaper}
-                md={3}
-              >
-                <Typography variant="subtitle2">
-                  {cmt.time.split("T")[0]} #{cmt.sectionId}
-                  {cmt.userId === props.user.userId ? " by you" : ""}
-                  <br />
-                </Typography>
-                <Typography variant="body2">
-                  {cmt.comment}
-                </Typography>
-                {
-                  cmt.userId === props.user.userId ? (
-                    <IconButton
-                      aria-label="close"
-                      color="inherit"
-                      size="small"
-                      onClick={() => {
-                        deleteComment(cmt.scommentId)
-                      }}
-                    >
-                      <DeleteIcon fontSize="inherit" />
-                    </IconButton>
-                  ) : (
-                    null
-                  )
-                }
-              </Paper>
+              <CommentCard
+                comment={cmt}
+                byUser={cmt.userId === props.user.userId}
+                reload={loadComments}
+              />
             </Grid>
           ))}
         </Grid>
