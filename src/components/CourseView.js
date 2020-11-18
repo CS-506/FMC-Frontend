@@ -664,7 +664,8 @@ export default function CourseView(props) {
             <Grid item key={comments.indexOf(cmt)} md={6}>
               <CommentCard
                 comment={cmt}
-                byUser={cmt.userId === props.user.userId}
+                byUser={props.user ? 
+                        (cmt.userId === props.user.userId) : false}
                 reload={loadComments}
               />
             </Grid>
