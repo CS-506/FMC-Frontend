@@ -50,6 +50,26 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+function VerificationCode(props) {
+  return ( props.waiting ?
+    <div>
+      <TextField
+        name="code"
+        id="code"
+        value={props.code}
+        label="Verification code"
+        variant="standard"
+        required
+        disabled={!props.waiting}
+        helperText="Pleae enter your verification code."
+        onChange={props.handler}
+      />
+      <br />
+    </div>
+    :
+    null
+  );
+}
 
 export default function Registration(props) {
   const classes = useStyles();
@@ -186,32 +206,6 @@ export default function Registration(props) {
 
   }
 
-  function VerificationCode() {
-    return ( awaitVerification ?
-      <div>
-        <TextField
-          name="code"
-          id="code"
-          value={code}
-          label="Verification code"
-          variant="standard"
-          required
-          disabled={!awaitVerification}
-          helperText="Pleae enter your verification code."
-          onChange={codeHandler}
-        />
-        <br />
-        <Button
-          color="default"
-        >
-          RESEND
-        </Button>
-      </div>
-      :
-      null
-    );
-  }
-
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -321,7 +315,11 @@ export default function Registration(props) {
               </Grid>
 
               <Grid item sm={12} align="center">
-                <VerificationCode />
+                <VerificationCode 
+                  code={code}
+                  waiting={awaitVerification} 
+                  handler={codeHandler}
+                />
               </Grid>
 
               <Grid item sm={12}>
