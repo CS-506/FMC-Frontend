@@ -49,6 +49,333 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+function GPADistroChart(props) {
+  const classes = useStyles();
+  let yAxisMax = 50;
+  if (props.data) {
+    let yMax = Math.max(...props.data.datasets[0].data);
+    yAxisMax = yMax > 90 ? 100 : (yMax + 10);
+  }
+  const chartOptions = {
+    maintainAspectRatio: false,
+    legend: {
+      display: false
+    },
+    scales: {
+      yAxes: [{
+        ticks: {
+          callback: function (value, index, values) {
+            return (value + "%");
+          },
+          suggestedMax: yAxisMax,
+        }
+      }]
+    },
+  }
+  return (
+    <div>
+      <h4>Overall Grade Distribution</h4>
+      <div className={classes.chart_area}>
+        {
+          (props.data) ?
+            <Bar
+              data={props.data}
+              width={400}
+              height={300}
+              options={chartOptions}
+            />
+            :
+            "No data available."
+        }
+      </div>
+    </div>
+  );
+}
+
+function GPATrendChart(props) {
+  const classes = useStyles();
+  const chartOptions = {
+    maintainAspectRatio: false,
+    legend: {
+      display: false
+    },
+    scales: {
+      yAxes: [{
+        ticks: {
+          suggestedMin: 2.0,
+          suggestedMax: 4.0
+        }
+      }]
+    },
+  }
+  return (
+    <div>
+      <h4>Historical GPA Trend</h4>
+      <div className={classes.chart_area}>
+        {
+          (props.data) ?
+            <Line
+              data={props.data}
+              width={400}
+              height={300}
+              options={chartOptions}
+            />
+            :
+            "No data available."
+        }
+      </div>
+    </div>
+  );
+}
+
+function Charts(props) {
+  return (
+    <Grid container spacing={4}>
+      <Grid item md={6}>
+        <GPADistroChart 
+          data={props.distData}
+        />
+      </Grid>
+      <Grid item md={6}>
+        <GPATrendChart 
+          data={props.trendData}
+        />
+      </Grid>
+    </Grid>
+  );
+}
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  body: {
+    fontSize: 14,
+  },
+}))(TableCell);
+
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+}))(TableRow);
+
+function SectionTable(props) {
+  const classes = useStyles();
+  const rows = props.rows;
+
+  return (
+    <TableContainer component={Paper}>
+      <Table className={classes.table} aria-label="customized table">
+        <TableHead>
+          <TableRow>
+            <StyledTableCell>Semester</StyledTableCell>
+            <StyledTableCell>Section</StyledTableCell>
+            <StyledTableCell>Instructor</StyledTableCell>
+            <StyledTableCell align="right">A</StyledTableCell>
+            <StyledTableCell align="right">AB</StyledTableCell>
+            <StyledTableCell align="right">B</StyledTableCell>
+            <StyledTableCell align="right">BC</StyledTableCell>
+            <StyledTableCell align="right">C</StyledTableCell>
+            <StyledTableCell align="right">D</StyledTableCell>
+            <StyledTableCell align="right">F</StyledTableCell>
+            <StyledTableCell align="right">GPA</StyledTableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row) => (
+            <StyledTableRow key={rows.indexOf(row)}>
+              <StyledTableCell component="th" scope="row">
+                {row.semester}
+              </StyledTableCell>
+              <StyledTableCell>{row.section}</StyledTableCell>
+              <StyledTableCell>{row.instructor}</StyledTableCell>
+              <StyledTableCell align="right">
+                {row.a ? row.a + "%" : ""}
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                {row.ab ? row.ab + "%" : ""}
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                {row.b ? row.b + "%" : ""}
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                {row.bc ? row.bc + "%" : ""}
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                {row.c ? row.c + "%" : ""}
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                {row.d ? row.d + "%" : ""}
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                {row.f ? + row.f + "%" : ""}
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                {row.gpa}
+              </StyledTableCell>
+            </StyledTableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+
+function CommentSection(props) {
+  const comments = props.comments;
+  return (
+    <div>
+      <Typography variant="h5">
+        Comments
+      </Typography>
+      <br />
+      {
+        props.showEditor ? 
+        <CommentEditor 
+          disable={props.disableComment} 
+          sectionId={props.sections[0].sectionId}
+          userId={props.user.userId}
+        />
+        :
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={props.leaveComment}
+        >
+          Leave a comment
+        </Button>
+      }
+      <br /><br />
+      <Grid container spacing={3}>
+        {comments.map(cmt => (
+          <Grid item key={comments.indexOf(cmt)} md={6}>
+            <CommentCard
+              comment={cmt}
+              byUser={props.user ? 
+                      (cmt.userId === props.user.userId) : false}
+              reload={props.loadComments}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </div>
+  );
+}
+
+function DataDisplay(props) {
+  const classes = useStyles();
+  const sectionTableRows = props.compileData();
+
+  return (
+    <div>
+      <Charts 
+        className={classes.unit} 
+        distData={props.gradeDistData}
+        trendData={props.gpaTrendData}
+      />
+
+      <br /> <hr /> <br />
+
+      <SectionTable 
+        className={classes.unit} 
+        rows={sectionTableRows}
+      />
+
+      <br /> <hr /> <br />
+
+      <CommentSection 
+        comments={props.comments}
+        showEditor={props.showCommentEditor}
+        disableComment={props.disableComment}
+        sections={props.sections}
+        user={props.user}
+        leaveComment={props.leaveComment}
+        loadComments={props.loadComments}
+      />
+
+      <br /> <hr /> <br />
+
+    </div>
+  );
+}
+
+/**
+ * Dropdown selection of instructors.
+ */
+function InstructorSelect(props) {
+  return (
+    <TextField
+      id="instructor-select"
+      select
+      fullWidth
+      label="Instructor"
+      value={props.data}
+      onChange={props.update}
+      helperText="Select an instructor who taught this course"
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <InstructorIcon />
+          </InputAdornment>
+        ),
+      }}
+    >
+      <MenuItem value={0} key={0}>
+        All instructors
+      </MenuItem>
+      {props.instructors?.map(inst => (
+        <MenuItem value={inst.iid} key={inst.iid}>
+          {inst.name}
+        </MenuItem>
+      ))}
+    </TextField>
+  );
+}
+
+/**
+ * Drop-down selection of semesters.
+ * NOTE: the mapped key/value are incremented by 1 to avoid collision
+ * with the 0 used for "All semesters". This means that when using the
+ * value of the Select component to index into the semesters array, 
+ * the value should be decremented by 1 in non-zero cases.
+ */
+function SemesterSelect(props) {
+  const semesters = props.semesters;
+  return (
+    <TextField
+      id="semester-select"
+      select
+      fullWidth
+      label="Semester"
+      value={props.data}
+      onChange={props.update}
+      helperText="Select a semester where this course was offered"
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <SemesterIcon />
+          </InputAdornment>
+        ),
+      }}
+    >
+      <MenuItem value={0} key={0}>
+        All semesters
+      </MenuItem>
+      {semesters?.map(sem => (
+        <MenuItem
+          value={semesters.indexOf(sem) + 1}
+          key={semesters.indexOf(sem) + 1}
+        >
+          {sem.semester + " " + sem.year}
+        </MenuItem>
+      ))}
+    </TextField>
+  );
+}
+
 export default function CourseView(props) {
   const classes = useStyles();
 
@@ -345,188 +672,6 @@ export default function CourseView(props) {
     loadComments();
   }, [loadSemesters, loadSections, loadInstructors, loadCourse]);
 
-
-  /**
-   * Dropdown selection of instructors.
-   */
-  function InstructorSelect() {
-    return (
-      <TextField
-        id="instructor-select"
-        select
-        fullWidth
-        label="Instructor"
-        value={iid}
-        onChange={iidChange}
-        helperText="Select an instructor who taught this course"
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <InstructorIcon />
-            </InputAdornment>
-          ),
-        }}
-      >
-        <MenuItem value={0} key={0}>
-          All instructors
-                </MenuItem>
-        {instructors?.map(item => (
-          <MenuItem value={item.iid} key={item.iid}>
-            {item.name}
-          </MenuItem>
-        ))}
-      </TextField>
-    );
-  }
-
-  /**
-   * Drop-down selection of semesters.
-   * NOTE: the mapped key/value are incremented by 1 to avoid collision
-   * with the 0 used for "All semesters". This means that when using the
-   * value of the Select component to index into the semesters array, 
-   * the value should be decremented by 1 in non-zero cases.
-   */
-  function SemesterSelect() {
-    return (
-      <TextField
-        id="semester-select"
-        select
-        fullWidth
-        label="Semester"
-        value={sem}
-        onChange={semChange}
-        helperText="Select a semester where this course was offered"
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SemesterIcon />
-            </InputAdornment>
-          ),
-        }}
-      >
-        <MenuItem value={0} key={0}>
-          All semesters
-                </MenuItem>
-        {semesters?.map(item => (
-          <MenuItem
-            value={semesters.indexOf(item) + 1}
-            key={semesters.indexOf(item) + 1}
-          >
-            {item.semester + " " + item.year}
-          </MenuItem>
-        ))}
-      </TextField>
-    );
-  }
-
-  function GPADistroChart() {
-    let yAxisMax = 50;
-    if (gradeDistData) {
-      let yMax = Math.max(...gradeDistData.datasets[0].data);
-      yAxisMax = yMax > 90 ? 100 : (yMax + 10);
-    }
-    const chartOptions = {
-      maintainAspectRatio: false,
-      legend: {
-        display: false
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            callback: function (value, index, values) {
-              return (value + "%");
-            },
-            suggestedMax: yAxisMax,
-          }
-        }]
-      },
-    }
-    return (
-      <div>
-        <h4>Overall Grade Distribution</h4>
-        <div className={classes.chart_area}>
-          {
-            (gradeDistData) ?
-              <Bar
-                data={gradeDistData}
-                width={400}
-                height={300}
-                options={chartOptions}
-              />
-              :
-              "No data available."
-          }
-        </div>
-      </div>
-    );
-  }
-
-  function GPATrendChart() {
-    const chartOptions = {
-      maintainAspectRatio: false,
-      legend: {
-        display: false
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            suggestedMin: 2.0,
-            suggestedMax: 4.0
-          }
-        }]
-      },
-    }
-    return (
-      <div>
-        <h4>Historical GPA Trend</h4>
-        <div className={classes.chart_area}>
-          {
-            (gpaTrendData) ?
-              <Line
-                data={gpaTrendData}
-                width={400}
-                height={300}
-                options={chartOptions}
-              />
-              :
-              "No data available."
-          }
-        </div>
-      </div>
-    );
-  }
-
-  function Charts() {
-    return (
-      <Grid container spacing={4}>
-        <Grid item md={6}>
-          <GPADistroChart />
-        </Grid>
-        <Grid item md={6}>
-          <GPATrendChart />
-        </Grid>
-      </Grid>
-    );
-  }
-
-  const StyledTableCell = withStyles((theme) => ({
-    head: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
-    },
-    body: {
-      fontSize: 14,
-    },
-  }))(TableCell);
-
-  const StyledTableRow = withStyles((theme) => ({
-    root: {
-      '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.action.hover,
-      },
-    },
-  }))(TableRow);
-
   function createData(semester, section, instructor,
     a, ab, b, bc, c, d, f, gpa) {
     return {
@@ -544,7 +689,7 @@ export default function CourseView(props) {
   }
 
   function compileData() {
-    let rows = []
+    let rows = [];
     for (let i = 0; i < sections.length; i++) {
       const entry = createData(
         sections[i].semester + " " + sections[i].year,
@@ -560,66 +705,6 @@ export default function CourseView(props) {
     return rows;
   }
 
-  function SectionTable() {
-    const rows = compileData();
-    return (
-      <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Semester</StyledTableCell>
-              <StyledTableCell>Section</StyledTableCell>
-              <StyledTableCell>Instructor</StyledTableCell>
-              <StyledTableCell align="right">A</StyledTableCell>
-              <StyledTableCell align="right">AB</StyledTableCell>
-              <StyledTableCell align="right">B</StyledTableCell>
-              <StyledTableCell align="right">BC</StyledTableCell>
-              <StyledTableCell align="right">C</StyledTableCell>
-              <StyledTableCell align="right">D</StyledTableCell>
-              <StyledTableCell align="right">F</StyledTableCell>
-              <StyledTableCell align="right">GPA</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <StyledTableRow key={rows.indexOf(row)}>
-                <StyledTableCell component="th" scope="row">
-                  {row.semester}
-                </StyledTableCell>
-                <StyledTableCell>{row.section}</StyledTableCell>
-                <StyledTableCell>{row.instructor}</StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.a ? row.a + "%" : ""}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.ab ? row.ab + "%" : ""}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.b ? row.b + "%" : ""}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.bc ? row.bc + "%" : ""}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.c ? row.c + "%" : ""}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.d ? row.d + "%" : ""}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.f ? + row.f + "%" : ""}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.gpa}
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  }
-
   function disableComment() {
     setShowCommentEditor(false);
     loadComments(Number(props.match.params.id));
@@ -633,69 +718,19 @@ export default function CourseView(props) {
     }
   }
 
-  function CommentSection() {
-    console.log(comments);
-    return (
+  return (
+    <div className={classes.root}>
+      {
+        redirect ? <Redirect to="/login" /> : null
+      }
       <div>
-        <Typography variant="h5">
-          Comments
-        </Typography>
-        <br />
-        {
-          showCommentEditor ? 
-          <CommentEditor 
-            disable={disableComment} 
-            sectionId={sections[0].sectionId}
-            userId={props.user.userId}
-            key="comment-editor"
-          />
-          :
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={leaveComment}
-          >
-            Leave a comment
-          </Button>
-        }
-        <br /><br />
-        <Grid container spacing={3}>
-          {comments.map(cmt => (
-            <Grid item key={comments.indexOf(cmt)} md={6}>
-              <CommentCard
-                comment={cmt}
-                byUser={props.user ? 
-                        (cmt.userId === props.user.userId) : false}
-                reload={loadComments}
-              />
-            </Grid>
-          ))}
-        </Grid>
+        <NavBar 
+          atSerachPage={false} 
+          logout={props.logout}
+          loginStat={props.loginStat}
+          user={props.user}
+        />
       </div>
-    );
-  }
-
-  function DataDisplay() {
-    return (
-      <div>
-        <Charts className={classes.unit} />
-        <br />
-        <hr />
-        <br />
-        <SectionTable className={classes.unit} />
-        <br />
-        <hr />
-        <br />
-        <CommentSection key="comment-section"/>
-        <br />
-        <hr />
-        <br />
-      </div>
-    );
-  }
-
-  function Main() {
-    return (
       <Paper className={classes.contents}>
         {course ?
           <div className={classes.unit}>
@@ -715,45 +750,36 @@ export default function CourseView(props) {
         <div className={classes.unit}>
           <Grid container spacing={2}>
             <Grid item md={6}>
-              <InstructorSelect />
+              <InstructorSelect 
+                data={iid}
+                update={iidChange}
+                instructors={instructors}
+              />
             </Grid>
             <Grid item md={6}>
-              <SemesterSelect />
+              <SemesterSelect 
+                data={sem}
+                update={semChange}
+                semesters={semesters}
+              />
             </Grid>
           </Grid>
         </div>
 
         <hr />
-        <DataDisplay key="data-display"/>
-      </Paper>
-    );
-  }
-
-  function LoadMain() {
-    return (
-      isLoading ?
-        <Typography variant="h3">
-          Please wait...
-        </Typography>
-        :
-        <Main key="main"/>
-    );
-  }
-
-  return (
-    <div className={classes.root}>
-      {
-        redirect ? <Redirect to="/login" /> : null
-      }
-      <div>
-        <NavBar 
-          atSerachPage={false} 
-          logout={props.logout}
-          loginStat={props.loginStat}
+        <DataDisplay 
+          compileData={compileData} 
+          gradeDistData={gradeDistData}
+          gpaTrendData={gpaTrendData}
+          comments={comments}
+          showCommentEditor={showCommentEditor}
+          disableComment={disableComment}
+          sections={sections}
           user={props.user}
+          leaveComment={leaveComment}
+          loadComments={loadComments}
         />
-      </div>
-      <LoadMain key="load-main" />
-    </div>
+      </Paper>
+  </div>
   );
 }
