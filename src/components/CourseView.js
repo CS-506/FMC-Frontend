@@ -587,13 +587,13 @@ export default function CourseView(props) {
 
     // sum up all percentages
     for (let i = 0; i < sects.length; i++) {
-      distro[0] += sects[i].a;
-      distro[1] += sects[i].a;
-      distro[2] += sects[i].b;
-      distro[3] += sects[i].b;
-      distro[4] += sects[i].c;
-      distro[5] += sects[i].d;
-      distro[6] += sects[i].f;
+      distro[0] += sects[i].a_num;
+      distro[1] += sects[i].ab_num;
+      distro[2] += sects[i].b_num;
+      distro[3] += sects[i].bc_num;
+      distro[4] += sects[i].c_num;
+      distro[5] += sects[i].d_num;
+      distro[6] += sects[i].f_num;
     }
 
     // calculate average percentage and add to dataset
@@ -631,6 +631,7 @@ export default function CourseView(props) {
     axios.get(url)
       .then((res) => {
         let sects = processSections(res.data);
+        console.log(sects);
         setSections(sects);
         setGradeDistData(compileGradeDistribution(sects));
       })
@@ -693,10 +694,10 @@ export default function CourseView(props) {
         sections[i].semester + " " + sections[i].year,
         sections[i].section_code,
         getInstructorName(sections[i].instructorId),
-        sections[i].a, sections[i].a,
-        sections[i].b, sections[i].b,
-        sections[i].c, sections[i].d,
-        sections[i].f,
+        sections[i].a_num, sections[i].ab_num,
+        sections[i].b_num, sections[i].bc_num,
+        sections[i].c_num, sections[i].d_num,
+        sections[i].f_num,
         sections[i].avg_gpa);
       rows.push(entry);
     }

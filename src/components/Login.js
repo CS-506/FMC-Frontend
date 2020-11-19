@@ -144,7 +144,15 @@ export default function Login(props) {
   return (
     <div className={classes.root}>
       {
-        redirect ? <Redirect to="/Search" /> : null
+        redirect ? <Redirect to={{
+                        pathname: '/Search',
+                        state: {
+                          "keyWord": " ",
+                          "keySubject": " ",
+                          "keyInstructor": " ",
+                        }
+                     }}
+                  /> : null
       }
       <CssBaseline />
       <Grid item className={classes.image}>
