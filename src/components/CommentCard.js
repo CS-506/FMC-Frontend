@@ -1,13 +1,12 @@
 import React from "react";
 import axios from "axios";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   Typography, Paper, IconButton,
 } from "@material-ui/core";
 import {
   DeleteForeverOutlined as DeleteIcon,
 } from "@material-ui/icons";
-import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   unit: {
@@ -35,8 +34,6 @@ export default function CommentCard(props) {
     });
   }
 
-  console.log(props);
-  
   return (
     <Paper className={classes.comment_card} md={3}>
       <Typography variant="subtitle2">

@@ -1,4 +1,4 @@
-import React, { Profiler } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Container from '@material-ui/core/Container';
@@ -83,7 +83,6 @@ export default function Profile(props) {
             <Grid item key={user.RC.indexOf(rcItem)} md={6}>
               <Link
                 to={{ pathname: 'course_' }}
-
                 style={{ textDecoration: 'none' }}
                 key={user.RC.indexOf(rcItem)}
               >
@@ -98,7 +97,7 @@ export default function Profile(props) {
                   </Typography>
                   <Typography variant="body2">
                     Rating: {rcItem.rate} <br />
-                                        Comment: {rcItem.comment}
+                    Comment: {rcItem.comment}
                   </Typography>
                 </Paper>
               </Link>
@@ -160,20 +159,20 @@ export default function Profile(props) {
                     to="/ProfileEditor"
                   >
                     Edit Profile
-                  </Button>
+                </Button>
                 </Grid>
               </Grid>
 
               <Typography component="h1" variant="h5" style={{ marginBottom: 20 }}>
                 Welcome, {user.lastname} ~
-                        </Typography>
+              </Typography>
 
               <Grid container spacing={3}>
                 <Grid item md={6} >
                   <Paper className={classes.paper} style={{ padding: 10 }}>
                     <Typography variant="h5" style={{ padding: 5 }}>
                       Description
-                                </Typography>
+                    </Typography>
                     <Typography style={{ marginLeft: 15 }}>{user.description}</Typography>
 
                   </Paper>
@@ -182,7 +181,7 @@ export default function Profile(props) {
                   <Paper className={classes.paper} style={{ padding: 10 }}>
                     <Typography variant="h5" style={{ padding: 5 }}>
                       Contact
-                                </Typography>
+                    </Typography>
                     <Typography style={{ marginLeft: 15 }}>{user.email}</Typography>
                     <Typography style={{ marginLeft: 15 }}>{user.phone}</Typography>
 
@@ -195,7 +194,7 @@ export default function Profile(props) {
                       <Grid item xs={6}>
                         <Typography variant="h5" style={{ padding: 5 }}>
                           My Rating and Comments
-                                        </Typography>
+                        </Typography>
                       </Grid>
                       <Grid item xs={6} align="right">
                         <Button variant="contained"
@@ -205,7 +204,7 @@ export default function Profile(props) {
                           to="/hives"
                         >
                           Manage
-                                        </Button>
+                      </Button>
                       </Grid>
                     </Grid>
 
@@ -213,10 +212,6 @@ export default function Profile(props) {
 
                   </Paper>
                 </Grid>
-
-
-
-
               </Grid>
             </Paper>
           </Container>
@@ -224,7 +219,5 @@ export default function Profile(props) {
       </main>
 
     </div>
-
-
   )
 }
