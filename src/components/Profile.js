@@ -13,6 +13,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Collapse from "@material-ui/core/Collapse";
 import CloseIcon from '@material-ui/icons/Close';
 import { Link } from 'react-router-dom';
+import axios from "axios";
 
 const useStyles = makeStyles(theme => ({
     contents: {
@@ -32,7 +33,6 @@ const useStyles = makeStyles(theme => ({
     rcPaper: {
         flexGrow: 1,
     }
-
 }));
 
 export default function Profile(props) {
@@ -42,7 +42,7 @@ export default function Profile(props) {
         subject: "COMP SCI",
         code: "506",
         name: "Software Engineering",
-        cid: 0,
+        courseId: 0,
         rate: 5,
         comment: "Thanks to my awesome teammates"
     }
@@ -50,146 +50,127 @@ export default function Profile(props) {
         subject: "COMP SCI",
         code: "537",
         name: "Operating System",
-        cid: 1,
+        courseId: 1,
         rate: 5,
         comment: "Professor is nice."
     }
     const userInit = {
-        userId: 1,
+        uid: 1,
         firstname: "Badger",
         lastname: "Penrose",
         description: "Hello World. \nThat nobel prize seems lit.",
         email: "bPenrose@wisc.edu",
         phone: "777-888-9999",
-        RC: [rc1, rc2],        
+        RC: [rc1, rc2],
     };
 
     const [user, setProfile] = React.useState(userInit);
+    const [iComment, saveIComment] = React.useState([]);
+    const [sComment, saveSComment] = React.useState([]);
 
     const [showAlert, setShowAlert] = React.useState(false);
     const [alertSeverity, setAlertSeverity] = React.useState("warning");
     const [alertText, setAlertText] = React.useState("ALERT");
-    
+
+    const fetchSComment = React.useCallback((userID) => {
+        const paramSearch = `/user/scomment/get/userid/${userID}`;
+        //console.log("Command for search controller: " + paramSearch);
+        axios.get(paramSearch)
+            .then((res) => {
+                //console.log(res.data);
+                saveSComment(res.data);
+            })
+            .catch((err) => {
+                alert("Search Loading Error.");
+            });
+    }, []);
+
+    const [section, saveSection] = React.useState({});
+    const [course, saveCourse] = React.useState({});
+    const pairSection = React.useCallback((sectionID) => {
+        
+        const paramSearchSection = `/admin/section/get/id/${sectionID}`;
+        var sectionBuff = axios.get(paramSearchSection)
+            .then((res) => {
+                console.log(res.data);
+                saveSection(res.data);
+                return res.data.courseId;
+            })
+            .catch((err) => {
+                alert("Search Loading Error.");
+            });
+        pairCourse(section.courseId);
+    }, []);        
+
+    const pairCourse = React.useCallback((courseID) => {
+
+        const paramSearchCourse = `/admin/course/get/${courseID}`;
+        axios.get(paramSearchCourse)
+            .then((res) => {
+                console.log(res.data);
+                saveCourse(res.data);
+            })
+            .catch((err) => {
+                alert("Search Loading Error.");
+            });
+        
+    }, []);
+
+    React.useEffect(() => {
+        fetchSComment(user.uid);
+        pairCourse(2);
+    }, [fetchSComment]);
+
     function alertUser(severity, msg) {
         setAlertSeverity(severity);
         setAlertText(msg);
         setShowAlert(true);
     }
 
-    const fetchRC = React.useCallback((userId) => {
-        const paramSearch = `/user/comment/get/userid/${userId} `;
-        console.log("Command for fetchRC: " + paramSearch);
-        axios.get(paramSearch)
-            .then((res) => {
-                console.log(res.data);
-                saveResult(res.data);
-            })
-            .catch((err) => {
-                alert("Comments Loading Error.");
-            });
-        
-    }, []);
-
-    
-    React.useEffect(() => {
-        
-        fetchRC(user['userId']);
-
-        let isMounted = true;
-        /*
-        fetch("/api/user/" + props.user.username)
-            .then(res => res.json())
-            .then(data => {
-                if (isMounted) 
-                    setProfile(data);
-            })
-            .catch(err => {
-                let errormsg = "ERROR " + err.response.status
-                                + ": Failed to fetch data from server.";
-                if (isMounted) 
-                    alertUser("error", errormsg);
-                console.log(err);
-            });
-
-        
-        fetch("/api/hive/getHives/" + props.user.username)
-            .then(res => res.json())
-            .then(data => {
-                if (isMounted) 
-                    setHiveList(data);
-            })
-            .catch(err => {
-                let errormsg = "ERROR " + err.response.status
-                                + ": Failed to fetch data from server.";
-                if (isMounted) 
-                    alertUser("error", errormsg);
-                console.log(err);
-                return;
-            });
-        
-        fetch( "/api/user/" + props.user.username + "/apiary")
-            .then(res => res.json())
-            .then(data => {
-                if (isMounted) 
-                    setApiaryList(data);
-            })
-            .catch(err => {
-                let errormsg = "ERROR " + err.response.status
-                                + ": Failed to fetch apiary from server.";
-                if (isMounted) 
-                    alertUser("error", errormsg);
-                console.log(err);
-                return;
-            });
-                
-        */
-        console.log(user);
-        return () => { isMounted = false; };
-        
-    }, []);
-    
-    
-
     function RCTable() {
         return (
             <div>
                 <Grid container spacing={3}>
-                    {user.RC.map(rcItem => (
-                    <Grid item key={user.RC.indexOf(rcItem)} md={6}>
-                        <Link 
-                            to={{ pathname: 'course_' }}
-                            
-                            style={{ textDecoration: 'none' }}
-                            key={user.RC.indexOf(rcItem)}
-                        >
-                            <Paper
-                                className={classes.rcPaper} 
-                                style={{ padding:10, paddingLeft:20}}
-                                md={3}
+                    {sComment.map(rcItem => (
+                        <Grid item key={sComment.indexOf(rcItem)} md={6}>
+                            <Link
+                                to={{ pathname: 'course_' }}
+                                style={{ textDecoration: 'none' }}
                             >
-                                <Typography variant="subtitle2">
-                                    {rcItem.subject} {rcItem.code}<br/> 
-                                    {rcItem.name} 
-                                </Typography>
-                                <Typography variant="body2">
-                                        Rating: {rcItem.rate} <br/> 
+                                <Paper
+                                    className={classes.rcPaper}
+                                    style={{ padding: 10, paddingLeft: 20 }}
+                                    md={3}
+                                >
+                                    <Typography variant="subtitle2">
+                                        {/*pairCourse(rcItem.sectionId).courseId */}
+                                        {course.name}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        Rating: {rcItem.rate} <br />
                                         Comment: {rcItem.comment}
-                                </Typography>
-                            </Paper>
-                        </Link>
-                    </Grid>
+                                    </Typography>
+                                    <Typography variant="caption">
+                                        {rcItem.time} 
+                                    </Typography>
+                                </Paper>
+                            </Link>
+                        </Grid>
                     ))}
                 </Grid>
+
             </div>
         );
     }
 
     return (
-        <div className = {classes.root}>
-            <NavBar 
-                title="Profile" 
-                loginStat={props.loginStat} 
-                user={props.user} 
+        <div className={classes.root}>
+            {
+                //props.loginStat === "NOT_LOGGED_IN" ? <Redirect to="/login" /> : null
+            }
+            <NavBar
+                loginStat={props.loginStat}
+                user={props.user}
                 logout={props.logout}
             />
             <Collapse in={showAlert}>
@@ -204,98 +185,94 @@ export default function Profile(props) {
                                 setShowAlert(false);
                             }}
                         >
-                    <CloseIcon fontSize="inherit" />
-                    </IconButton>
-                }
+                            <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                    }
                 >
                     {alertText}
                 </Alert>
             </Collapse>
-            
+
             <br />
-            
+
             <main className={classes.contents}>
                 <div>
-                <Container className={classes.container} maxWidth="lg">
-                <Paper style={{ padding:30, marginTop:30 }}>
-                    
-                    <Grid container spacing={3}>
-                        <Grid item>
-                            <Avatar className={classes.user_avatar} variant="square" src={pfImage} /> 
-                        </Grid>
-                        <Grid item style={{padding: 20, marginTop:150}}>
-                            <Button variant="contained"
-                                className={classes.register}
-                                style={{color:'white', backgroundColor: '#ffc107'}}
-                                component={Link}
-                                to="/ProfileEditor"
-                            >
-                                Edit Profile
-                            </Button>
-                        </Grid>
-                    </Grid>             
+                    <Container className={classes.container} maxWidth="lg">
+                        <Paper style={{ padding: 30, marginTop: 30 }}>
 
-                        <Typography component="h1" variant="h5" style={{marginBottom:20}}>
-                            Welcome, {user.lastname} ~
+                            <Grid container spacing={3}>
+                                <Grid item>
+                                    <Avatar className={classes.user_avatar} variant="square" src={pfImage} />
+                                </Grid>
+                                <Grid item style={{ padding: 20, marginTop: 150 }}>
+                                    <Button variant="contained"
+                                        className={classes.register}
+                                        style={{ color: 'white', backgroundColor: '#ffc107' }}
+                                        component={Link}
+                                        to="/ProfileEditor"
+                                    >
+                                        Edit Profile
+                                    </Button>
+                                </Grid>
+                            </Grid>
+
+                            <Typography component="h1" variant="h5" style={{ marginBottom: 20 }}>
+                                Welcome, {user.lastname} ~
                         </Typography>
 
-                    <Grid container spacing={3}>
-                        <Grid item md={6} >
-                            <Paper className={classes.paper} style={{padding:10}}>
-                                <Typography variant="h5" style={{padding:5}}>
-                                    Description
+                            <Grid container spacing={3}>
+                                <Grid item md={6} >
+                                    <Paper className={classes.paper} style={{ padding: 10 }}>
+                                        <Typography variant="h5" style={{ padding: 5 }}>
+                                            Description
                                 </Typography>
-                                <Typography style={{marginLeft:15}}>{user.description}</Typography>
-                                
-                            </Paper>
-                        </Grid>
-                        <Grid item md={6} >
-                            <Paper className={classes.paper} style={{padding:10}}>
-                                <Typography variant="h5" style={{padding:5}}>
-                                    Contact
-                                </Typography>
-                                <Typography style={{marginLeft:15}}>{user.email}</Typography>
-                                <Typography style={{marginLeft:15}}>{user.phone}</Typography>
+                                        <Typography style={{ marginLeft: 15 }}>{user.description}</Typography>
 
-                            </Paper>
-                        </Grid>
-
-                        <Grid item md={12} >
-                            <Paper className={classes.paper} style={{padding:10}}>
-                                <Grid container> 
-                                    <Grid item xs={6}>
-                                        <Typography variant="h5" style={{padding:5}}>
-                                            My Rating and Comments
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={6} align="right">
-                                        <Button variant="contained"
-                                            className={classes.register}
-                                            style={{color:'white', backgroundColor: '#ffc107'}}
-                                            component={Link}
-                                            to="/hives"
-                                        >
-                                            Manage
-                                        </Button>
-                                    </Grid>
+                                    </Paper>
                                 </Grid>
-                                                            
-                                <RCTable />
+                                <Grid item md={6} >
+                                    <Paper className={classes.paper} style={{ padding: 10 }}>
+                                        <Typography variant="h5" style={{ padding: 5 }}>
+                                            Contact
+                                </Typography>
+                                        <Typography style={{ marginLeft: 15 }}>{user.email}</Typography>
+                                        <Typography style={{ marginLeft: 15 }}>{user.phone}</Typography>
 
-                            </Paper>
-                        </Grid>
+                                    </Paper>
+                                </Grid>
 
-                        
+                                <Grid item md={12} >
+                                    <Paper className={classes.paper} style={{ padding: 10 }}>
+                                        <Grid container>
+                                            <Grid item xs={6}>
+                                                <Typography variant="h5" style={{ padding: 5 }}>
+                                                    My Rating and Comments
+                                        </Typography>
+                                            </Grid>
+                                            <Grid item xs={6} align="right">
+                                                <Button variant="contained"
+                                                    className={classes.register}
+                                                    style={{ color: 'white', backgroundColor: '#ffc107' }}
+                                                    component={Link}
+                                                    to="/hives"
+                                                >
+                                                    Manage
+                                        </Button>
+                                            </Grid>
+                                        </Grid>
 
+                                        <RCTable />
 
-                    </Grid>
-                </Paper>    
-                </Container>
+                                    </Paper>
+                                </Grid>
+                            </Grid>
+                        </Paper>
+                    </Container>
                 </div>
             </main>
 
         </div>
 
-        
+
     )
 }
