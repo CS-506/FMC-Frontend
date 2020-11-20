@@ -40,7 +40,8 @@ export default function CommentCard(props) {
           .then((resCourse) => {
             console.log(resCourse.data);
             setCourseName(resCourse.data.name+"\n");
-            setCourseCode(resCourse.data.subject + " " + resCourse.data.code+"\n");
+            setCourseCode(resCourse.data.subject + " " 
+                          + resCourse.data.code+"\n");
           })
       })
   }
@@ -57,17 +58,17 @@ export default function CommentCard(props) {
 
   return (
     <Paper className={classes.comment_card} md={3}>
+      {props.showTitle ? (
+          <Typography variant="subtitle2">
+            {courseCode + ": " + courseName} 
+          </Typography>
+        ) : (
+          null
+        )
+      }
       <Typography variant="subtitle2">
-        {(props.showTitle) ?
-          courseName : ""
-        }
-        {(props.showTitle) ?
-          courseCode : ""
-        }
-      </Typography>
-      <Typography variant="subtitle2">
-        {props.comment.time.split("T")[0]} #{props.comment.sectionId}
-        {props.byUser ? " by you" : ""}
+        {props.comment.time.split("T")[0]}
+        {props.byUser && !props.showTitle ? " by you" : ""}
         <br />
       </Typography>
       <hr />
