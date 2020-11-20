@@ -102,8 +102,8 @@ export default function Profile(props) {
         setShowAlert(true);
     }
 
-    const loadUser = React.useCallback((userId) => {
-        
+    const loadUser = React.useCallback(() => {
+        const userId = Number(props.user.userId);
         const paramUser = `/user/get/id/${userId}`;
         Axios.get(paramUser)
             .then((res) => {
@@ -128,8 +128,7 @@ export default function Profile(props) {
     }, []);
 
     React.useEffect(() => {
-        const userId = Number(props.user.userId);
-        loadUser(userId);
+        loadUser();
         loadComments();
     }, [loadUser, loadComments]);
 
@@ -205,40 +204,16 @@ export default function Profile(props) {
                     <Container className={classes.container} maxWidth="lg">
                         <Paper style={{ padding: 30, marginTop: 30 }}>
 
-                            <Grid container spacing={3}>
-                                <Grid item>
-                                    <Avatar className={classes.user_avatar} variant="square" src={pfImage} />
-                                </Grid>
-                                <Grid item style={{ padding: 20, marginTop: 150 }}>
-                                    <Button variant="contained"
-                                        className={classes.register}
-                                        style={{ color: 'white', backgroundColor: '#ffc107' }}
-                                        component={Link}
-                                        to="/ProfileEditor"
-                                    >
-                                        Edit Profile
-                </Button>
-                                </Grid>
-                            </Grid>
-
                             <Typography component="h1" variant="h5" style={{ marginBottom: 20 }}>
-                                Welcome, {user.lastName} ~
+                                Welcome, {user.username} ~
                             </Typography>
 
                             <Grid container spacing={3}>
-                                <Grid item md={6} >
+                                
+                                <Grid item md={12} >
                                     <Paper className={classes.paper} style={{ padding: 10 }}>
                                         <Typography variant="h5" style={{ padding: 5 }}>
-                                            Description
-                                        </Typography>
-                                        <Typography style={{ marginLeft: 15 }}>{user.description}</Typography>
-
-                                    </Paper>
-                                </Grid>
-                                <Grid item md={6} >
-                                    <Paper className={classes.paper} style={{ padding: 10 }}>
-                                        <Typography variant="h5" style={{ padding: 5 }}>
-                                            Contact
+                                            Email
                                          </Typography>
                                         <Typography style={{ marginLeft: 15 }}>{user.email}</Typography>
                                         <Typography style={{ marginLeft: 15 }}>{user.phone}</Typography>
