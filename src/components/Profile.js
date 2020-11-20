@@ -73,7 +73,7 @@ export default function Profile(props) {
     setShowAlert(true);
   }
 
-  const loadUser = React.useCallback(() => {
+  function loadUser() {
     const userId = Number(props.user.userId);
     const paramUser = `/user/get/id/${userId}`;
     Axios.get(paramUser)
@@ -84,9 +84,9 @@ export default function Profile(props) {
       .catch((err) => {
         alert("Failed to find user.");
       })
-  }, []);
+  }
 
-  const loadComments = React.useCallback(() => {
+  function loadComments() {
     const userId = Number(props.user.userId);
     const paramComment = `/user/comment/get/userid/${userId}`;
     Axios.get(paramComment)
@@ -96,17 +96,17 @@ export default function Profile(props) {
       .catch((err) => {
         alert("Failed to fetch comments.");
       })
-  }, []);
+  }
 
   React.useEffect(() => {
-    console.log(props);
     if (props.loginStat === "NOT_LOGGED_IN") {
       setRedirect(true);
-      return;
+    } else if (props.loginStat === "LOGGED_IN" && props.user) {
+      console.log("HERE WE GO!");
+      loadUser();
+      loadComments();
     }
-    loadUser();
-    loadComments();
-  }, [loadUser, loadComments]);
+  }, [props.loginStat, props.user]);
 
   return (
     <div className={classes.root}>

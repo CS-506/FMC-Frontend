@@ -12,7 +12,7 @@ import ProfilePage from "./components/Profile";
 import Registration from "./components/Registration";
 
 export default function App() {
-  const [loginStat, setLoginStat] = React.useState("NOT_LOGGED_IN");
+  const [loginStat, setLoginStat] = React.useState("WAIT");
   const [userData, setUserData] = React.useState(null);
 
   function authenticate(loginUser) {
