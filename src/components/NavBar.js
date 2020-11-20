@@ -243,7 +243,7 @@ export default function NavBar(props) {
                               <Link to="/Profile" 
                                 style={{ textDecoration: 'none' }}
                               >
-                                  Profile
+                                  Manage My Comments
                               </Link>
                           </MenuItem>
                           

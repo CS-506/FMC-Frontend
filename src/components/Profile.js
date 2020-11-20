@@ -49,8 +49,7 @@ function CommentSection(props) {
                             byUser={props.user ?
                                 (cmt.userId === props.user.userId) : false}
                             reload={props.loadComments}
-                            courseId="Comp Sci 999"
-                            courseName="Testing"
+                            showTitle={true}
                         />
                     </Grid>
                 ))}
@@ -58,6 +57,8 @@ function CommentSection(props) {
         </div>
     );
 }
+
+
 
 export default function Profile(props) {
     const classes = useStyles();
@@ -89,6 +90,8 @@ export default function Profile(props) {
 
     const [user, setUser] = React.useState(userInit);
     const [comments, saveComments] = React.useState([]);
+
+
     const [showAlert, setShowAlert] = React.useState(false);
     const [alertSeverity, setAlertSeverity] = React.useState("warning");
     const [alertText, setAlertText] = React.useState("ALERT");
@@ -250,16 +253,6 @@ export default function Profile(props) {
                                                 <Typography variant="h5" style={{ padding: 5 }}>
                                                     My Comments
                         </Typography>
-                                            </Grid>
-                                            <Grid item xs={6} align="right">
-                                                <Button variant="contained"
-                                                    className={classes.register}
-                                                    style={{ color: 'white', backgroundColor: '#ffc107' }}
-                                                    component={Link}
-                                                    to="/hives"
-                                                >
-                                                    Manage
-                      </Button>
                                             </Grid>
                                         </Grid>
 

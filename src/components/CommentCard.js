@@ -21,27 +21,54 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
+
 export default function CommentCard(props) {
   const classes = useStyles();
+  const [courseName, setCourseName] = React.useState(null);
+  const [courseCode, setCourseCode] = React.useState(null);
+
+  React.useEffect(() => {
+    if (props.showTitle) {
+      pairCourse();
+    }
+  }, [])
+
+  function pairCourse() {
+    const sectionId = props.comment.sectionId;
+    //const [courseName, saveCourseName] = React.useEffect();
+    //var courseCode = "";
+    const courseName = axios.get(`/admin/section/get/id/${sectionId}`)
+      .then((resSection) => {
+        console.log(resSection.data);
+        axios.get(`/admin/course/get/${resSection.data.courseId}`)
+          .then((resCourse) => {
+            console.log(resCourse.data);
+            setCourseName(resCourse.data.name+"\n");
+            setCourseCode(resCourse.data.subject + " " + resCourse.data.code+"\n");
+            //saveCourseName(resCourse.data.name);
+            //return courseName;
+          })
+      })
+  }
 
   function deleteComment(scid) {
     axios.delete("/user/scomment/delete/id/" + scid)
-    .then((res) => {
-      props.reload();
-    })
-    .catch((err) => {
-      alert("Failed to delete comment.");
-    });
+      .then((res) => {
+        props.reload();
+      })
+      .catch((err) => {
+        alert("Failed to delete comment.");
+      });
   }
 
   return (
     <Paper className={classes.comment_card} md={3}>
-      <Typography variant="subtitle1">
-        { (props.courseId) ? 
-          props.courseId + " " : ""
+      <Typography variant="subtitle2">
+        {(props.showTitle) ?
+          courseName : ""
         }
-        { (props.courseName) ? 
-          props.courseName : ""
+        {(props.showTitle) ?
+          courseCode : ""
         }
       </Typography>
       <Typography variant="subtitle2">
@@ -49,7 +76,7 @@ export default function CommentCard(props) {
         {props.byUser ? " by you" : ""}
         <br />
       </Typography>
-      <hr/>
+      <hr />
       <Typography variant="body2">
         {props.comment.comment}
       </Typography>
