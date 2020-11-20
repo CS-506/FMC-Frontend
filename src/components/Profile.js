@@ -32,11 +32,23 @@ const useStyles = makeStyles(theme => ({
   },
   rcPaper: {
     flexGrow: 1,
+  },
+  content: {
+    marginLeft: 15,
   }
 }));
 
 function CommentSection(props) {
+  const classes = useStyles();
   const comments = props.comments;
+  if (comments.length === 0) {
+    return (
+      <Typography className={classes.content}>
+        You don't have any comments.
+      </Typography>
+    )
+  }
+
   return (
     <div>
       <Grid container spacing={3}>
@@ -46,7 +58,7 @@ function CommentSection(props) {
               comment={cmt}
               byUser={props.user ?
                 (cmt.userId === props.user.userId) : false}
-              reload={props.loadComments}
+              reload={props.reload}
               showTitle={true}
             />
           </Grid>
@@ -157,13 +169,12 @@ export default function Profile(props) {
                       <Typography variant="h5" style={{ padding: 5 }}>
                         Email
                       </Typography>
-                      <Typography style={{ marginLeft: 15 }}>
+                      <Typography className={classes.content}>
                         {user.email}
                       </Typography>
-                      <Typography style={{ marginLeft: 15 }}>
+                      <Typography className={classes.content}>
                         {user.phone}
                       </Typography>
-
                     </Paper>
                   </Grid>
 
@@ -180,6 +191,7 @@ export default function Profile(props) {
                       <CommentSection
                         comments={comments}
                         user={user}
+                        reload={loadComments}
                       />
 
                     </Paper>
