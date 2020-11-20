@@ -36,6 +36,14 @@ export default function CommentCard(props) {
 
   return (
     <Paper className={classes.comment_card} md={3}>
+      <Typography variant="subtitle1">
+        { (props.courseId) ? 
+          props.courseId + " " : ""
+        }
+        { (props.courseName) ? 
+          props.courseName : ""
+        }
+      </Typography>
       <Typography variant="subtitle2">
         {props.comment.time.split("T")[0]} #{props.comment.sectionId}
         {props.byUser ? " by you" : ""}
@@ -51,6 +59,9 @@ export default function CommentCard(props) {
             aria-label="close"
             color="inherit"
             size="small"
+            style={{
+              float: "right",
+            }}
             onClick={() => {
               deleteComment(props.comment.scommentId)
             }}
