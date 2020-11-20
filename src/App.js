@@ -30,7 +30,6 @@ export default function App() {
   }
 
   React.useEffect(() => {
-    //localStorage.clear(); // Clear local storage on every start
     const locLoginStat = localStorage.getItem("locLoginStat");
     const locUser = localStorage.getItem("locUser");
     if (locLoginStat === "LOGGED_IN") {
@@ -40,65 +39,63 @@ export default function App() {
   }, [])
 
   return (
-      <Router>
-        <Route 
-          exact path="/login"
-          render={ props => (
-            <Login {...props}
-              loginStat={loginStat}
-              user={userData}
-              auth={authenticate}
-              logout={logout}
-            />
-          )}
-        />
-        <Route 
-          exact path="/register"
-          render={ props => (
-            <Registration {...props}
-              loginStat={loginStat}
-              user={userData}
-              auth={authenticate}
-              logout={logout}
-            />
-          )}
-        />
-        <Route 
-          exact path="/Search"
-          render={ props => (
-            <SearchPage {...props}
-              loginStat={loginStat}
-              user={userData}
-              auth={authenticate}
-              logout={logout}
-            />
-          )}
-        />
-        <Route 
-          exact path="/Profile"
-          render={ props => (
-            <ProfilePage {...props}
-              loginStat={loginStat}
-              user={userData}
-              auth={authenticate}
-              logout={logout}
-            />
-          )}
-        />
-        <Route 
-          exact path="/course_:id" 
-          render={ props => (
-            <CourseView {...props}
-              loginStat={loginStat}
-              user={userData}
-              auth={authenticate}
-              logout={logout}
-            />
-          )}
-        />
-        <Route exact path="/" component={HomePage} />
-      </Router>
-    
+    <Router>
+      <Route 
+        exact path="/login"
+        render={ props => ( <Login {...props}
+            loginStat={loginStat}
+            user={userData}
+            auth={authenticate}
+            logout={logout}
+          />
+        )}
+      />
+      <Route 
+        exact path="/register"
+        render={ props => (
+          <Registration {...props}
+            loginStat={loginStat}
+            user={userData}
+            auth={authenticate}
+            logout={logout}
+          />
+        )}
+      />
+      <Route 
+        exact path="/Search"
+        render={ props => (
+          <SearchPage {...props}
+            loginStat={loginStat}
+            user={userData}
+            auth={authenticate}
+            logout={logout}
+          />
+        )}
+      />
+      <Route 
+        exact path="/Profile"
+        render={ props => (
+          <ProfilePage {...props}
+            loginStat={loginStat}
+            user={userData}
+            auth={authenticate}
+            logout={logout}
+          />
+        )}
+      />
+      <Route 
+        exact path="/course_:id" 
+        render={ props => (
+          <CourseView {...props}
+            loginStat={loginStat}
+            user={userData}
+            auth={authenticate}
+            logout={logout}
+          />
+        )}
+      />
+      <Route exact path="/" component={HomePage} />
+    </Router>
   );
 }
  
