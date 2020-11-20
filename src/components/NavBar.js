@@ -124,7 +124,7 @@ export default function NavBar(props) {
   function saveInst(newInst) {
     setKeyInstructor(newInst);
   }
-  
+
   function sendKeyCaller() {
     if (props.atSearchPage)
       props.sendKey(keyWord);
@@ -140,181 +140,176 @@ export default function NavBar(props) {
   };
 
   const handleClose = () => {
-      setAnchorEl(null);
+    setAnchorEl(null);
   };
 
-  console.log(props);
-  
   return (
     <div className={classes.root}>
-        <CssBaseline />
-        <AppBar 
-          position="fixed" 
-          className={classes.navbar} 
-          style={{ background: '#d50000' }}
-        >
-            <Toolbar>
-              <Grid container justify="space-between">
+      <CssBaseline />
+      <AppBar
+        position="fixed"
+        className={classes.navbar}
+        style={{ background: '#d50000' }}
+      >
+        <Toolbar>
+          <Grid container justify="space-between">
 
-                <Grid item >
+            <Grid item >
 
-                  <Grid container style={{marginTop: 5}}>
-                    
-                    <Grid item>
-                      <Typography variant="h6" noWrap>
-                        Find My Course
-                      </Typography>
-                    </Grid>
+              <Grid container style={{ marginTop: 5 }}>
 
-                    <Grid item>
-                      <div className={classes.search}>
-                        <div className={classes.searchIcon}>
-                          <SearchIcon />
-                        </div>
-                        <InputBase
-                          //placeholder= {(keyWord==""||keyWord==" ") ? "Search..." : keyWord} 
-                          placeholder="Search..."
-                          classes={{
-                              root: classes.inputRoot,
-                              input: classes.inputInput,
-                          }}
-                          inputProps={{ 'aria-label': 'search' }}
-                          onChange={e => saveKey(e.target.value)}
-                        />
-                      </div>
-                    </Grid>
-
-                    <Grid item> 
-                      <Link to={{
-                          pathname: '/Search',
-                          state: {
-                            "keyWord": keyWord, 
-                            "keySubject": " ", 
-                            "keyInstructor": " ",
-                          },
-                        }}
-                        style={{ textDecoration: 'none' }}
-                      >
-                        <Button
-                          style={{ marginLeft: 10}}
-                          className={classes.searchButton}
-                          onClick={() => sendKeyCaller()}
-                        >
-                          Search 
-                        </Button>
-                      </Link>
-                    </Grid>
-
-                  </Grid>
+                <Grid item>
+                  <Typography variant="h6" noWrap>
+                    Find My Course
+                  </Typography>
                 </Grid>
 
                 <Grid item>
-                  {props.loginStat === "LOGGED_IN" ? (
-                    <div className={classes.menuButton}>
-                      <IconButton
-                          aria-label="account of current user"
-                          aria-controls="menu-appbar"
-                          aria-haspopup="true"
-                          onClick={handleMenu}
-                          color="inherit"
-                          transformorigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                          }}
-                      >
-                        <AccountCircle />
-                      </IconButton>
-                      <Menu
-                          id="menu-appbar"
-                          anchorEl={anchorEl}
-                          anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                          }}
-                          keepMounted
-                          transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                          }}
-                          open={open}
-                          onClose={handleClose}
-                      >
-                          <MenuItem onClick={handleClose}>
-                              <Link to="/Profile" 
-                                style={{ textDecoration: 'none' }}
-                              >
-                                  Manage My Comments
-                              </Link>
-                          </MenuItem>
-                          
-                          <MenuItem onClick={() => props.logout()}>
-                              Log out 
-                          </MenuItem>
-                      </Menu>
+                  <div className={classes.search}>
+                    <div className={classes.searchIcon}>
+                      <SearchIcon />
                     </div>
-                  ) : (
-                    <Button
-                      variant="outlined"
-                      style={{ color: 'white' }}
-                      href="/login"
-                    >
-                      Log in 
-                    </Button>
-                  )}
+                    <InputBase
+                      placeholder="Search..."
+                      classes={{
+                        root: classes.inputRoot,
+                        input: classes.inputInput,
+                      }}
+                      inputProps={{ 'aria-label': 'search' }}
+                      onChange={e => saveKey(e.target.value)}
+                    />
+                  </div>
                 </Grid>
-              </Grid>
-            </Toolbar>
-        </AppBar>
-        <div className={classes.grow} />
 
-        <Drawer
-            className={classes.drawer}
-            variant="permanent"
-            classes={{paper: classes.drawerPaper,}}
-            style={{ background: "#b8bec4" }}
-        >
+                <Grid item>
+                  <Link to={{
+                    pathname: '/Search',
+                    state: {
+                      "keyWord": keyWord,
+                      "keySubject": " ",
+                      "keyInstructor": " ",
+                    },
+                  }}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <Button
+                      style={{ marginLeft: 10 }}
+                      className={classes.searchButton}
+                      onClick={() => sendKeyCaller()}
+                    >
+                      Search
+                    </Button>
+                  </Link>
+                </Grid>
+
+              </Grid>
+            </Grid>
+
+            <Grid item>
+              {props.loginStat === "LOGGED_IN" ? (
+                <div className={classes.menuButton}>
+                  <IconButton
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={handleMenu}
+                    color="inherit"
+                    transformorigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                  >
+                    <AccountCircle />
+                  </IconButton>
+                  <Menu
+                    id="menu-appbar"
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    open={open}
+                    onClose={handleClose}
+                  >
+                    <MenuItem onClick={handleClose}>
+                      <Link to="/Profile"
+                        style={{ textDecoration: 'none' }}
+                      >
+                        Manage My Comments
+                      </Link>
+                    </MenuItem>
+
+                    <MenuItem onClick={() => props.logout()}>
+                      Log out
+                    </MenuItem>
+                  </Menu>
+                </div>
+              ) : (
+                  <Button
+                    variant="outlined"
+                    style={{ color: 'white' }}
+                    href="/login"
+                  >
+                    Log in
+                  </Button>
+                )}
+            </Grid>
+          </Grid>
+        </Toolbar>
+      </AppBar>
+      <div className={classes.grow} />
+
+      <Drawer
+        className={classes.drawer}
+        variant="permanent"
+        classes={{ paper: classes.drawerPaper, }}
+        style={{ background: "#b8bec4" }}
+      >
         <Toolbar />
         <div className={classes.drawerContainer}>
-          <br/><br/>
+          <br /><br />
           <List>
             <div className={classes.search}>
               <InputBase
-                //placeholder={ (keySubject==""||keySubject==" ") ? "Subject..." : keySubject }
                 placeholder="Subject..."
                 classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput2,
+                  root: classes.inputRoot,
+                  input: classes.inputInput2,
                 }}
                 inputProps={{ 'aria-label': 'search' }}
                 onChange={e => saveSubj(e.target.value)}
               />
             </div>
-            <br/>
+            <br />
             <div className={classes.search}>
-              <InputBase 
-                //placeholder= { (keyInstructor==""||keyInstructor==" ") ? "Instructor..." : keyInstructor }
+              <InputBase
                 placeholder="Instructor..."
                 classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput2,
+                  root: classes.inputRoot,
+                  input: classes.inputInput2,
                 }}
                 inputProps={{ 'aria-label': 'search' }}
                 onChange={e => saveInst(e.target.value)}
               />
             </div>
-            <br/>
+            <br />
             <Link to={{
-                pathname: '/Search',
-                state: {
-                  "keyWord": " ", 
-                  "keySubject": keySubject, 
-                  "keyInstructor": keyInstructor,
-                },
-              }}
+              pathname: '/Search',
+              state: {
+                "keyWord": " ",
+                "keySubject": keySubject,
+                "keyInstructor": keyInstructor,
+              },
+            }}
               style={{ textDecoration: 'none' }}
             >
               <Button
-                style={{ marginLeft: 15}}
+                style={{ marginLeft: 15 }}
                 className={classes.searchButton}
                 onClick={() => sendFilterCaller()}
                 width='20ch'
@@ -322,15 +317,11 @@ export default function NavBar(props) {
                 {"Filter current results"}
               </Button>
             </Link>
-            
           </List>
-          
-          <br/><br/>
+          <br /><br />
           <Divider />
-          
         </div>
       </Drawer>
-    
     </div>
   );
 }
