@@ -309,12 +309,12 @@ export default function NavBar(props) {
               style={{ textDecoration: 'none' }}
             >
               <Button
-                style={{ marginLeft: 15 }}
+                style={{ marginLeft: 145 }}
                 className={classes.searchButton}
                 onClick={() => sendFilterCaller()}
                 width='20ch'
               >
-                {"Filter current results"}
+                Filter
               </Button>
             </Link>
           </List>
