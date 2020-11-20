@@ -30,6 +30,7 @@ export default function App() {
   }
 
   React.useEffect(() => {
+    localStorage.clear(); // Clear local storage on every start
     const locLoginStat = localStorage.getItem("locLoginStat");
     const locUser = localStorage.getItem("locUser");
     if (locLoginStat === "LOGGED_IN") {
