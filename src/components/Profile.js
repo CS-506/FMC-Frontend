@@ -56,43 +56,16 @@ function CommentSection(props) {
   );
 }
 
-
-
 export default function Profile(props) {
   const classes = useStyles();
 
-  const rc1 = {
-    subject: "COMP SCI",
-    code: "506",
-    name: "Software Engineering",
-    cid: 0,
-    rate: 5,
-    comment: "Thanks to my awesome teammates"
-  }
-  const rc2 = {
-    subject: "COMP SCI",
-    code: "537",
-    name: "Operating System",
-    cid: 1,
-    rate: 5,
-    comment: "Professor is nice."
-  }
-  const userInit = {
-    firstname: "Badger",
-    lastname: "Penrose",
-    description: "Hello World. \nThat nobel prize seems lit.",
-    email: "bPenrose@wisc.edu",
-    phone: "777-888-9999",
-    RC: [rc1, rc2],
-  };
-
-  const [user, setUser] = React.useState(userInit);
+  const [user, setUser] = React.useState(null);
   const [comments, saveComments] = React.useState([]);
-
 
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertSeverity, setAlertSeverity] = React.useState("warning");
   const [alertText, setAlertText] = React.useState("ALERT");
+  const [redirect, setRedirect] = React.useState(false);
 
   function alertUser(severity, msg) {
     setAlertSeverity(severity);
@@ -126,6 +99,11 @@ export default function Profile(props) {
   }, []);
 
   React.useEffect(() => {
+    console.log(props);
+    if (props.loginStat === "NOT_LOGGED_IN") {
+      setRedirect(true);
+      return;
+    }
     loadUser();
     loadComments();
   }, [loadUser, loadComments]);
@@ -133,7 +111,7 @@ export default function Profile(props) {
   return (
     <div className={classes.root}>
       {
-        props.loginStat === "NOT_LOGGED_IN" ? <Redirect to="/login" /> : null
+        redirect ? <Redirect to="/login" /> : null
       }
       <NavBar
         title="Profile"
@@ -163,55 +141,56 @@ export default function Profile(props) {
 
       <br />
 
-      <main className={classes.contents}>
-        <div>
-          <Container className={classes.container} maxWidth="lg">
-            <Paper style={{ padding: 30, marginTop: 30 }}>
+      { user !== null ? (
+        <main className={classes.contents}>
+          <div>
+            <Container className={classes.container} maxWidth="lg">
+              <Paper style={{ padding: 30, marginTop: 30 }}>
 
-              <Typography component="h1" variant="h5" style={{ marginBottom: 20 }}>
-                Welcome, {user.username}
-              </Typography>
+                <Typography component="h1" variant="h5" style={{ marginBottom: 20 }}>
+                  Welcome, {user.username}
+                </Typography>
 
-              <Grid container spacing={3}>
+                <Grid container spacing={3}>
+                  <Grid item md={12} >
+                    <Paper className={classes.paper} style={{ padding: 10 }}>
+                      <Typography variant="h5" style={{ padding: 5 }}>
+                        Email
+                      </Typography>
+                      <Typography style={{ marginLeft: 15 }}>
+                        {user.email}
+                      </Typography>
+                      <Typography style={{ marginLeft: 15 }}>
+                        {user.phone}
+                      </Typography>
 
-                <Grid item md={12} >
-                  <Paper className={classes.paper} style={{ padding: 10 }}>
-                    <Typography variant="h5" style={{ padding: 5 }}>
-                      Email
-                    </Typography>
-                    <Typography style={{ marginLeft: 15 }}>
-                      {user.email}
-                    </Typography>
-                    <Typography style={{ marginLeft: 15 }}>
-                      {user.phone}
-                    </Typography>
+                    </Paper>
+                  </Grid>
 
-                  </Paper>
-                </Grid>
-
-                <Grid item md={12} >
-                  <Paper className={classes.paper} style={{ padding: 10 }}>
-                    <Grid container>
-                      <Grid item xs={6}>
-                        <Typography variant="h5" style={{ padding: 5 }}>
-                          My Comments
-                        </Typography>
+                  <Grid item md={12} >
+                    <Paper className={classes.paper} style={{ padding: 10 }}>
+                      <Grid container>
+                        <Grid item xs={6}>
+                          <Typography variant="h5" style={{ padding: 5 }}>
+                            My Comments
+                          </Typography>
+                        </Grid>
                       </Grid>
-                    </Grid>
 
-                    <CommentSection
-                      comments={comments}
-                      user={user}
-                    />
+                      <CommentSection
+                        comments={comments}
+                        user={user}
+                      />
 
-                  </Paper>
+                    </Paper>
+                  </Grid>
                 </Grid>
-              </Grid>
-            </Paper>
-          </Container>
-        </div>
-      </main>
-
+              </Paper>
+            </Container>
+          </div>
+        </main>
+      ) : null
+      }
     </div>
   )
 }

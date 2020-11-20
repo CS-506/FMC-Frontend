@@ -20,8 +20,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-
-
 export default function CommentCard(props) {
   const classes = useStyles();
   const [courseName, setCourseName] = React.useState(null);
@@ -35,9 +33,7 @@ export default function CommentCard(props) {
 
   function pairCourse() {
     const sectionId = props.comment.sectionId;
-    //const [courseName, saveCourseName] = React.useEffect();
-    //var courseCode = "";
-    const courseName = axios.get(`/admin/section/get/id/${sectionId}`)
+    axios.get(`/admin/section/get/id/${sectionId}`)
       .then((resSection) => {
         console.log(resSection.data);
         axios.get(`/admin/course/get/${resSection.data.courseId}`)
@@ -45,8 +41,6 @@ export default function CommentCard(props) {
             console.log(resCourse.data);
             setCourseName(resCourse.data.name+"\n");
             setCourseCode(resCourse.data.subject + " " + resCourse.data.code+"\n");
-            //saveCourseName(resCourse.data.name);
-            //return courseName;
           })
       })
   }
