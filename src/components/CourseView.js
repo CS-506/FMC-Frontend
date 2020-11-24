@@ -719,8 +719,15 @@ export default function CourseView(props) {
 
   return (
     <div className={classes.root}>
-      {
-        redirect ? <Redirect to="/login" /> : null
+      { redirect ? 
+        <Redirect
+          to={{
+            pathname: "/login",
+            state: {
+              redir: "/course_" + Number(props.match.params.id),
+            },
+          }} 
+        /> : null
       }
       <div>
         <NavBar 

@@ -40,8 +40,8 @@ const useStyles = makeStyles(theme => ({
     position: "fixed",
     backgroundImage: `url(${bgImage})`,
     backgroundRepeat: 'no-repeat',
-    backgroundColor:
-      theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
+    backgroundColor: theme.palette.type === 'light' ? 
+                    theme.palette.grey[50] : theme.palette.grey[900],
     backgroundSize: 'cover',
     backgroundPosition: 'center',
   },
@@ -66,6 +66,11 @@ export default function Login(props) {
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertSeverity, setAlertSeverity] = React.useState("info");
   const [alertText, setAlertText] = React.useState("");
+
+  React.useEffect(() => {
+    if (props.location.state && props.location.state.emailField)
+      setEmail(props.location.state.emailField);
+  }, [])
 
   function alert(severity, text) {
     setAlertSeverity(severity);
@@ -141,20 +146,22 @@ export default function Login(props) {
     });
   }
 
+  console.log(props.location.state);
+  const redirTo = 
+    props.location.state && props.location.state.redir ? {
+      pathname: props.location.state.redir,
+    } : {
+      pathname: "/Search",
+      state: {
+        "keyWord": " ",
+        "keySubject": " ",
+        "keyInstructor": " ",
+      },
+    };
+
   return (
     <div className={classes.root}>
-      { redirect ? 
-        <Redirect 
-          to={{
-            pathname: '/Search',
-            state: {
-              "keyWord": " ",
-              "keySubject": " ",
-              "keyInstructor": " ",
-            }
-          }}
-        /> : null
-      }
+      { redirect ? <Redirect to={redirTo} /> : null }
       <CssBaseline />
       <Grid item className={classes.image}>
         <div className={classes.desktop}>

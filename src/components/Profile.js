@@ -11,7 +11,6 @@ import IconButton from "@material-ui/core/IconButton";
 import Collapse from "@material-ui/core/Collapse";
 import CloseIcon from '@material-ui/icons/Close';
 import { Redirect } from 'react-router';
-import { Link } from 'react-router-dom';
 import Axios from "axios";
 import CommentCard from "./CommentCard";
 
@@ -123,7 +122,15 @@ export default function Profile(props) {
   return (
     <div className={classes.root}>
       {
-        redirect ? <Redirect to="/login" /> : null
+        redirect ? 
+        <Redirect
+          to={{
+            pathname: "/login",
+            state: {
+              redir: "/profile",
+            }
+          }}
+        /> : null
       }
       <NavBar
         title="Profile"

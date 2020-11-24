@@ -32,7 +32,9 @@ export default function App() {
   React.useEffect(() => {
     const locLoginStat = localStorage.getItem("locLoginStat");
     const locUser = localStorage.getItem("locUser");
-    if (locLoginStat === "LOGGED_IN") {
+    if (!locLoginStat) {
+      setLoginStat("NOT_LOGGED_IN");
+    } else if (locLoginStat === "LOGGED_IN") {
       setLoginStat(locLoginStat);
       setUserData(JSON.parse(locUser));
     }

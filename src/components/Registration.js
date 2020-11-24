@@ -9,6 +9,7 @@ import {
   LockOutlined as LockOutlinedIcon,
   Close as CloseIcon,
 } from "@material-ui/icons/";
+import { Redirect } from 'react-router';
 import isEmail from "validator/lib/isEmail";
 import bgImage from "./img/login_bg.jpg";
 
@@ -71,6 +72,175 @@ function VerificationCode(props) {
   );
 }
 
+function LoginForm(props) {
+  const classes = useStyles();
+  const [redirect, setRedirect] = React.useState(false);
+
+  function loginRedirect() {
+    setRedirect(true);
+  }
+
+  return (
+  <Paper className={classes.paper}>
+    { redirect ? 
+      <Redirect
+        to={{
+          pathname: "/login",
+          state: {
+            emailField: props.email,
+          },
+        }} 
+      /> : null
+    }
+    <div className={classes.paper}>
+    <Avatar className={classes.avatar}>
+      <LockOutlinedIcon />
+    </Avatar>
+    <Typography component="h1" variant="h5">
+      Register New Account
+    </Typography>
+    <br />
+    <hr />
+
+    <Collapse in={props.showAlert}>
+      <Alert
+        severity={props.alertSeverity}
+        action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={() => { props.setShowAlert(false); }}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        }
+      >
+        {props.alertText}
+      </Alert>
+    </Collapse>
+
+    <br />
+
+    <form className={classes.form}>
+      <Grid container spacing={2}>
+        <Grid item sm={12}>
+          <TextField
+            name="email"
+            id="email"
+            value={props.email}
+            label="Email"
+            variant="outlined"
+            required
+            fullWidth
+            autoFocus
+            disabled={props.awaitVerification}
+            helperText="Please enter UW-Madison email address"
+            onChange={props.emailHandler}
+            InputProps={{
+              // read-only when awaiting verification
+              readOnly: props.awaitVerification,
+            }}
+          />
+        </Grid>
+
+        <Grid item sm={12}>
+          <TextField
+            name="password"
+            id="password"
+            value={props.password}
+            label="Password"
+            type="password"
+            variant="outlined"
+            disabled={props.awaitVerification}
+            required
+            fullWidth
+            onChange={props.passwordHandler}
+            InputProps={{
+              // read-only when awaiting verification
+              readOnly: props.awaitVerification,
+            }}
+          />
+        </Grid>
+
+        <Grid item sm={12}>
+        {
+          // Don't show password confirmation box when awaiting verification
+          props.awaitVerification ? null :
+          <TextField
+            name="password2"
+            id="password2"
+            value={props.password2}
+            label="Confirm password"
+            type="password"
+            variant="outlined"
+            required
+            fullWidth
+            disabled={props.awaitVerification}
+            helperText={"Please set a password. Your password must " 
+                  + "contain at least 8 and no more than 32 characters."}
+            onChange={props.password2Handler}
+          />
+        }
+        </Grid>
+
+        <Grid item sm={12}>
+          <hr />
+        </Grid>
+
+        <Grid item sm={12} align="center">
+          <VerificationCode 
+            code={props.code}
+            waiting={props.awaitVerification} 
+            handler={props.codeHandler}
+          />
+        </Grid>
+
+        <Grid item sm={12}>
+          <Button
+            variant="contained"
+            color={props.awaitVerification? "secondary" : "primary"}
+            className={classes.register}
+            fullWidth
+            disabled={props.verified}
+            onClick={props.awaitVerification ? 
+                      props.verifyHandler: props.registerHandler}
+          >
+            { props.awaitVerification ? "VERIFY EMAIL" : "CONFIRM" }
+          </Button>
+        </Grid>
+
+        <Grid item sm={12}>
+          {
+            props.awaitVerification ?
+            <Button
+              variant="contained"
+              color="default"
+              onClick={props.cancelHandler}
+              fullWidth
+            >
+              Cancel
+            </Button>
+            :
+            <Button
+              color="default"
+              variant={ props.verified ? "contained" : "text" }
+              color={ props.verified ? "primary" : "default" }
+              onClick={loginRedirect}
+              fullWidth
+            >
+              { props.verified || props.awaitVerification ? 
+                      "Log in now" : "I already have an account" }
+            </Button>
+          }
+        </Grid>
+      </Grid>
+    </form>
+  </div>
+  </Paper>
+  );
+}
+
 export default function Registration(props) {
   const classes = useStyles();
 
@@ -106,7 +276,8 @@ export default function Registration(props) {
     .then((res) => {
       if (res.data) {
         console.log(res);
-        alert("success", "Your account has been verified!");
+        alert("success", "Your account has been verified! Click "
+                      + "the button below to login now.");
         setAwaitVerification(false);
         setVerified(true);
       } else {
@@ -121,6 +292,7 @@ export default function Registration(props) {
   }
 
   function verifyUser(username) {
+    alert("info", "Please wait...");
     axios.get("/user/sendVerification/" + username)
     .then((res) => {
       console.log(res);
@@ -212,156 +384,25 @@ export default function Registration(props) {
       <Grid item className={classes.image}>
         <div className={classes.desktop}>
         <div className={classes.window}>
-        <Paper className={classes.paper}>
-
-
-          <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Register New Account
-          </Typography>
-          <br />
-          <hr />
-
-          <Collapse in={showAlert}>
-            <Alert
-              severity={alertSeverity}
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => { setShowAlert(false); }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {alertText}
-            </Alert>
-          </Collapse>
-
-          <br />
-
-          <form className={classes.form}>
-            <Grid container spacing={2}>
-              <Grid item sm={12}>
-                <TextField
-                  name="email"
-                  id="email"
-                  value={email}
-                  label="Email"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  autoFocus
-                  disabled={awaitVerification}
-                  helperText="Please enter UW-Madison email address"
-                  onChange={emailHandler}
-                  InputProps={{
-                    // read-only when awaiting verification
-                    readOnly: awaitVerification,
-                  }}
-                />
-              </Grid>
-
-              <Grid item sm={12}>
-                <TextField
-                  name="password"
-                  id="password"
-                  value={password}
-                  label="Password"
-                  type="password"
-                  variant="outlined"
-                  disabled={awaitVerification}
-                  required
-                  fullWidth
-                  onChange={passwordHandler}
-                  InputProps={{
-                    // read-only when awaiting verification
-                    readOnly: awaitVerification,
-                  }}
-                />
-              </Grid>
-
-              <Grid item sm={12}>
-              {
-                // Don't show password confirmation box 
-                // when awaiting verification
-                awaitVerification ?
-                null
-                :
-                <TextField
-                  name="password2"
-                  id="password2"
-                  value={password2}
-                  label="Confirm password"
-                  type="password"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  disabled={awaitVerification}
-                  helperText={"Please set a password. Your password must " 
-                        + "contain at least 8 and no more than 32 characters."}
-                  onChange={password2Handler}
-                />
-              }
-              </Grid>
-
-              <Grid item sm={12}>
-                <hr />
-              </Grid>
-
-              <Grid item sm={12} align="center">
-                <VerificationCode 
-                  code={code}
-                  waiting={awaitVerification} 
-                  handler={codeHandler}
-                />
-              </Grid>
-
-              <Grid item sm={12}>
-                <Button
-                  variant="contained"
-                  color={awaitVerification? "secondary" : "primary"}
-                  className={classes.register}
-                  fullWidth
-                  disabled={verified}
-                  onClick={awaitVerification? verifyHandler: registerHandler}
-                >
-                  { awaitVerification ? "VERIFY EMAIL" : "CONFIRM" }
-                </Button>
-              </Grid>
-
-              <Grid item sm={12}>
-                {
-                  awaitVerification ?
-                  <Button
-                    variant="contained"
-                    color="default"
-                    onClick={cancelHandler}
-                    fullWidth
-                  >
-                    Cancel
-                  </Button>
-                  :
-                  <Button
-                    color="default"
-                    href="/login"
-                    fullWidth
-                  >
-                    {
-                      verified || awaitVerification ? "Log in now" : "I already have an account"
-                    }
-                  </Button>
-                }
-              </Grid>
-            </Grid>
-          </form>
-        </div>
-        </Paper>
+        <LoginForm 
+          showAlert={showAlert}
+          alertSeverity={alertSeverity}
+          setShowAlert={setShowAlert}
+          alertText={alertText}
+          email={email}
+          emailHandler={emailHandler}
+          password={password}
+          passwordHandler={passwordHandler}
+          password2={password2}
+          password2Handler={password2Handler}
+          code={code}
+          codeHandler={codeHandler}
+          verified={verified}
+          verifyHandler={verifyHandler}
+          registerHandler={registerHandler}
+          awaitVerification={awaitVerification}
+          cancelHandler={cancelHandler}
+        />
         </div>
         </div>
       </Grid>
