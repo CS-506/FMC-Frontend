@@ -101,7 +101,6 @@ export default function Login(props) {
   function setUserId(loginData) {
     axios.get("/user/get/username/" + loginData.username)
       .then((res) => {
-        console.log(res);
         loginData.userId = res.data.userId;
         props.auth(loginData);
         alert("success", "Success. Redirecting...");
@@ -131,7 +130,6 @@ export default function Login(props) {
       password: password,
     })
     .then((res) => {
-      console.log(res);
       if (res.data) {
         setUserId(loginData);
       } else {
@@ -146,7 +144,6 @@ export default function Login(props) {
     });
   }
 
-  console.log(props.location.state);
   const redirTo = 
     props.location.state && props.location.state.redir ? {
       pathname: props.location.state.redir,

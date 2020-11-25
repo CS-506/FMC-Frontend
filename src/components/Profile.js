@@ -1,17 +1,18 @@
 import React from "react";
+import Axios from "axios";
+import { Redirect } from 'react-router';
 import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import {
+  Typography, Container, Grid, Paper, Collapse, IconButton, Button, 
+  DialogTitle, DialogContent, DialogContentText, DialogActions, Dialog,
+} from "@material-ui/core";
+import {
+  Close as CloseIcon, Delete as DeleteIcon
+} from "@material-ui/icons";
+import Alert from "@material-ui/lab/Alert";
+
 import pfImage from "./img/default_avatar.jpg";
 import NavBar from "./NavBar"
-import Alert from "@material-ui/lab/Alert";
-import IconButton from "@material-ui/core/IconButton";
-import Collapse from "@material-ui/core/Collapse";
-import CloseIcon from '@material-ui/icons/Close';
-import { Redirect } from 'react-router';
-import Axios from "axios";
 import CommentCard from "./CommentCard";
 
 const useStyles = makeStyles(theme => ({
@@ -34,6 +35,9 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     marginLeft: 15,
+  },
+  button: {
+    margin: theme.spacing(1),
   }
 }));
 
@@ -67,6 +71,140 @@ function CommentSection(props) {
   );
 }
 
+function OkDialog(props) {
+  const [redirect, setRedirect] = React.useState(false);
+
+  const redirTo = {
+    pathname: "/Search",
+    state: {
+      "keyWord": " ",
+      "keySubject": " ",
+      "keyInstructor": " ",
+    },
+  };
+
+  function ok() {
+    props.close();
+    props.logout();
+    setRedirect(true);
+  }
+
+  return (
+    <div>
+    { redirect ? <Redirect to={redirTo} /> : null }
+    <Dialog 
+      open={props.isopen}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">
+        {"Deleting your account"}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          { props.deleted ?
+            "Your account has been deleted. " 
+            + "You will now be redirected to the search page." 
+            : " Please wait..."
+          }
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        { !props.deleted ? null : 
+          <Button onClick={ok} color="primary">
+            OK
+          </Button>
+        }
+      </DialogActions>
+    </Dialog>
+    </div>
+  )
+}
+
+function ConfirmDialog(props) {
+  return (
+    <Dialog
+      open={props.isopen}
+      onClose={props.close}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">
+        {"Delete your account?"}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          Are you sure you wish to delete your account?
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={props.deregister} color="secondary">
+          Yes
+        </Button>
+        <Button onClick={props.close}>
+          No
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+function Deregistration(props) {
+  const classes = useStyles();
+
+  const [confirmDialog, setConfirmDialog] = React.useState(false);
+  const [okDialog, setOkDialog] = React.useState(false);
+  const [deleted, setDeleted] = React.useState(false);
+
+  function deregister() {
+    setConfirmDialog(false);
+    setOkDialog(true);
+    console.log("Deleting user: " + props.user.userId);
+    Axios.delete("/user/delete/id/" + props.user.userId)
+      .then((res) => {
+        setDeleted(true);
+      })
+      .catch((err) => {
+        alert("Failed to delete user.");
+        closeDialog();
+      })
+  }
+
+  function closeDialog() {
+    setConfirmDialog(false);
+    setOkDialog(false);
+  }
+
+  return (
+    <Paper className={classes.paper} style={{ padding: 10 }}>
+      <Typography variant="h5" style={{ padding: 5 }}>
+        Delete My Account
+      </Typography>
+      <Button 
+        variant="contained"
+        color="secondary"
+        size="large"
+        className={classes.button}
+        startIcon={<DeleteIcon />}
+        onClick={() => setConfirmDialog(true)}
+      >
+        Delete my account
+      </Button>
+      <ConfirmDialog 
+        isopen={confirmDialog}
+        close={closeDialog}
+        deregister={deregister}
+      />
+      <OkDialog
+        isopen={okDialog}
+        close={closeDialog}
+        deleted={deleted}
+        logout={props.logout}
+      />
+    </Paper>
+  );
+}
+
 export default function Profile(props) {
   const classes = useStyles();
 
@@ -90,7 +228,6 @@ export default function Profile(props) {
     Axios.get(paramUser)
       .then((res) => {
         setUser(res.data);
-        console.log(res.data);
       })
       .catch((err) => {
         alert("Failed to find user.");
@@ -113,7 +250,6 @@ export default function Profile(props) {
     if (props.loginStat === "NOT_LOGGED_IN") {
       setRedirect(true);
     } else if (props.loginStat === "LOGGED_IN" && props.user) {
-      console.log("HERE WE GO!");
       loadUser();
       loadComments();
     }
@@ -202,6 +338,13 @@ export default function Profile(props) {
                       />
 
                     </Paper>
+                  </Grid>
+
+                  <Grid item md={12}>
+                    <Deregistration 
+                      user={props.user}
+                      logout={props.logout}
+                    />
                   </Grid>
                 </Grid>
               </Paper>

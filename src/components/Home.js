@@ -120,7 +120,7 @@ export default function Home() {
                             className={classes.searchButton}
                             variant="contained"
                             style={{background: '#c40d02', textDecoration: 'none'}}                        
-                            textPrimary
+                            textprimary="true"
                         >
                             Search Course!
                         </Button>
