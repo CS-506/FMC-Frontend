@@ -17,7 +17,7 @@ import { red, white } from '@material-ui/core/colors';
 import Search from './Search';
 import { Link } from 'react-router-dom';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-
+import logo from "./img/Logo2.PNG";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -44,6 +44,10 @@ const initialState = {
     currKeyWord: ''
 };
 
+function LogoDisplay() {
+    return <img src={logo} alt="Find My Course" height="200" width="400"/>;
+}
+
 function reducer(state, action) {
     switch (action.type) {
         case 'UPDATE_INPUT':
@@ -54,7 +58,6 @@ function reducer(state, action) {
             return initialState;
     }
 }
-
 
 
 export default function Home(props) {
@@ -150,21 +153,16 @@ export default function Home(props) {
             </Grid>
             </Grid>
 
-
-
-
             <Grid
                 container
                 spacing={3}
                 direction="column"
                 alignItems="center"
                 justify="center"
-                style={{ minHeight: '100vh' }}
+                style={{ minHeight: '70vh' }}
             >
                 <Grid item xs={12}>
-                    <Typography className={classes.title} variant="h3">
-                        Find My Course
-                    </Typography>
+                    <LogoDisplay />
                 </Grid>
                 <br />
                 <Grid container spacing={0}>
