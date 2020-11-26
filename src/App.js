@@ -96,7 +96,16 @@ export default function App() {
           />
         )}
       />
-      <Route exact path="/" component={HomePage} />
+      <Route 
+        exact path="/" 
+        render={ props => (
+          <HomePage {...props}
+            loginStat={loginStat}
+            user={userData}
+            auth={authenticate}
+            logout={logout}
+          />
+        )} />
     </Router>
   );
 }
