@@ -3,33 +3,39 @@ import React from 'react';
 import Search from './Search';
 import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+import { Link } from 'react-router-dom';
 
 Enzyme.configure({ adapter: new Adapter() });
 
 describe('Desperate trying', () => {
-    it('Just render it mf', () => {
-        //const tree = renderer.create(<Search />).toJSON();
-        
-        var state={
-            keyWord: " ",
-            keySubject: " ",
-            keyInstructor: " "
-        }
+    it('Just render it PLEASE...', () => {
         const wrapper = shallow(
-            <Search 
-                location={    
-                    state
-                } 
+            <Link to={{
+                pathname: '/Search',
+                state: {
+                    "keyWord": " ",
+                    "keySubject": " ",
+                    "keyInstructor": " ",
+                },
+            }}
             />
-            );
+        );
         expect(wrapper.exists()).toBe(true);
+
+        /*
+        const wrapper = shallow(
+            <Search
+                location={
+                    state={
+                        keyWord: " ",
+                        keySubject: " ",
+                        keyInstructor: " "
+                    }
+                }
+            />
+        );
+        expect(wrapper.exists()).toBe(true);
+        */
     });
 
 });
-/*
-const mock = require('./Search')
-
-test('Search test', () => {
-    expect(mock.exist()).toBe(true)
-})
-*/

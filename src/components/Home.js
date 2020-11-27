@@ -172,7 +172,7 @@ export default function Home(props) {
                             <AppContext.Provider value={{ state, dispatch }}>
                                 <TextField
                                     className={classes.searchbox}
-                                    placeholder="Course..."
+                                    placeholder="Type in Course Name ..."
                                     variant="outlined"
                                     fullWidth
                                     onChange={e => saveKey(e.target.value)}
