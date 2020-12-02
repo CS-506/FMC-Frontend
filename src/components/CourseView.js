@@ -326,11 +326,19 @@ function InstructorSelect(props) {
       <MenuItem value={0} key={0}>
         All instructors
       </MenuItem>
-      {props.instructors?.map(inst => (
-        <MenuItem value={inst.iid} key={inst.iid}>
-          {inst.name}
-        </MenuItem>
-      ))}
+      {props.instructors?.map(inst => { 
+        if (!props.options || props.options.length === 0 
+            || (props.options.length > 0 
+              && props.options.includes(props.instructors.indexOf(inst)))) {
+          return (
+            <MenuItem value={inst.iid} key={inst.iid}>
+              {inst.name}
+            </MenuItem>
+          );
+        } else {
+          return null;
+        }
+      })}
     </TextField>
   );
 }
@@ -364,14 +372,22 @@ function SemesterSelect(props) {
       <MenuItem value={0} key={0}>
         All semesters
       </MenuItem>
-      {semesters?.map(sem => (
-        <MenuItem
-          value={semesters.indexOf(sem) + 1}
-          key={semesters.indexOf(sem) + 1}
-        >
-          {sem.semester + " " + sem.year}
-        </MenuItem>
-      ))}
+      {semesters?.map(sem => {
+        if (!props.options || props.options.length === 0 
+            || (props.options.length > 0
+                && props.options.includes(props.semesters.indexOf(sem)))) {
+          return (
+            <MenuItem
+              value={semesters.indexOf(sem) + 1}
+              key={semesters.indexOf(sem) + 1}
+            >
+              {sem.semester + " " + sem.year}
+            </MenuItem>
+          );
+        } else {
+          return null;
+        }
+      })}
     </TextField>
   );
 }
@@ -386,17 +402,23 @@ export default function CourseView(props) {
   const [iid, setIid] = React.useState(0);
   // instructors who have taught this course previously
   const [instructors, setInstructors] = React.useState([]);
+  // selectable options for instructors
+  const [instOptions, setInstOptions] = React.useState([]);
+  // is search anchored on instructors
+  const [instAnchored, setInstAnchored] = React.useState(false);
   // semester currently displayed
   const [sem, setSem] = React.useState(0);
   // semesters in which this course was offered
   const [semesters, setSemesters] = React.useState([]);
+  // selectable options for semesters
+  const [semOptions, setSemOptions] = React.useState([]);
   // sections after filters are applied
   const [sections, setSections] = React.useState([]);
   // section comments
   const [comments, setComments] = React.useState([]);
 
-  const iidChange = event => setIid(event.target.value);
-  const semChange = event => setSem(Number(event.target.value));
+  const iidChange = event => selectInstructor(Number(event.target.value));
+  const semChange = event => selectSemester(Number(event.target.value));
 
 
   /* PAGE STATES *************************************************/
@@ -475,6 +497,24 @@ export default function CourseView(props) {
       else
         return 1;
     }
+  }
+
+  function selectInstructor(iid) {
+    if (iid === 0) {
+      setInstOptions([]);
+      setSemOptions([]);
+    }
+    setInstAnchored(true);
+    setIid(iid);
+  }
+
+  function selectSemester(sem) {
+    if (sem === 0) {
+      setSemOptions([]);
+      setInstOptions([]);
+    }
+    setInstAnchored(false);
+    setSem(sem);
   }
 
   /**
@@ -606,12 +646,50 @@ export default function CourseView(props) {
     return chartData;
   }
 
+  // Set selectable semester options based on list of sections
+  // Instructor is anchor.
+  function setSemOptsFromSects(sectOpts) {
+    let opts = [];
+    for (let i = 0; i < semesters.length; i++) {
+      for (let j = 0; j < sectOpts.length; j++) {
+        if (semesters[i].year == String(sectOpts[j].year)
+            && semesters[i].semester == sectOpts[j].semester) {
+          opts.push(i);
+        }
+      }
+    }
+    setSemOptions(opts);
+  }
+
+  // Set selectable instructor options based on list of sections
+  // Semester is anchored
+  function setInstOptsFromSects(sectOpts) {
+    let opts = [];
+    for (let i = 0; i < instructors.length; i++) {
+      for (let j = 0; j < sectOpts.length; j++) {
+        if (Number(instructors[i].iid) === Number(sectOpts[j].instructorId)) {
+          opts.push(i);
+        }
+      }
+    }
+    setInstOptions(opts);
+  }
+
   /**
    * Process section information retrieved from backend.
-   * Also triggers graph regeneration.
+   * if filtering is anchored on instructors, then display a list of
+   * semesters corresponding to the selected instructor; if anchored
+   * on semester, then display a list of instructors corresponding to
+   * the selected semester.
    */
   function processSections(sects) {
-    return sects.sort(sectcomp);
+    sects = sects.sort(sectcomp);
+    if (instAnchored && iid !== 0) {
+      setSemOptsFromSects(sects);
+    } else if (!instAnchored && sem !== 0) {
+      setInstOptsFromSects(sects);
+    }
+    return sects;
   }
 
   /**
@@ -622,16 +700,32 @@ export default function CourseView(props) {
    * SemesterSelect() for reason of doing so.
    */
   const loadSections = React.useCallback((courseId) => {
-    let url = "/coursesection/section/"
-      + courseId + "/"
-      + (iid == 0 ? "instructor_all" : iid)
-      + (sem == 0 ? "/year_all/sem_all"
-        : "/" + semesters[sem - 1].year
-        + "/" + semesters[sem - 1].semester);
+    let url = "/coursesection/section/" + courseId + "/";
+    if (instAnchored && iid !== 0) {
+      url += String(iid) + "/year_all/sem_all";
+    } else if (!instAnchored && sem !== 0) {
+      url += "inst_all/" + String(semesters[sem - 1].year)
+                   + "/" + String(semesters[sem - 1].semester);
+    } else {
+      url += "inst_all/year_all/sem_all";
+    }
     axios.get(url)
       .then((res) => {
-        let sects = processSections(res.data);
-        console.log(sects);
+        processSections(res.data);
+      })
+      .catch((err) => {
+        alert("Failed to fetch list of sections.");
+      });
+
+    url = "/coursesection/section/"
+    + courseId + "/"
+    + (iid == 0 ? "instructor_all" : iid)
+    + (sem == 0 ? "/year_all/sem_all"
+      : "/" + semesters[sem - 1].year
+      + "/" + semesters[sem - 1].semester);
+    axios.get(url)
+      .then((res) => {
+        let sects = res.data.sort(sectcomp);
         setSections(sects);
         setGradeDistData(compileGradeDistribution(sects));
       })
@@ -760,6 +854,7 @@ export default function CourseView(props) {
                 data={iid}
                 update={iidChange}
                 instructors={instructors}
+                options={instOptions}
               />
             </Grid>
             <Grid item md={6}>
@@ -767,6 +862,7 @@ export default function CourseView(props) {
                 data={sem}
                 update={semChange}
                 semesters={semesters}
+                options={semOptions}
               />
             </Grid>
           </Grid>
