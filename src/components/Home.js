@@ -59,6 +59,10 @@ function reducer(state, action) {
     }
 }
 
+function TestKeyWord(currKeyWord) {
+    return (<div></div>);
+}
+
 
 export default function Home(props) {
     const classes = useStyles();
@@ -209,7 +213,7 @@ export default function Home(props) {
                     </Link>
                 </Grid>
 
-
+            <TestKeyWord value={keyWord} />
             </Grid>
         </div>
     )

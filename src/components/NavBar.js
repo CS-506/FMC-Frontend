@@ -143,6 +143,16 @@ export default function NavBar(props) {
     setAnchorEl(null);
   };
 
+  function TestKeyWord(currkeyWord) {
+    return (<div></div>);
+  }
+  function TestKeySubject(currkeySubject) {
+    return (<div></div>);
+  }
+  function TestKeyInstructor(currkeyInstructor) {
+    return (<div></div>);
+  }
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -322,6 +332,10 @@ export default function NavBar(props) {
           <Divider />
         </div>
       </Drawer>
+      
+      <TestKeyWord value={keyWord} />
+      <TestKeySubject value={keySubject} />
+      <TestKeyInstructor value={keyInstructor} />
     </div>
   );
 }

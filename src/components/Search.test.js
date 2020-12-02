@@ -8,34 +8,52 @@ import { Link } from 'react-router-dom';
 Enzyme.configure({ adapter: new Adapter() });
 
 describe('Desperate trying', () => {
-    it('Just render it PLEASE...', () => {
-        const wrapper = shallow(
-            <Link to={{
-                pathname: '/Search',
-                state: {
-                    "keyWord": " ",
-                    "keySubject": " ",
-                    "keyInstructor": " ",
-                },
-            }}
-            />
-        );
-        expect(wrapper.exists()).toBe(true);
-
-        /*
+    it('Render Search Page', () => {       
         const wrapper = shallow(
             <Search
-                location={
-                    state={
+                location={{
+                    state: {
                         keyWord: " ",
                         keySubject: " ",
                         keyInstructor: " "
                     }
-                }
+                }}
             />
         );
         expect(wrapper.exists()).toBe(true);
-        */
+    });
+
+    it('Props passed are stored', () => {
+        const wrapper = shallow(
+            <Search
+                location={{
+                    state: {
+                        keyWord: "system",
+                        keySubject: "COMP SCI",
+                        keyInstructor: "Remzi"
+                    }
+                }}
+            />
+        );
+        expect(wrapper.find('TestKeyWord').prop('value')).toEqual("system"); 
+        expect(wrapper.find('TestKeySubject').prop('value')).toEqual("COMP SCI"); 
+        expect(wrapper.find('TestKeyInstructor').prop('value')).toEqual("Remzi"); 
+    });
+
+    it('Searching with keyWord', () => {
+        const wrapper = shallow(
+            <Search
+                location={{
+                    state: {
+                        keyWord: "A keyWord that will not give any search result",
+                        keySubject: " ",
+                        keyInstructor: " "
+                    }
+                }}
+            />
+        ); 
+        // Jest cannot test useEffect, as well as functions within functional components
+        expect(wrapper.find('TestResult').prop('value')).toHaveLength(0); 
     });
 
 });

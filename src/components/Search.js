@@ -91,19 +91,22 @@ export default function Search(props) {
         //searchByFilter(" ", keySubj, keyInst);
     }
 
+
     // As default,
     // Enter page with keyWord=" " and display all courses:
     React.useEffect(() => {
         // if (props.location.state) {
         // }
         searchByFilter(keyWord, keySubject, keyInstructor);
-    }, [searchByKeyWord]);
+    }, [searchByFilter]);
     
     function addrConcat(cid) {
         var newAddr = "/course_";
         newAddr = newAddr.concat(cid);
         return newAddr;
     }
+
+
     function DisplaySearch() {
         return (
             <div>
@@ -138,6 +141,21 @@ export default function Search(props) {
             </div>
         );
     }
+
+    
+    function TestResult(currResult) {
+        return (<div></div>);
+    }    
+    function TestKeyWord(currKeyWord) {
+        return (<div></div>);
+    }
+    function TestKeySubject(currKeyWord) {
+        return (<div></div>);
+    }
+    function TestKeyInstructor(currKeyWord) {
+        return (<div></div>);
+    }
+
     return (
         <div className = {classes.root}>
             
@@ -158,9 +176,14 @@ export default function Search(props) {
                         Search Result for  "{keyWord}"
                     </Typography>
 
-                    <DisplaySearch />
+                    <DisplaySearch searchResult={result}/>
                 </div>
             </main>
+            
+            <TestKeyWord value={keyWord}/>
+            <TestKeySubject value={keySubject}/>
+            <TestKeyInstructor value={keyInstructor}/>
+            <TestResult value={result}/>
         </div>
     )
 }
