@@ -24,8 +24,6 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         borderColor: "red",
     },
-    title: {
-    },
     searchBox: {
         outlineColor: red,
         padding: theme.spacing(3),
@@ -63,29 +61,17 @@ function TestKeyWord(currKeyWord) {
     return (<div></div>);
 }
 
-
 export default function Home(props) {
     const classes = useStyles();
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const [keyWord, setKeyWord] = React.useState(" ");
-    const [keySubject, setKeySubject] = React.useState(" ");
-    const [keyInsturctor, setKeyInsturctor] = React.useState(" ");
 
-    const auth = true;
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
     function saveKey(newKeyWord) {
         setKeyWord(newKeyWord);
-    }
-
-    function saveSubj(newSubj) {
-        setKeySubject(newSubj);
-    }
-
-    function saveInst(newInst) {
-        setKeyInsturctor(newInst);
     }
 
     const handleMenu = (event) => {
@@ -176,7 +162,7 @@ export default function Home(props) {
                             <AppContext.Provider value={{ state, dispatch }}>
                                 <TextField
                                     className={classes.searchbox}
-                                    placeholder="Type in Course Name ..."
+                                    placeholder="Type in Course Description ..."
                                     variant="outlined"
                                     fullWidth
                                     onChange={e => saveKey(e.target.value)}

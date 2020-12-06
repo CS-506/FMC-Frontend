@@ -31,7 +31,12 @@ export default function Search(props) {
     const [keyWord, setKeyWord] = React.useState(props.location.state.keyWord || " ");
     const [keySubject, setKeySubject] = React.useState(props.location.state.keySubject || " ");
     const [keyInstructor, setKeyInstructor] = React.useState(props.location.state.keyInstructor || " ");
-
+/*
+    const [keyWord, setKeyWord] = React.useState(" ");
+    const [keySubject, setKeySubject] = React.useState(" ");
+    const [keyInstructor, setKeyInstructor] = React.useState(" ");
+*/
+    
     // search result:
     const [result, saveResult] = React.useState([]);
     
