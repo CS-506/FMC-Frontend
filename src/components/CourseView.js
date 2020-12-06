@@ -193,25 +193,25 @@ function SectionTable(props) {
               <StyledTableCell>{row.section}</StyledTableCell>
               <StyledTableCell>{row.instructor}</StyledTableCell>
               <StyledTableCell align="right">
-                {row.a ? row.a + "%" : ""}
+                {row.a + "%"}
               </StyledTableCell>
               <StyledTableCell align="right">
-                {row.ab ? row.ab + "%" : ""}
+                {row.ab + "%"}
               </StyledTableCell>
               <StyledTableCell align="right">
-                {row.b ? row.b + "%" : ""}
+                {row.b + "%"}
               </StyledTableCell>
               <StyledTableCell align="right">
-                {row.bc ? row.bc + "%" : ""}
+                {row.bc + "%"}
               </StyledTableCell>
               <StyledTableCell align="right">
-                {row.c ? row.c + "%" : ""}
+                {row.c + "%"}
               </StyledTableCell>
               <StyledTableCell align="right">
-                {row.d ? row.d + "%" : ""}
+                {row.d + "%"}
               </StyledTableCell>
               <StyledTableCell align="right">
-                {row.f ? + row.f + "%" : ""}
+                {row.f + "%"}
               </StyledTableCell>
               <StyledTableCell align="right">
                 {row.gpa}
@@ -326,11 +326,19 @@ function InstructorSelect(props) {
       <MenuItem value={0} key={0}>
         All instructors
       </MenuItem>
-      {props.instructors?.map(inst => (
-        <MenuItem value={inst.iid} key={inst.iid}>
-          {inst.name}
-        </MenuItem>
-      ))}
+      {props.instructors?.map(inst => { 
+        if (!props.options || props.options.length === 0 
+            || (props.options.length > 0 
+              && props.options.includes(props.instructors.indexOf(inst)))) {
+          return (
+            <MenuItem value={inst.iid} key={inst.iid}>
+              {inst.name}
+            </MenuItem>
+          );
+        } else {
+          return null;
+        }
+      })}
     </TextField>
   );
 }
@@ -364,14 +372,22 @@ function SemesterSelect(props) {
       <MenuItem value={0} key={0}>
         All semesters
       </MenuItem>
-      {semesters?.map(sem => (
-        <MenuItem
-          value={semesters.indexOf(sem) + 1}
-          key={semesters.indexOf(sem) + 1}
-        >
-          {sem.semester + " " + sem.year}
-        </MenuItem>
-      ))}
+      {semesters?.map(sem => {
+        if (!props.options || props.options.length === 0 
+            || (props.options.length > 0
+                && props.options.includes(props.semesters.indexOf(sem)))) {
+          return (
+            <MenuItem
+              value={semesters.indexOf(sem) + 1}
+              key={semesters.indexOf(sem) + 1}
+            >
+              {sem.semester + " " + sem.year}
+            </MenuItem>
+          );
+        } else {
+          return null;
+        }
+      })}
     </TextField>
   );
 }
@@ -386,17 +402,23 @@ export default function CourseView(props) {
   const [iid, setIid] = React.useState(0);
   // instructors who have taught this course previously
   const [instructors, setInstructors] = React.useState([]);
+  // selectable options for instructors
+  const [instOptions, setInstOptions] = React.useState([]);
+  // is search anchored on instructors
+  const [instAnchored, setInstAnchored] = React.useState(false);
   // semester currently displayed
   const [sem, setSem] = React.useState(0);
   // semesters in which this course was offered
   const [semesters, setSemesters] = React.useState([]);
+  // selectable options for semesters
+  const [semOptions, setSemOptions] = React.useState([]);
   // sections after filters are applied
   const [sections, setSections] = React.useState([]);
   // section comments
   const [comments, setComments] = React.useState([]);
 
-  const iidChange = event => setIid(event.target.value);
-  const semChange = event => setSem(Number(event.target.value));
+  const iidChange = event => selectInstructor(Number(event.target.value));
+  const semChange = event => selectSemester(Number(event.target.value));
 
 
   /* PAGE STATES *************************************************/
@@ -430,12 +452,56 @@ export default function CourseView(props) {
     axios.get(url)
       .then((res) => {
         let sects = processSections(res.data);
+        for (let i = 0; i < sects.length; i++) {
+          sects[i].semester = capitalizeFirstLetter(sects[i].semester);
+        }
         setGPATrendData(compileGPATrend(sects));
       })
       .catch((err) => {
         alert("Failed to fetch list of sections.");
       });
   }, [])
+
+  /**
+   * What?? I like C.
+   */
+  function strtok(str, delim) {
+    let tokens = [];
+    let head = 0;
+    for (let i = 0; i < str.length; i++) {
+      if (i === str.length - 1) {
+        tokens.push(str.substring(head, i + 1));
+      }
+      if (delim.includes(str[i])) {
+        if (i === head) {
+          continue;
+        }
+        tokens.push(str.substring(head, i));
+        tokens.push(str[i]);
+        head = i + 1;
+      }
+    }
+    return tokens;
+  }
+
+  function capitalizeFirstLetter(str) {
+    if (str.length === 0)
+      return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function setNameCapitalization(name) {
+    const delims = [" ", "-", "'"];
+    let tokens = strtok(name, delims);
+    let ret = "";
+    for (let i = 0; i < tokens.length; i++) {
+      let word = tokens[i].toLowerCase();
+      if (!delims.includes(tokens[i]))
+        word = capitalizeFirstLetter(word);
+      ret += word;
+    }
+    return ret;
+  }
 
   /**
    * Fetch list of instructors who have taught this course in the past.
@@ -447,7 +513,7 @@ export default function CourseView(props) {
         for (let i = 0; i < res.data.length; i++) {
           let inst = {
             iid: res.data[i][0],
-            name: (res.data[i][1] + " " + res.data[i][3]),
+            name: setNameCapitalization(res.data[i][1]),
           };
           instructorInfo.push(inst);
         }
@@ -475,6 +541,24 @@ export default function CourseView(props) {
       else
         return 1;
     }
+  }
+
+  function selectInstructor(iid) {
+    if (iid === 0) {
+      setInstOptions([]);
+      setSemOptions([]);
+    }
+    setInstAnchored(true);
+    setIid(iid);
+  }
+
+  function selectSemester(sem) {
+    if (sem === 0) {
+      setSemOptions([]);
+      setInstOptions([]);
+    }
+    setInstAnchored(false);
+    setSem(sem);
   }
 
   /**
@@ -511,7 +595,10 @@ export default function CourseView(props) {
   const loadSemesters = React.useCallback((courseId) => {
     axios.get("/coursesection/yearsemester/course/" + courseId)
       .then((res) => {
-        const sems = filterSemesters(res.data);
+        let sems = filterSemesters(res.data);
+        for (let i = 0; i < sems.length; i++) {
+          sems[i].semester = capitalizeFirstLetter(sems[i].semester);
+        }
         setSemesters(sems);
       })
       .catch((err) => {
@@ -552,7 +639,7 @@ export default function CourseView(props) {
     let end = 0;
     let gpa = 0;
     for (let i = 0; i < sects.length; i++) {
-      gpa += sects[i].avg_gpa;
+      gpa += sects[i].avgGpa;
       if (i === sects.length - 1 || sectcomp(sects[i], sects[i + 1]) !== 0) {
         let avg = gpa / (end - start + 1);
         chartData.labels.push(sects[i].semester + " " + sects[i].year);
@@ -587,13 +674,13 @@ export default function CourseView(props) {
 
     // sum up all percentages
     for (let i = 0; i < sects.length; i++) {
-      distro[0] += sects[i].a_num;
-      distro[1] += sects[i].ab_num;
-      distro[2] += sects[i].b_num;
-      distro[3] += sects[i].bc_num;
-      distro[4] += sects[i].c_num;
-      distro[5] += sects[i].d_num;
-      distro[6] += sects[i].f_num;
+      distro[0] += sects[i].a;
+      distro[1] += sects[i].ab;
+      distro[2] += sects[i].b;
+      distro[3] += sects[i].bc;
+      distro[4] += sects[i].c;
+      distro[5] += sects[i].d;
+      distro[6] += sects[i].f;
     }
 
     // calculate average percentage and add to dataset
@@ -605,13 +692,50 @@ export default function CourseView(props) {
 
     return chartData;
   }
+// Set selectable semester options based on list of sections
+  // Instructor is anchor.
+  function setSemOptsFromSects(sectOpts) {
+    let opts = [];
+    for (let i = 0; i < semesters.length; i++) {
+      for (let j = 0; j < sectOpts.length; j++) {
+        if (semesters[i].year == String(sectOpts[j].year)
+            && semesters[i].semester == sectOpts[j].semester) {
+          opts.push(i);
+        }
+      }
+    }
+    setSemOptions(opts);
+  }
+
+  // Set selectable instructor options based on list of sections
+  // Semester is anchored
+  function setInstOptsFromSects(sectOpts) {
+    let opts = [];
+    for (let i = 0; i < instructors.length; i++) {
+      for (let j = 0; j < sectOpts.length; j++) {
+        if (Number(instructors[i].iid) === Number(sectOpts[j].instructorId)) {
+          opts.push(i);
+        }
+      }
+    }
+    setInstOptions(opts);
+  }
 
   /**
    * Process section information retrieved from backend.
-   * Also triggers graph regeneration.
+   * if filtering is anchored on instructors, then display a list of
+   * semesters corresponding to the selected instructor; if anchored
+   * on semester, then display a list of instructors corresponding to
+   * the selected semester.
    */
   function processSections(sects) {
-    return sects.sort(sectcomp);
+    sects = sects.sort(sectcomp);
+    if (instAnchored && iid !== 0) {
+      setSemOptsFromSects(sects);
+    } else if (!instAnchored && sem !== 0) {
+      setInstOptsFromSects(sects);
+    }
+    return sects;
   }
 
   /**
@@ -622,16 +746,35 @@ export default function CourseView(props) {
    * SemesterSelect() for reason of doing so.
    */
   const loadSections = React.useCallback((courseId) => {
-    let url = "/coursesection/section/"
-      + courseId + "/"
-      + (iid == 0 ? "instructor_all" : iid)
-      + (sem == 0 ? "/year_all/sem_all"
-        : "/" + semesters[sem - 1].year
-        + "/" + semesters[sem - 1].semester);
+    let url = "/coursesection/section/" + courseId + "/";
+    if (instAnchored && iid !== 0) {
+      url += String(iid) + "/year_all/sem_all";
+    } else if (!instAnchored && sem !== 0) {
+      url += "inst_all/" + String(semesters[sem - 1].year)
+                   + "/" + String(semesters[sem - 1].semester);
+    } else {
+      url += "inst_all/year_all/sem_all";
+    }
     axios.get(url)
       .then((res) => {
-        let sects = processSections(res.data);
-        console.log(sects);
+        processSections(res.data);
+      })
+      .catch((err) => {
+        alert("Failed to fetch list of sections.");
+      });
+
+    url = "/coursesection/section/"
+    + courseId + "/"
+    + (iid == 0 ? "instructor_all" : iid)
+    + (sem == 0 ? "/year_all/sem_all"
+      : "/" + semesters[sem - 1].year
+      + "/" + semesters[sem - 1].semester);
+    axios.get(url)
+      .then((res) => {
+        let sects = res.data.sort(sectcomp);
+        for (let i = 0; i < sects.length; i++) {
+          sects[i].semester = capitalizeFirstLetter(sects[i].semester);
+        }
         setSections(sects);
         setGradeDistData(compileGradeDistribution(sects));
       })
@@ -672,7 +815,7 @@ export default function CourseView(props) {
   }, [loadSemesters, loadSections, loadInstructors, loadCourse]);
 
   function createData(semester, section, instructor,
-    a, ab, b, bc, c, d, f, gpa) {
+                      a, ab, b, bc, c, d, f, gpa) {
     return {
       semester, section, instructor,
       a, ab, b, bc, c, d, f, gpa
@@ -690,15 +833,19 @@ export default function CourseView(props) {
   function compileData() {
     let rows = [];
     for (let i = 0; i < sections.length; i++) {
+      const s = sections[i];
+      const a = s.a ? s.a : 0;
+      const ab = s.ab ? s.ab : 0;
+      const b = s.b ? s.b : 0;
+      const bc = s.bc ? s.bc : 0;
+      const c = s.c ? s.c : 0;
+      const d = s.d ? s.d : 0;
+      const f = s.f ? s.f : 0;
       const entry = createData(
         sections[i].semester + " " + sections[i].year,
-        sections[i].section_code,
+        sections[i].sectionMode + " " + sections[i].sectionCode,
         getInstructorName(sections[i].instructorId),
-        sections[i].a_num, sections[i].ab_num,
-        sections[i].b_num, sections[i].bc_num,
-        sections[i].c_num, sections[i].d_num,
-        sections[i].f_num,
-        sections[i].avg_gpa);
+        a, ab, b, bc, c, d, f, sections[i].avgGpa);
       rows.push(entry);
     }
     return rows;
@@ -741,7 +888,7 @@ export default function CourseView(props) {
         {course ?
           <div className={classes.unit}>
             <Typography variant="h4">
-              {course.subject.toUpperCase()} {course.code}
+              {course.deptAbbr.toUpperCase()} {course.code}
             </Typography>
             <Typography variant="h6">
               {course.name}
@@ -760,6 +907,7 @@ export default function CourseView(props) {
                 data={iid}
                 update={iidChange}
                 instructors={instructors}
+                options={instOptions}
               />
             </Grid>
             <Grid item md={6}>
@@ -767,6 +915,7 @@ export default function CourseView(props) {
                 data={sem}
                 update={semChange}
                 semesters={semesters}
+                options={semOptions}
               />
             </Grid>
           </Grid>
