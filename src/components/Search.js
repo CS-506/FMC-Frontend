@@ -44,7 +44,7 @@ export default function Search(props) {
 
     // Search course info from backend given the entry:
     const searchByKeyWord = React.useCallback((currKeyWord) => {
-        const paramSearch = `/coursesearch/search/${currKeyWord}/ / / / /`;
+        const paramSearch = `/coursesearch/search/${currKeyWord}/ / / /`;
         console.log("Command for search controller: " + paramSearch);
         axios.get(paramSearch)
             .then((res) => {
@@ -57,7 +57,7 @@ export default function Search(props) {
     }, []);
 
     const searchByFilter = React.useCallback((currKeyWord, currKeySubj, currKeyFilter) => {
-        const paramSearch = `/coursesearch/search/${currKeyWord}/${currKeySubj}/${currKeyFilter}/ / /`;
+        const paramSearch = `/coursesearch/search/${currKeyWord}/${currKeySubj}/${currKeyFilter}/ /`;
         console.log("Command for search controller: " + paramSearch);
         axios.get(paramSearch)
             .then((res) => {
