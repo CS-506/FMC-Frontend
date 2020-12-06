@@ -1,4 +1,4 @@
-import React, { useState, sendData } from 'react';
+import React from 'react';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
