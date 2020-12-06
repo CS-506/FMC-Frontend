@@ -1,20 +1,16 @@
-import React, { useState, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import {
-    createMuiTheme,
     makeStyles
 } from '@material-ui/core/styles';
 import {
-    Typography,
     Grid,
     TextField,
     Button,
-    InputBase,
     Menu,
     MenuItem,
     IconButton,
 } from "@material-ui/core/";
-import { red, white } from '@material-ui/core/colors';
-import Search from './Search';
+import { red } from '@material-ui/core/colors';
 import { Link } from 'react-router-dom';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import logo from "./img/Logo2.PNG";
@@ -65,8 +61,6 @@ export default function Home(props) {
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const [keyWord, setKeyWord] = React.useState(" ");
-    const [keySubject, setKeySubject] = React.useState(" ");
-    const [keyInsturctor, setKeyInsturctor] = React.useState(" ");
 
     const auth = true;
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -74,14 +68,6 @@ export default function Home(props) {
 
     function saveKey(newKeyWord) {
         setKeyWord(newKeyWord);
-    }
-
-    function saveSubj(newSubj) {
-        setKeySubject(newSubj);
-    }
-
-    function saveInst(newInst) {
-        setKeyInsturctor(newInst);
     }
 
     const handleMenu = (event) => {

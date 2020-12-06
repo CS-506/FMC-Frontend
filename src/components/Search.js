@@ -35,8 +35,6 @@ export default function Search(props) {
     // search result:
     const [result, saveResult] = React.useState([]);
     
-    const [buttonCheck, buttonClick] = React.useState(false);
-
     // Search course info from backend given the entry:
     const searchByKeyWord = React.useCallback((currKeyWord) => {
         const paramSearch = `/coursesearch/search/${currKeyWord}/ / / /`;
