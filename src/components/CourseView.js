@@ -174,7 +174,6 @@ function SectionTable(props) {
     if (!showAll) {
       rows = rows.slice(0, MAXSECTIONS);
     }
-    console.log(rows);
     setSects(rows);
   }, [props.rows, showAll]);
 
@@ -590,21 +589,21 @@ export default function CourseView(props) {
   }, []);
 
   /**
-   * Sort semesters by chronological order. 
+   * Sort semesters by REVERSE chronological order. 
    * 
-   * Spring < Fall in the same year, for the present time we will assume
+   * Spring > Fall in the same year, for the present time we will assume
    * that semester is either "spring" or "fall".
    */
   function semcomp(sem1, sem2) {
     if (sem1.year != sem2.year) {
-      return (sem1.year - sem2.year);
+      return -(sem1.year - sem2.year);
     } else {
       if (sem1.semester === sem2.semester)
         return 0;
       else if (sem1.semester.toLowerCase() === "spring")
-        return -1;
-      else
         return 1;
+      else
+        return -1;
     }
   }
 
@@ -650,7 +649,6 @@ export default function CourseView(props) {
 
     // semesters are shown in reverse chronological order (recent -> past)
     uniqsems.sort(semcomp);
-    uniqsems.reverse();
     return uniqsems;
   }
 
@@ -844,7 +842,7 @@ export default function CourseView(props) {
       + "/" + semesters[sem - 1].semester);
     axios.get(url)
       .then((res) => {
-        let sects = res.data.sort(sectcomp).reverse();
+        let sects = res.data.sort(sectcomp);
         for (let i = 0; i < sects.length; i++) {
           sects[i].semester = capitalizeFirstLetter(sects[i].semester);
         }
