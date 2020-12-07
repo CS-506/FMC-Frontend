@@ -551,7 +551,7 @@ export default function CourseView(props) {
         for (let i = 0; i < sects.length; i++) {
           sects[i].semester = capitalizeFirstLetter(sects[i].semester);
         }
-        setGPATrendData(compileGPATrend(sects));
+        setGPATrendData(compileGPATrend(sects.reverse()));
       })
       .catch((err) => {
         alert("Failed to fetch list of sections.");
