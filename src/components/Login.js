@@ -72,6 +72,10 @@ export default function Login(props) {
       setEmail(props.location.state.emailField);
   }, [])
 
+  function TestText(currAlertText) {
+    return (<div></div>)
+  }
+
   function alert(severity, text) {
     setAlertSeverity(severity);
     setAlertText(text);
@@ -254,6 +258,7 @@ export default function Login(props) {
           </div>
         </div>
       </Grid>
+      <TestText valueEmail={email} valueAT={alertText}/>
     </div>
   );
 }

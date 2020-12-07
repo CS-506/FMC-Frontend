@@ -4,11 +4,12 @@ import { withStyles, makeStyles } from "@material-ui/core/styles";
 import {
   Typography, Paper, Grid, TextField, MenuItem, InputAdornment, 
   Button, Table, TableBody, TableCell, TableContainer, 
-  TableHead, TableRow,
+  TableHead, TableRow, Checkbox, FormControlLabel, Switch, FormGroup,
 } from "@material-ui/core/";
 import {
   PeopleAlt as InstructorIcon,
   DateRange as SemesterIcon,
+  UnfoldLess as ShowLessIcon,
 } from "@material-ui/icons";
 import {
   Line, Bar
@@ -110,25 +111,27 @@ function GPATrendChart(props) {
   }
   return (
     <div>
-      <h4>Historical GPA Trend</h4>
+      <h4>Cumulative Historical GPA Trend</h4>
       <div className={classes.chart_area}>
-        {
-          (props.data) ?
-            <Line
-              data={props.data}
-              width={400}
-              height={300}
-              options={chartOptions}
-            />
-            :
-            "No data available."
-        }
+        <Line
+          data={props.data}
+          width={400}
+          height={300}
+          options={chartOptions}
+        />
       </div>
     </div>
   );
 }
 
 function Charts(props) {
+  if (props.sections.length === 0)  {
+    return (
+      <Typography variant="subtitle2">
+        No charts available
+      </Typography>
+    );
+  }
   return (
     <Grid container spacing={4}>
       <Grid item md={6}>
@@ -162,11 +165,98 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
+function SectionTableRow(props) {
+  const row = props.row;
+  if (!row)
+    return null;
+  return (
+    <StyledTableRow>
+      <StyledTableCell component="th" scope="row">
+        {row.semester}
+      </StyledTableCell>
+      <StyledTableCell>{row.section}</StyledTableCell>
+      <StyledTableCell>{row.instructor}</StyledTableCell>
+      <StyledTableCell align="right">
+        {row.a + "%"}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        {row.ab + "%"}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        {row.b + "%"}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        {row.bc + "%"}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        {row.c + "%"}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        {row.d + "%"}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        {row.f + "%"}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        {row.gpa}
+      </StyledTableCell>
+    </StyledTableRow>
+  );
+}
+
 function SectionTable(props) {
   const classes = useStyles();
-  const rows = props.rows;
+  const MAXSECTIONS = 10;
+  const TAILNUM = 4;
+
+  const [sects, setSects] = React.useState([]);
+  const [showAll, setShowAll] = React.useState(false);
+  const [lastRows, setLastRows] = React.useState([]);
+
+  React.useEffect(() => {
+    let rows = props.rows;
+    setLastRows([]);
+    if (!showAll) {
+      if (rows.length > MAXSECTIONS) {
+        let last = rows.slice(rows.length - TAILNUM, rows.length);
+        setLastRows(last);
+        rows = rows.slice(0, MAXSECTIONS - TAILNUM);
+      } 
+    }
+    setSects(rows);
+  }, [props.rows, showAll]);
+
+  if (props.rows.length === 0) {
+    return (
+      <Typography variant="subtitle2">
+        Section data not available.
+      </Typography>
+    )
+  }
 
   return (
+    <div>
+    <Typography variant="h5">
+      Section Data (Total: {props.rows.length})
+    </Typography>
+
+    { props.rows.length > MAXSECTIONS ? (
+      <FormGroup row>
+          <FormControlLabel
+            control={
+              <Checkbox 
+                checked={showAll}
+                onChange={(e) => setShowAll(e.target.checked)}
+                color="primary"
+                label="show all"
+              />
+            }
+            label="Show all"
+          />
+      </FormGroup>
+    ) : <br />
+    }
+
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="customized table">
         <TableHead>
@@ -185,46 +275,70 @@ function SectionTable(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <StyledTableRow key={rows.indexOf(row)}>
-              <StyledTableCell component="th" scope="row">
-                {row.semester}
-              </StyledTableCell>
-              <StyledTableCell>{row.section}</StyledTableCell>
-              <StyledTableCell>{row.instructor}</StyledTableCell>
-              <StyledTableCell align="right">
-                {row.a + "%"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {row.ab + "%"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {row.b + "%"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {row.bc + "%"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {row.c + "%"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {row.d + "%"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {row.f + "%"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {row.gpa}
-              </StyledTableCell>
-            </StyledTableRow>
+          { sects.map((row) => (
+            <SectionTableRow row={row} key={sects.indexOf(row)} />
           ))}
+          { /* This is stupid */
+            !showAll && lastRows.length > 0 ? (
+            <StyledTableRow>
+              <StyledTableCell>...</StyledTableCell>
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+            </StyledTableRow>
+            ) : null
+          }
+          { /* This is also stupid */
+            !showAll && lastRows.length > 0 ? lastRows.map((row) => (
+              <SectionTableRow row={row} key={lastRows.indexOf(row)} />
+            )) : null
+          }
         </TableBody>
       </Table>
     </TableContainer>
+
+    { props.rows.length <= MAXSECTIONS || showAll ? (
+      <Typography variant="subtitle2">
+        <br />
+        (All sections shown.)
+      </Typography>
+      ) : null
+    }
+
+    { props.rows.length > MAXSECTIONS && showAll ? (
+        <Button 
+          onClick={() => {
+            setShowAll(false);
+          }}
+          color="default"
+          variant="outlined"
+          style={{ marginTop: 10 }}
+          startIcon={<ShowLessIcon />}
+        >
+          Show less
+        </Button>
+      ) : null
+    }
+    </div>
   );
 }
 
 function CommentSection(props) {
+  if (props.sections.length === 0) {
+    return (
+      <Typography variant="subtitle2">
+        Comment section not available.
+      </Typography>
+    );
+  }
+
   const comments = props.comments;
   return (
     <div>
@@ -273,6 +387,7 @@ function DataDisplay(props) {
     <div>
       <Charts 
         className={classes.unit} 
+        sections={props.sections}
         distData={props.gradeDistData}
         trendData={props.gpaTrendData}
       />
@@ -455,7 +570,7 @@ export default function CourseView(props) {
         for (let i = 0; i < sects.length; i++) {
           sects[i].semester = capitalizeFirstLetter(sects[i].semester);
         }
-        setGPATrendData(compileGPATrend(sects));
+        setGPATrendData(compileGPATrend(sects.reverse()));
       })
       .catch((err) => {
         alert("Failed to fetch list of sections.");
@@ -525,21 +640,21 @@ export default function CourseView(props) {
   }, []);
 
   /**
-   * Sort semesters by chronological order. 
+   * Sort semesters by REVERSE chronological order. 
    * 
-   * Spring < Fall in the same year, for the present time we will assume
+   * Spring > Fall in the same year, for the present time we will assume
    * that semester is either "spring" or "fall".
    */
   function semcomp(sem1, sem2) {
     if (sem1.year != sem2.year) {
-      return (sem1.year - sem2.year);
+      return -(sem1.year - sem2.year);
     } else {
       if (sem1.semester === sem2.semester)
         return 0;
       else if (sem1.semester.toLowerCase() === "spring")
-        return -1;
-      else
         return 1;
+      else
+        return -1;
     }
   }
 
@@ -585,7 +700,6 @@ export default function CourseView(props) {
 
     // semesters are shown in reverse chronological order (recent -> past)
     uniqsems.sort(semcomp);
-    uniqsems.reverse();
     return uniqsems;
   }
 

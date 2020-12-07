@@ -2,7 +2,7 @@ import React from 'react';
 import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 import {
-  Typography, Paper,
+  Typography, Paper, Button,
 } from "@material-ui/core/";
 import { Link } from 'react-router-dom';
 import NavBar from "./NavBar";
@@ -25,41 +25,141 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+function DisplaySearch(props) {
+  const classes = useStyles();
+
+  function addrConcat(cid) {
+    var newAddr = "/course_";
+    newAddr = newAddr.concat(cid);
+    return newAddr;
+  }
+
+  if (props.isLoading) {
+    return (
+      <Typography variant="subtitle2">
+        <br />
+        Loading...
+      </Typography>
+    )
+  }
+
+  if (props.results.length === 0) {
+    return (
+      <Typography variant="subtitle2">
+        <br />
+        No results found.
+      </Typography>
+    );
+  }
+
+  return (
+    <div>
+      { props.results.map(resultItem => (
+        <Link
+          to={{
+            pathname: addrConcat(resultItem[0]).toString(),
+            state: {
+              "keyWord": props.keyWord,
+              "keySubject": props.keySubject,
+              "keyInstructor": props.keyInstructor,
+            },
+          }}
+          style={{ textDecoration: 'none' }}
+          key={props.results.indexOf(resultItem)}
+        >
+          <Paper
+            className={classes.paper}
+            style={{ padding: 10, paddingLeft: 25 }}
+          >
+            <Typography variant="h5">
+              {resultItem[2]}
+            </Typography>
+            <Typography variant="subtitle1">
+              {resultItem[5]} {resultItem[1]}
+            </Typography>
+          </Paper>
+        </Link>
+      ))}
+      <div
+        className={classes.paper}
+        style={{ marginLeft: 30, marginTop: 20 }}
+      >
+        {props.noMore ? (
+          <Typography variant="subtitle2">
+            All results loaded. ({props.results.length} total)
+          </Typography>
+        ) : (
+            <Button
+              size="small"
+              onClick={props.loadMore}
+              style={{ marginBottom: 500 }}
+            >
+              ({props.results.length}) Show more ...
+            </Button>
+          )
+        }
+      </div>
+    </div>
+  );
+}
+
 export default function Search(props) {
   const classes = useStyles();
 
-  const [keyWord, setKeyWord] = React.useState(props.location.state.keyWord);
-  const [keySubject, setKeySubject] = React.useState(props.location.state.keySubject);
-  const [keyInstructor, setKeyInstructor] = React.useState(props.location.state.keyInstructor);
+  const [keyWord, setKeyWord] =
+    React.useState(props.location.state.keyWord);
+  const [keySubject, setKeySubject] =
+    React.useState(props.location.state.keySubject);
+  const [keyInstructor, setKeyInstructor] =
+    React.useState(props.location.state.keyInstructor);
 
-  // search result:
-  const [result, saveResult] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  /* The current result list */
+  const [results, saveResult] = React.useState([]);
+  /* The current pageno the search is at */
+  const [pageno, setPageno] = React.useState(0);
+  /* If there are more results to be fetched. */
+  const [noMore, setNoMore] = React.useState(false);
+
+  function search(keyword = " ", subj = " ", inst = " ",
+    page = 0, sz = 25, sort = "code") {
+    setIsLoading(true);
+    const url = `/coursesearch/search/` +
+      `${keyword}/${subj}/${inst}/${sort}/${page}/${sz}`;
+    axios.get(url)
+      .then((res) => {
+        setIsLoading(false);
+        let response = res.data;
+        let newpg = page + response.length;
+        setPageno(newpg);
+        if (page === 0) {
+          // New search terms, start fresh
+          saveResult(response);
+          setNoMore(false);
+        } else {
+          // building on old search, add to existing results
+          let updatedResults = results.concat(response);
+          saveResult(updatedResults);
+        }
+        if (response.length < sz)
+          setNoMore(true);
+      })
+      .catch((err) => {
+        alert("Search Loading Error.");
+      });
+  }
+
+  const searchNewPage = React.useCallback(() => {
+    search(keyWord, keySubject, keyInstructor, pageno);
+  }, [results, pageno])
 
   // Search course info from backend given the entry:
   const searchByKeyWord = React.useCallback((currKeyWord) => {
-    const paramSearch = `/coursesearch/search/${currKeyWord}/ / / /`;
-    console.log("Command for search controller: " + paramSearch);
-    axios.get(paramSearch)
-      .then((res) => {
-        console.log(res.data);
-        saveResult(res.data);
-      })
-      .catch((err) => {
-        alert("Search Loading Error.");
-      });
+    search(currKeyWord);
   }, []);
 
-  const searchByFilter = React.useCallback((currKeyWord, currKeySubj, currKeyFilter) => {
-    const paramSearch = `/coursesearch/search/${currKeyWord}/${currKeySubj}/${currKeyFilter}/ /`;
-    console.log("Command for search controller: " + paramSearch);
-    axios.get(paramSearch)
-      .then((res) => {
-        console.log(res.data);
-        saveResult(res.data);
-      })
-      .catch((err) => {
-        alert("Search Loading Error.");
-      });
+  const searchByFilter = React.useCallback((keyword, subj, inst) => {
+    search(keyword, subj, inst);
   }, []);
 
   // Update keyWord from NavBar's search box:
@@ -93,45 +193,6 @@ export default function Search(props) {
     searchByFilter(keyWord, keySubject, keyInstructor);
   }, [searchByKeyWord]);
 
-  function addrConcat(cid) {
-    var newAddr = "/course_";
-    newAddr = newAddr.concat(cid);
-    return newAddr;
-  }
-  function DisplaySearch() {
-    return (
-      <div>
-        {result.map(resultItem => (
-
-          <Link
-            to={{
-              pathname: addrConcat(resultItem[0]).toString(),
-              state: {
-                "keyWord": keyWord,
-                "keySubject": keySubject,
-                "keyInstructor": keyInstructor,
-              },
-            }}
-
-            style={{ textDecoration: 'none' }}
-            key={result.indexOf(resultItem)}
-          >
-            <Paper
-              className={classes.paper}
-              style={{ padding: 10, paddingLeft: 20 }}
-            >
-              <Typography variant="h5">
-                {resultItem[3]}
-              </Typography>
-              <Typography variant="subtitle1">
-                {resultItem[1]} {resultItem[2]}
-              </Typography>
-            </Paper>
-          </Link>
-        ))}
-      </div>
-    );
-  }
   return (
     <div className={classes.root}>
 
@@ -152,7 +213,15 @@ export default function Search(props) {
             Search Result for  "{keyWord}"
           </Typography>
 
-          <DisplaySearch />
+          <DisplaySearch
+            results={results}
+            keyWord={keyWord}
+            keySubject={keySubject}
+            keyInstructor={keyInstructor}
+            noMore={noMore}
+            loadMore={searchNewPage}
+            isLoading={isLoading && pageno === 0}
+          />
         </div>
       </main>
     </div>
