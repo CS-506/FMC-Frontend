@@ -39,17 +39,18 @@ export default function Search(props) {
     
     // search result:
     const [result, saveResult] = React.useState([]);
-    
+    const [searchExecuted, setSearchExecuted] = React.useState(true);
     const [buttonCheck, buttonClick] = React.useState(false);
 
     // Search course info from backend given the entry:
     const searchByKeyWord = React.useCallback((currKeyWord) => {
-        const paramSearch = `/coursesearch/search/${currKeyWord}/ / / /`;
+        const paramSearch = `/coursesearch/search/${currKeyWord}/ / / / / /`;
         console.log("Command for search controller: " + paramSearch);
         axios.get(paramSearch)
             .then((res) => {
                 console.log(res.data);
                 saveResult(res.data);
+                setSearchExecuted(true)
             })
             .catch((err) => {
                 alert("Search Loading Error.");
@@ -57,7 +58,7 @@ export default function Search(props) {
     }, []);
 
     const searchByFilter = React.useCallback((currKeyWord, currKeySubj, currKeyFilter) => {
-        const paramSearch = `/coursesearch/search/${currKeyWord}/${currKeySubj}/${currKeyFilter}/ /`;
+        const paramSearch = `/coursesearch/search/${currKeyWord}/${currKeySubj}/${currKeyFilter}/ / / /`;
         console.log("Command for search controller: " + paramSearch);
         axios.get(paramSearch)
             .then((res) => {
@@ -102,8 +103,12 @@ export default function Search(props) {
     React.useEffect(() => {
         // if (props.location.state) {
         // }
-        searchByFilter(keyWord, keySubject, keyInstructor);
-    }, [searchByFilter]);
+        if (keyWord != " ")
+            searchByFilter(keyWord, keySubject, keyInstructor);
+        else
+            setSearchExecuted(false);
+
+    }, [searchByFilter, setSearchExecuted]);
     
     function addrConcat(cid) {
         var newAddr = "/course_";
@@ -135,10 +140,10 @@ export default function Search(props) {
                             style={{ padding:10, paddingLeft:20}}
                         >
                             <Typography variant="h5">
-                                {resultItem[3]}
+                                {resultItem[2]}
                             </Typography>
                             <Typography variant="subtitle1">
-                                {resultItem[1]} {resultItem[2]}
+                                {resultItem[5]} {resultItem[1]}
                             </Typography>
                         </Paper>
                     </Link>
@@ -177,10 +182,15 @@ export default function Search(props) {
             
             <main className = {classes.contents}>
                 <div>
-                    <Typography variant="h5">
-                        Search Result for  "{keyWord}"
-                    </Typography>
-
+                    { searchExecuted ? 
+                        <Typography variant="h5">
+                            Search Result for "{keyWord}"" 
+                        </Typography>
+                        : 
+                        <Typography variant="h5">
+                            Please enter search contents ~
+                        </Typography>
+                    }   
                     <DisplaySearch searchResult={result}/>
                 </div>
             </main>
