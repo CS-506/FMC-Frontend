@@ -111,7 +111,7 @@ function GPATrendChart(props) {
   }
   return (
     <div>
-      <h4>Historical GPA Trend</h4>
+      <h4>Cumulative Historical GPA Trend</h4>
       <div className={classes.chart_area}>
         {
           (props.data) ?
