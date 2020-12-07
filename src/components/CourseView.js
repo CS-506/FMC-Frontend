@@ -162,17 +162,64 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
+function SectionTableRow(props) {
+  console.log(props);
+  const row = props.row;
+  if (!row)
+    return null;
+  return (
+    <StyledTableRow>
+      <StyledTableCell component="th" scope="row">
+        {row.semester}
+      </StyledTableCell>
+      <StyledTableCell>{row.section}</StyledTableCell>
+      <StyledTableCell>{row.instructor}</StyledTableCell>
+      <StyledTableCell align="right">
+        {row.a + "%"}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        {row.ab + "%"}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        {row.b + "%"}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        {row.bc + "%"}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        {row.c + "%"}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        {row.d + "%"}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        {row.f + "%"}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        {row.gpa}
+      </StyledTableCell>
+    </StyledTableRow>
+  );
+}
+
 function SectionTable(props) {
   const classes = useStyles();
   const MAXSECTIONS = 10;
+  const TAILNUM = 3;
 
   const [sects, setSects] = React.useState([]);
   const [showAll, setShowAll] = React.useState(false);
+  const [lastRows, setLastRows] = React.useState([]);
 
   React.useEffect(() => {
     let rows = props.rows;
+    setLastRows([]);
     if (!showAll) {
-      rows = rows.slice(0, MAXSECTIONS);
+      if (rows.length > 20) {
+        let last = rows.slice(rows.length - TAILNUM, rows.length);
+        setLastRows(last);
+      }
+      rows = rows.slice(0, MAXSECTIONS - TAILNUM);
     }
     setSects(rows);
   }, [props.rows, showAll]);
@@ -180,7 +227,7 @@ function SectionTable(props) {
   return (
     <div>
     <Typography variant="h5">
-      Section Data
+      Section Data (Total: {props.rows.length})
     </Typography>
 
     { props.rows.length > MAXSECTIONS ? (
@@ -219,41 +266,11 @@ function SectionTable(props) {
         </TableHead>
         <TableBody>
           { sects.map((row) => (
-            <StyledTableRow key={sects.indexOf(row)}>
-              <StyledTableCell component="th" scope="row">
-                {row.semester}
-              </StyledTableCell>
-              <StyledTableCell>{row.section}</StyledTableCell>
-              <StyledTableCell>{row.instructor}</StyledTableCell>
-              <StyledTableCell align="right">
-                {row.a + "%"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {row.ab + "%"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {row.b + "%"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {row.bc + "%"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {row.c + "%"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {row.d + "%"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {row.f + "%"}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {row.gpa}
-              </StyledTableCell>
-            </StyledTableRow>
+            <SectionTableRow row={row} key={sects.indexOf(row)} />
           ))}
           { /* This is stupid */
-            !showAll ? (
-            <StyledTableRow key="...">
+            !showAll && lastRows.length > 0 ? (
+            <StyledTableRow>
               <StyledTableCell>...</StyledTableCell>
               <StyledTableCell />
               <StyledTableCell />
@@ -267,6 +284,11 @@ function SectionTable(props) {
               <StyledTableCell />
             </StyledTableRow>
             ) : null
+          }
+          { /* This is also stupid */
+            !showAll && lastRows.length > 0 ? lastRows.map((row) => (
+              <SectionTableRow row={row} key={lastRows.indexOf(row)} />
+            )) : null
           }
         </TableBody>
       </Table>
