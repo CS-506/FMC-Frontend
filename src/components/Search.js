@@ -44,30 +44,45 @@ export default function Search(props) {
 
     // Search course info from backend given the entry:
     const searchByKeyWord = React.useCallback((currKeyWord) => {
-        const paramSearch = `/coursesearch/search/${currKeyWord}/ / / / / /`;
-        console.log("Command for search controller: " + paramSearch);
-        axios.get(paramSearch)
-            .then((res) => {
-                console.log(res.data);
-                saveResult(res.data);
-                setSearchExecuted(true)
-            })
-            .catch((err) => {
-                alert("Search Loading Error.");
-            });
+        if (currKeyWord != " ") {
+
+            const paramSearch = `/coursesearch/search/${currKeyWord}/ / / / / /`;
+            console.log("Command for search controller: " + paramSearch);
+            axios.get(paramSearch)
+                .then((res) => {
+                    console.log(res.data);
+                    saveResult(res.data);
+                    setSearchExecuted(true);
+                })
+                .catch((err) => {
+                    alert("Search Loading Error.");
+                });
+        
+        } else {
+            saveResult([]); // Reset search result displayed
+            setSearchExecuted(false);
+        } 
     }, []);
 
-    const searchByFilter = React.useCallback((currKeyWord, currKeySubj, currKeyFilter) => {
-        const paramSearch = `/coursesearch/search/${currKeyWord}/${currKeySubj}/${currKeyFilter}/ / / /`;
-        console.log("Command for search controller: " + paramSearch);
-        axios.get(paramSearch)
-            .then((res) => {
-                console.log(res.data);
-                saveResult(res.data);
-            })
-            .catch((err) => {
-                alert("Search Loading Error.");
-            });
+    const searchByFilter = React.useCallback((currKeyWord, currKeySubj, currKeyInst) => {
+        if (currKeyWord != " " || currKeySubj != " " || currKeyInst != " ") {
+            
+            const paramSearch = `/coursesearch/search/${currKeyWord}/${currKeySubj}/${currKeyInst}/ / / /`;
+            console.log("Command for search controller: " + paramSearch);
+            axios.get(paramSearch)
+                .then((res) => {
+                    console.log(res.data);
+                    saveResult(res.data);
+                    setSearchExecuted(true);
+                })
+                .catch((err) => {
+                    alert("Search Loading Error.");
+                });
+
+        } else {
+            saveResult([]); // Reset search result displayed
+            setSearchExecuted(false);
+        } 
     }, []);
 
     // Update keyWord from NavBar's search box:
@@ -103,10 +118,8 @@ export default function Search(props) {
     React.useEffect(() => {
         // if (props.location.state) {
         // }
-        if (keyWord != " ")
-            searchByFilter(keyWord, keySubject, keyInstructor);
-        else
-            setSearchExecuted(false);
+        
+        searchByFilter(keyWord, keySubject, keyInstructor);
 
     }, [searchByFilter, setSearchExecuted]);
     
