@@ -113,23 +113,25 @@ function GPATrendChart(props) {
     <div>
       <h4>Cumulative Historical GPA Trend</h4>
       <div className={classes.chart_area}>
-        {
-          (props.data) ?
-            <Line
-              data={props.data}
-              width={400}
-              height={300}
-              options={chartOptions}
-            />
-            :
-            "No data available."
-        }
+        <Line
+          data={props.data}
+          width={400}
+          height={300}
+          options={chartOptions}
+        />
       </div>
     </div>
   );
 }
 
 function Charts(props) {
+  if (props.sections.length === 0)  {
+    return (
+      <Typography variant="subtitle2">
+        No charts available
+      </Typography>
+    );
+  }
   return (
     <Grid container spacing={4}>
       <Grid item md={6}>
@@ -223,6 +225,14 @@ function SectionTable(props) {
     }
     setSects(rows);
   }, [props.rows, showAll]);
+
+  if (props.rows.length === 0) {
+    return (
+      <Typography variant="subtitle2">
+        Section data not available.
+      </Typography>
+    )
+  }
 
   return (
     <div>
@@ -321,6 +331,14 @@ function SectionTable(props) {
 }
 
 function CommentSection(props) {
+  if (props.sections.length === 0) {
+    return (
+      <Typography variant="subtitle2">
+        Comment section not available.
+      </Typography>
+    );
+  }
+
   const comments = props.comments;
   return (
     <div>
@@ -369,6 +387,7 @@ function DataDisplay(props) {
     <div>
       <Charts 
         className={classes.unit} 
+        sections={props.sections}
         distData={props.gradeDistData}
         trendData={props.gpaTrendData}
       />
