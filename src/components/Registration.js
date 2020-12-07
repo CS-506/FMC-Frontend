@@ -261,6 +261,10 @@ export default function Registration(props) {
   const [alertSeverity, setAlertSeverity] = React.useState("info");
   const [alertText, setAlertText] = React.useState("");
 
+  function TestAlertText(currAlertText) {
+    return (<div></div>)
+  }
+
   function alert(severity, text) {
     setAlertSeverity(severity);
     setAlertText(text);
@@ -406,6 +410,7 @@ export default function Registration(props) {
         </div>
         </div>
       </Grid>
+      <TestAlertText valueEmail={email} valueAT={alertText}/>
     </div>
   );
 }
