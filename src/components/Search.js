@@ -113,8 +113,6 @@ export default function Search(props) {
   const [keyInstructor, setKeyInstructor] = 
           React.useState(props.location.state.keyInstructor || " ");
   
-  const [searchExecuted, setSearchExecuted] = React.useState(true);
-
   const [isLoading, setIsLoading] = React.useState(true);
   /* The current result list */
   const [results, saveResult] = React.useState([]);
@@ -242,7 +240,7 @@ export default function Search(props) {
       <TestKeyWord value={keyWord}/>
       <TestKeySubject value={keySubject}/>
       <TestKeyInstructor value={keyInstructor}/>
-      <TestResult value={result}/>
+      <TestResult value={results}/>
     </div>
   )
 }
