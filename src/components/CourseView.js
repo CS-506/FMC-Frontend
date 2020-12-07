@@ -692,14 +692,22 @@ export default function CourseView(props) {
 
     return chartData;
   }
-// Set selectable semester options based on list of sections
+
+  /**
+   * Checks if a section (sect) takes place in the given semester (sem)
+   */
+  function sectionIsInSemester(sect, sem) {
+    return (sem.year == String(sect.year) &&
+            sem.semester.toLowerCase() === sect.semester.toLowerCase());
+  }
+
+  // Set selectable semester options based on list of sections
   // Instructor is anchor.
   function setSemOptsFromSects(sectOpts) {
     let opts = [];
     for (let i = 0; i < semesters.length; i++) {
       for (let j = 0; j < sectOpts.length; j++) {
-        if (semesters[i].year == String(sectOpts[j].year)
-            && semesters[i].semester == sectOpts[j].semester) {
+        if (sectionIsInSemester(sectOpts[j], semesters[i])) {
           opts.push(i);
         }
       }

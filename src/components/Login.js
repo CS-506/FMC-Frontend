@@ -152,7 +152,7 @@ export default function Login(props) {
     props.location.state && props.location.state.redir ? {
       pathname: props.location.state.redir,
     } : {
-      pathname: "/Search",
+      pathname: "/Profile",
       state: {
         "keyWord": " ",
         "keySubject": " ",

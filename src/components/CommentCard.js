@@ -39,9 +39,9 @@ export default function CommentCard(props) {
         axios.get(`/admin/course/get/${resSection.data.courseId}`)
           .then((resCourse) => {
             console.log(resCourse.data);
-            setCourseName(resCourse.data.name+"\n");
-            setCourseCode(resCourse.data.subject + " " 
-                          + resCourse.data.code+"\n");
+            setCourseName(resCourse.data.name);
+            setCourseCode(resCourse.data.deptAbbr + " " 
+                          + resCourse.data.code);
           })
       })
   }

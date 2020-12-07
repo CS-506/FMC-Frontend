@@ -1,20 +1,16 @@
-import React, { useState, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import {
-    createMuiTheme,
-    makeStyles
+  makeStyles
 } from '@material-ui/core/styles';
 import {
-    Typography,
-    Grid,
-    TextField,
-    Button,
-    InputBase,
-    Menu,
-    MenuItem,
-    IconButton,
+  Grid,
+  TextField,
+  Button,
+  Menu,
+  MenuItem,
+  IconButton,
 } from "@material-ui/core/";
-import { red, white } from '@material-ui/core/colors';
-import Search from './Search';
+import { red } from '@material-ui/core/colors';
 import { Link } from 'react-router-dom';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import logo from "./img/Logo2.PNG";
@@ -39,22 +35,22 @@ export const AppContext = React.createContext();
 
 // Set up Initial State
 const initialState = {
-    currKeyWord: ''
+  currKeyWord: ''
 };
 
 function LogoDisplay() {
-    return <img src={logo} alt="Find My Course" height="200" width="400"/>;
+  return <img src={logo} alt="Find My Course" height="200" width="400" />;
 }
 
 function reducer(state, action) {
-    switch (action.type) {
-        case 'UPDATE_INPUT':
-            return {
-                currKeyWord: action.data
-            };
-        default:
-            return initialState;
-    }
+  switch (action.type) {
+    case 'UPDATE_INPUT':
+      return {
+        currKeyWord: action.data
+      };
+    default:
+      return initialState;
+  }
 }
 
 function TestKeyWord(currKeyWord) {

@@ -1,28 +1,28 @@
 import React from 'react';
 import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
-import { 
-    Typography, Paper,
+import {
+  Typography, Paper,
 } from "@material-ui/core/";
 import { Link } from 'react-router-dom';
 import NavBar from "./NavBar";
 
 const useStyles = makeStyles(theme => ({
-    navbar: {
-        flexGrow: 1,
-        zIndex: theme.zIndex.drawer + 1,
-    },
-    contents: {
-        flexGrow: 1,
-        paddingTop: theme.spacing(10),
-        paddingLeft: theme.spacing(35),
-    },
-    paper: {
-        margin: theme.spacing(2, 3),
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'left',
-    },
+  navbar: {
+    flexGrow: 1,
+    zIndex: theme.zIndex.drawer + 1,
+  },
+  contents: {
+    flexGrow: 1,
+    paddingTop: theme.spacing(10),
+    paddingLeft: theme.spacing(35),
+  },
+  paper: {
+    margin: theme.spacing(2, 3),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'left',
+  },
 }));
 
 export default function Search(props) {
@@ -31,12 +31,7 @@ export default function Search(props) {
     const [keyWord, setKeyWord] = React.useState(props.location.state.keyWord || " ");
     const [keySubject, setKeySubject] = React.useState(props.location.state.keySubject || " ");
     const [keyInstructor, setKeyInstructor] = React.useState(props.location.state.keyInstructor || " ");
-/*
-    const [keyWord, setKeyWord] = React.useState(" ");
-    const [keySubject, setKeySubject] = React.useState(" ");
-    const [keyInstructor, setKeyInstructor] = React.useState(" ");
-*/
-    
+
     // search result:
     const [result, saveResult] = React.useState([]);
     const [searchExecuted, setSearchExecuted] = React.useState(true);
@@ -213,5 +208,7 @@ export default function Search(props) {
             <TestKeyInstructor value={keyInstructor}/>
             <TestResult value={result}/>
         </div>
-    )
+      </main>
+    </div>
+  )
 }
