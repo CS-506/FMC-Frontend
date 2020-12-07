@@ -172,6 +172,10 @@ export default function Search(props) {
   }, []);
 
   const searchByFilter = React.useCallback((keyword, subj, inst) => {
+    if (subj === "")
+      subj = " ";
+    if (inst === "")
+      inst = " ";
     search(keyword, subj, inst);
   }, []);
 
