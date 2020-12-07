@@ -113,12 +113,16 @@ function GPATrendChart(props) {
     <div>
       <h4>Cumulative Historical GPA Trend</h4>
       <div className={classes.chart_area}>
-        <Line
-          data={props.data}
-          width={400}
-          height={300}
-          options={chartOptions}
-        />
+        { props.data ?
+          <Line
+            data={props.data}
+            width={400}
+            height={300}
+            options={chartOptions}
+          />
+          :
+          "No data available"
+        }
       </div>
     </div>
   );
