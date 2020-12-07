@@ -9,6 +9,7 @@ import {
 import {
   PeopleAlt as InstructorIcon,
   DateRange as SemesterIcon,
+  UnfoldLess as ShowLessIcon,
 } from "@material-ui/icons";
 import {
   Line, Bar
@@ -163,7 +164,6 @@ const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
 function SectionTableRow(props) {
-  console.log(props);
   const row = props.row;
   if (!row)
     return null;
@@ -205,7 +205,7 @@ function SectionTableRow(props) {
 function SectionTable(props) {
   const classes = useStyles();
   const MAXSECTIONS = 10;
-  const TAILNUM = 3;
+  const TAILNUM = 4;
 
   const [sects, setSects] = React.useState([]);
   const [showAll, setShowAll] = React.useState(false);
@@ -215,11 +215,11 @@ function SectionTable(props) {
     let rows = props.rows;
     setLastRows([]);
     if (!showAll) {
-      if (rows.length > 20) {
+      if (rows.length > MAXSECTIONS) {
         let last = rows.slice(rows.length - TAILNUM, rows.length);
         setLastRows(last);
-      }
-      rows = rows.slice(0, MAXSECTIONS - TAILNUM);
+        rows = rows.slice(0, MAXSECTIONS - TAILNUM);
+      } 
     }
     setSects(rows);
   }, [props.rows, showAll]);
@@ -244,7 +244,7 @@ function SectionTable(props) {
             label="Show all"
           />
       </FormGroup>
-    ) : null
+    ) : <br />
     }
 
     <TableContainer component={Paper}>
@@ -294,13 +294,23 @@ function SectionTable(props) {
       </Table>
     </TableContainer>
 
+    { props.rows.length <= MAXSECTIONS || showAll ? (
+      <Typography variant="subtitle2">
+        <br />
+        (All sections shown.)
+      </Typography>
+      ) : null
+    }
+
     { props.rows.length > MAXSECTIONS && showAll ? (
         <Button 
           onClick={() => {
             setShowAll(false);
           }}
           color="default"
+          variant="outlined"
           style={{ marginTop: 10 }}
+          startIcon={<ShowLessIcon />}
         >
           Show less
         </Button>
