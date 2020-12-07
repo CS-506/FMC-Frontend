@@ -106,12 +106,14 @@ function DisplaySearch(props) {
 export default function Search(props) {
   const classes = useStyles();
 
-  const [keyWord, setKeyWord] =
-    React.useState(props.location.state.keyWord);
-  const [keySubject, setKeySubject] =
-    React.useState(props.location.state.keySubject);
-  const [keyInstructor, setKeyInstructor] =
-    React.useState(props.location.state.keyInstructor);
+  const [keyWord, setKeyWord] = 
+          React.useState(props.location.state.keyWord || " ");
+  const [keySubject, setKeySubject] = 
+          React.useState(props.location.state.keySubject || " ")
+  const [keyInstructor, setKeyInstructor] = 
+          React.useState(props.location.state.keyInstructor || " ");
+  
+  const [searchExecuted, setSearchExecuted] = React.useState(true);
 
   const [isLoading, setIsLoading] = React.useState(true);
   /* The current result list */
@@ -120,6 +122,19 @@ export default function Search(props) {
   const [pageno, setPageno] = React.useState(0);
   /* If there are more results to be fetched. */
   const [noMore, setNoMore] = React.useState(false);
+  
+  function TestResult(currResult) {
+    return (<div></div>);
+  }    
+  function TestKeyWord(currKeyWord) {
+    return (<div></div>);
+  }
+  function TestKeySubject(currKeyWord) {
+    return (<div></div>);
+  }
+  function TestKeyInstructor(currKeyWord) {
+    return (<div></div>);
+  }
 
   function search(keyword = " ", subj = " ", inst = " ",
     page = 0, sz = 25, sort = "code") {
@@ -224,6 +239,10 @@ export default function Search(props) {
           />
         </div>
       </main>
+      <TestKeyWord value={keyWord}/>
+      <TestKeySubject value={keySubject}/>
+      <TestKeyInstructor value={keyInstructor}/>
+      <TestResult value={result}/>
     </div>
   )
 }
