@@ -4,7 +4,7 @@ import { withStyles, makeStyles } from "@material-ui/core/styles";
 import {
   Typography, Paper, Grid, TextField, MenuItem, InputAdornment, 
   Button, Table, TableBody, TableCell, TableContainer, 
-  TableHead, TableRow,
+  TableHead, TableRow, Checkbox, FormControlLabel, Switch, FormGroup,
 } from "@material-ui/core/";
 import {
   PeopleAlt as InstructorIcon,
@@ -164,9 +164,43 @@ const StyledTableRow = withStyles((theme) => ({
 
 function SectionTable(props) {
   const classes = useStyles();
-  const rows = props.rows;
+  const MAXSECTIONS = 10;
+
+  const [sects, setSects] = React.useState([]);
+  const [showAll, setShowAll] = React.useState(false);
+
+  React.useEffect(() => {
+    let rows = props.rows;
+    if (!showAll) {
+      rows = rows.slice(0, MAXSECTIONS);
+    }
+    console.log(rows);
+    setSects(rows);
+  }, [props.rows, showAll]);
 
   return (
+    <div>
+    <Typography variant="h5">
+      Section Data
+    </Typography>
+
+    { props.rows.length > MAXSECTIONS ? (
+      <FormGroup row>
+          <FormControlLabel
+            control={
+              <Checkbox 
+                checked={showAll}
+                onChange={(e) => setShowAll(e.target.checked)}
+                color="primary"
+                label="show all"
+              />
+            }
+            label="Show all"
+          />
+      </FormGroup>
+    ) : null
+    }
+
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="customized table">
         <TableHead>
@@ -185,8 +219,8 @@ function SectionTable(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <StyledTableRow key={rows.indexOf(row)}>
+          { sects.map((row) => (
+            <StyledTableRow key={sects.indexOf(row)}>
               <StyledTableCell component="th" scope="row">
                 {row.semester}
               </StyledTableCell>
@@ -218,9 +252,40 @@ function SectionTable(props) {
               </StyledTableCell>
             </StyledTableRow>
           ))}
+          { /* This is stupid */
+            !showAll ? (
+            <StyledTableRow key="...">
+              <StyledTableCell>...</StyledTableCell>
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+              <StyledTableCell />
+            </StyledTableRow>
+            ) : null
+          }
         </TableBody>
       </Table>
     </TableContainer>
+
+    { props.rows.length > MAXSECTIONS && showAll ? (
+        <Button 
+          onClick={() => {
+            setShowAll(false);
+          }}
+          color="default"
+          style={{ marginTop: 10 }}
+        >
+          Show less
+        </Button>
+      ) : null
+    }
+    </div>
   );
 }
 
@@ -779,7 +844,7 @@ export default function CourseView(props) {
       + "/" + semesters[sem - 1].semester);
     axios.get(url)
       .then((res) => {
-        let sects = res.data.sort(sectcomp);
+        let sects = res.data.sort(sectcomp).reverse();
         for (let i = 0; i < sects.length; i++) {
           sects[i].semester = capitalizeFirstLetter(sects[i].semester);
         }
