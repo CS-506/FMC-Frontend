@@ -24,7 +24,7 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 ### `npm run test -- --coverage --watchAll=false`
 
 Run all tests with code coverage display.<br />
-See (https://medium.com/swlh/react-testing-using-jest-along-with-code-coverage-report-7454b5ba0236) for dependencies set up.
+See [testing with code coverage](https://medium.com/swlh/react-testing-using-jest-along-with-code-coverage-report-7454b5ba0236) for dependencies set up.
 
 ### `npm run build`
 
