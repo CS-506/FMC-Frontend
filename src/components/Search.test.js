@@ -6,6 +6,8 @@ import Adapter from 'enzyme-adapter-react-16';
 import { Link, MemoryRouter } from 'react-router-dom';
 import { InputBase, Button } from '@material-ui/core/';
 
+//import * as ReactReduxHooks from "./react-redux-hooks";
+
 Enzyme.configure({ adapter: new Adapter() });
 
 describe('Desperate trying', () => {
@@ -22,6 +24,7 @@ describe('Desperate trying', () => {
             />
         );
         expect(wrapper.exists()).toBe(true);
+        expect(wrapper).toMatchSnapshot();
     });
 
     it('Props passed are stored', () => {
@@ -67,5 +70,7 @@ describe('Desperate trying', () => {
         // Jest cannot test useEffect, as well as functions within functional components
         expect(wrapper.find('TestResult').prop('value')).toHaveLength(0); 
     });
+
+    
 
 });

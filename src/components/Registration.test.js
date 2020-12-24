@@ -27,11 +27,31 @@ describe('Testing Registration Page', () => {
 
     test('Register with non-wisc email', () => {
         const wrapper = mount(<Reg />);
-        wrapper.find(TextField).at(2).simulate("change", {
+        wrapper.find(TextField).at(0).simulate("change", {
             target: { value: "testemail@gmail.com"}
         });
         wrapper.find(Button).at(0).simulate("click");
         wrapper.update();
         //expect(wrapper.find('TestAlertText').prop('valueAT')).toEqual("Please use a UW-Madison email address.");
+    });
+    test('Register with invalid email', () => {
+        const wrapper = mount(<Reg />);
+        wrapper.find(TextField).at(0).simulate("change", {
+            target: { value: "testemail"}
+        });
+        wrapper.find(Button).at(0).simulate("click");
+        wrapper.update();
+        //expect(wrapper.find('TestAlertText').prop('valueAT')).toEqual("Invalid email address.");
+    });
+
+    
+    test('Register with no password', () => {
+        const wrapper = mount(<Reg />);
+        wrapper.find(TextField).at(1).simulate("change", {
+            target: { value: "123456"}
+        });
+        wrapper.find(Button).at(0).simulate("click");
+        wrapper.update();
+        //expect(wrapper.find('TestAlertText').prop('valueAT')).toEqual("Password must be at least 8 characters.");
     });
 }); 
