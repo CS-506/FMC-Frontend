@@ -107,11 +107,14 @@ export default function Search(props) {
   const classes = useStyles();
 
   const [keyWord, setKeyWord] = 
-          React.useState(props.location.state.keyWord || " ");
+    React.useState(props.location.state && props.location.state.keyWord ?
+                          props.location.state.keyWord : " ");
   const [keySubject, setKeySubject] = 
-          React.useState(props.location.state.keySubject || " ")
+    React.useState(props.location.state && props.location.state.keySubject ?
+                          props.location.state.keySubject : " ")
   const [keyInstructor, setKeyInstructor] = 
-          React.useState(props.location.state.keyInstructor || " ");
+    React.useState(props.location.state && props.location.state.keyInstructor ?
+                          props.location.state.keyInstructor :  " ");
   
   const [isLoading, setIsLoading] = React.useState(true);
   /* The current result list */
