@@ -54,7 +54,7 @@
     "enzyme-adapter-react-16": "^1.15.2",
     "jest-enzyme": "^7.1.2"
   },
-  "homepage": "https://fmcuw.com",
+  "homepage": ".",
   "optionalDependencies": {
     "fsevents": "^2.2.1"
   }
