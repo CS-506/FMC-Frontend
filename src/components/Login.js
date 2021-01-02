@@ -103,9 +103,10 @@ export default function Login(props) {
   }
 
   function setUserId(loginData) {
-    axios.get("/user/get/username/" + loginData.username)
+    axios.get(`/user?username=${loginData.username}`)
       .then((res) => {
         loginData.userId = res.data.userId;
+        console.log(loginData);
         props.auth(loginData);
         alert("success", "Success. Redirecting...");
         setRedirect(true);

@@ -224,7 +224,8 @@ export default function Profile(props) {
 
   function loadUser() {
     const userId = Number(props.user.userId);
-    const paramUser = `/user/get/id/${userId}`;
+    const paramUser = `/user?userId=${userId}`;
+
     Axios.get(paramUser)
       .then((res) => {
         setUser(res.data);
@@ -236,7 +237,7 @@ export default function Profile(props) {
 
   function loadComments() {
     const userId = Number(props.user.userId);
-    const paramComment = `/user/comment/get/userid/${userId}`;
+    const paramComment = `/user/comment?userId=${userId}`;
     Axios.get(paramComment)
       .then((res) => {
         saveComments(res.data);
