@@ -47,7 +47,9 @@ export default function CommentCard(props) {
   }
 
   function deleteComment(scid) {
-    axios.delete("/user/scomment/delete/id/" + scid)
+    // FIXME deprecated
+    // axios.delete("/user/scomment/delete/id/" + scid)
+    axios.delete(`/user/comment?sCommentId=${scid}`)
       .then((res) => {
         props.reload();
       })

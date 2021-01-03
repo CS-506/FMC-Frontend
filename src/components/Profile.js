@@ -160,7 +160,10 @@ function Deregistration(props) {
     setConfirmDialog(false);
     setOkDialog(true);
     console.log("Deleting user: " + props.user.userId);
-    Axios.delete("/user/delete/id/" + props.user.userId)
+
+    // FIXME deprecated
+    // Axios.delete("/user/delete/id/" + props.user.userId)
+    Axios.delete(`/user?userId=${props.user.userId}`)
       .then((res) => {
         setDeleted(true);
       })
