@@ -1,9 +1,9 @@
 import React from "react"
 import axios from "axios"
-import { withStyles, makeStyles } from "@material-ui/core/styles";
+import {withStyles, makeStyles} from "@material-ui/core/styles";
 import {
-  Typography, Paper, Grid, TextField, MenuItem, InputAdornment, 
-  Button, Table, TableBody, TableCell, TableContainer, 
+  Typography, Paper, Grid, TextField, MenuItem, InputAdornment,
+  Button, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Checkbox, FormControlLabel, Switch, FormGroup,
 } from "@material-ui/core/";
 import {
@@ -14,7 +14,7 @@ import {
 import {
   Line, Bar
 } from "react-chartjs-2";
-import { Redirect } from 'react-router';
+import {Redirect} from 'react-router';
 
 import NavBar from "./NavBar";
 import CommentEditor from "./CommentEditor";
@@ -113,7 +113,7 @@ function GPATrendChart(props) {
     <div>
       <h4>Cumulative Historical GPA Trend</h4>
       <div className={classes.chart_area}>
-        { props.data ?
+        {props.data ?
           <Line
             data={props.data}
             width={400}
@@ -129,7 +129,7 @@ function GPATrendChart(props) {
 }
 
 function Charts(props) {
-  if (props.sections.length === 0)  {
+  if (props.sections.length === 0) {
     return (
       <Typography variant="subtitle2">
         No charts available
@@ -139,12 +139,12 @@ function Charts(props) {
   return (
     <Grid container spacing={4}>
       <Grid item md={6}>
-        <GPADistroChart 
+        <GPADistroChart
           data={props.distData}
         />
       </Grid>
       <Grid item md={6}>
-        <GPATrendChart 
+        <GPATrendChart
           data={props.trendData}
         />
       </Grid>
@@ -225,7 +225,7 @@ function SectionTable(props) {
         let last = rows.slice(rows.length - TAILNUM, rows.length);
         setLastRows(last);
         rows = rows.slice(0, MAXSECTIONS - TAILNUM);
-      } 
+      }
     }
     setSects(rows);
   }, [props.rows, showAll]);
@@ -240,15 +240,15 @@ function SectionTable(props) {
 
   return (
     <div>
-    <Typography variant="h5">
-      Section Data (Total: {props.rows.length})
+      <Typography variant="h5">
+        Section Data (Total: {props.rows.length})
     </Typography>
 
-    { props.rows.length > MAXSECTIONS ? (
-      <FormGroup row>
+      {props.rows.length > MAXSECTIONS ? (
+        <FormGroup row>
           <FormControlLabel
             control={
-              <Checkbox 
+              <Checkbox
                 checked={showAll}
                 onChange={(e) => setShowAll(e.target.checked)}
                 color="primary"
@@ -257,79 +257,79 @@ function SectionTable(props) {
             }
             label="Show all"
           />
-      </FormGroup>
-    ) : <br />
-    }
+        </FormGroup>
+      ) : <br />
+      }
 
-    <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="customized table">
-        <TableHead>
-          <TableRow>
-            <StyledTableCell>Semester</StyledTableCell>
-            <StyledTableCell>Section</StyledTableCell>
-            <StyledTableCell>Instructor</StyledTableCell>
-            <StyledTableCell align="right">A</StyledTableCell>
-            <StyledTableCell align="right">AB</StyledTableCell>
-            <StyledTableCell align="right">B</StyledTableCell>
-            <StyledTableCell align="right">BC</StyledTableCell>
-            <StyledTableCell align="right">C</StyledTableCell>
-            <StyledTableCell align="right">D</StyledTableCell>
-            <StyledTableCell align="right">F</StyledTableCell>
-            <StyledTableCell align="right">GPA</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          { sects.map((row) => (
-            <SectionTableRow row={row} key={sects.indexOf(row)} />
-          ))}
-          { /* This is stupid */
-            !showAll && lastRows.length > 0 ? (
-            <StyledTableRow>
-              <StyledTableCell>...</StyledTableCell>
-              <StyledTableCell />
-              <StyledTableCell />
-              <StyledTableCell />
-              <StyledTableCell />
-              <StyledTableCell />
-              <StyledTableCell />
-              <StyledTableCell />
-              <StyledTableCell />
-              <StyledTableCell />
-              <StyledTableCell />
-            </StyledTableRow>
-            ) : null
-          }
-          { /* This is also stupid */
-            !showAll && lastRows.length > 0 ? lastRows.map((row) => (
-              <SectionTableRow row={row} key={lastRows.indexOf(row)} />
-            )) : null
-          }
-        </TableBody>
-      </Table>
-    </TableContainer>
+      <TableContainer component={Paper}>
+        <Table className={classes.table} aria-label="customized table">
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>Semester</StyledTableCell>
+              <StyledTableCell>Section</StyledTableCell>
+              <StyledTableCell>Instructor</StyledTableCell>
+              <StyledTableCell align="right">A</StyledTableCell>
+              <StyledTableCell align="right">AB</StyledTableCell>
+              <StyledTableCell align="right">B</StyledTableCell>
+              <StyledTableCell align="right">BC</StyledTableCell>
+              <StyledTableCell align="right">C</StyledTableCell>
+              <StyledTableCell align="right">D</StyledTableCell>
+              <StyledTableCell align="right">F</StyledTableCell>
+              <StyledTableCell align="right">GPA</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sects.map((row) => (
+              <SectionTableRow row={row} key={sects.indexOf(row)} />
+            ))}
+            { /* This is stupid */
+              !showAll && lastRows.length > 0 ? (
+                <StyledTableRow>
+                  <StyledTableCell>...</StyledTableCell>
+                  <StyledTableCell />
+                  <StyledTableCell />
+                  <StyledTableCell />
+                  <StyledTableCell />
+                  <StyledTableCell />
+                  <StyledTableCell />
+                  <StyledTableCell />
+                  <StyledTableCell />
+                  <StyledTableCell />
+                  <StyledTableCell />
+                </StyledTableRow>
+              ) : null
+            }
+            { /* This is also stupid */
+              !showAll && lastRows.length > 0 ? lastRows.map((row) => (
+                <SectionTableRow row={row} key={lastRows.indexOf(row)} />
+              )) : null
+            }
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-    { props.rows.length <= MAXSECTIONS || showAll ? (
-      <Typography variant="subtitle2">
-        <br />
-        (All sections shown.)
+      {props.rows.length <= MAXSECTIONS || showAll ? (
+        <Typography variant="subtitle2">
+          <br />
+          (All sections shown.)
       </Typography>
       ) : null
-    }
+      }
 
-    { props.rows.length > MAXSECTIONS && showAll ? (
-        <Button 
+      {props.rows.length > MAXSECTIONS && showAll ? (
+        <Button
           onClick={() => {
             setShowAll(false);
           }}
           color="default"
           variant="outlined"
-          style={{ marginTop: 10 }}
+          style={{marginTop: 10}}
           startIcon={<ShowLessIcon />}
         >
           Show less
         </Button>
       ) : null
-    }
+      }
     </div>
   );
 }
@@ -351,19 +351,19 @@ function CommentSection(props) {
       </Typography>
       <br />
       {
-        props.showEditor ? 
-        <CommentEditor 
-          disable={props.disableComment} 
-          sectionId={props.sections[0].sectionId}
-          userId={props.user.userId}
-        />
-        :
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={props.leaveComment}
-        >
-          Leave a comment
+        props.showEditor ?
+          <CommentEditor
+            disable={props.disableComment}
+            sectionId={props.sections[0].sectionId}
+            userId={props.user.userId}
+          />
+          :
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={props.leaveComment}
+          >
+            Leave a comment
         </Button>
       }
       <br /><br />
@@ -372,8 +372,8 @@ function CommentSection(props) {
           <Grid item key={comments.indexOf(cmt)} md={6}>
             <CommentCard
               comment={cmt}
-              byUser={props.user ? 
-                      (cmt.userId === props.user.userId) : false}
+              byUser={props.user ?
+                (cmt.userId === props.user.userId) : false}
               reload={props.loadComments}
             />
           </Grid>
@@ -389,8 +389,8 @@ function DataDisplay(props) {
 
   return (
     <div>
-      <Charts 
-        className={classes.unit} 
+      <Charts
+        className={classes.unit}
         sections={props.sections}
         distData={props.gradeDistData}
         trendData={props.gpaTrendData}
@@ -398,14 +398,14 @@ function DataDisplay(props) {
 
       <br /> <hr /> <br />
 
-      <SectionTable 
-        className={classes.unit} 
+      <SectionTable
+        className={classes.unit}
         rows={sectionTableRows}
       />
 
       <br /> <hr /> <br />
 
-      <CommentSection 
+      <CommentSection
         comments={props.comments}
         showEditor={props.showCommentEditor}
         disableComment={props.disableComment}
@@ -445,10 +445,10 @@ function InstructorSelect(props) {
       <MenuItem value={0} key={0}>
         All instructors
       </MenuItem>
-      {props.instructors?.map(inst => { 
-        if (!props.options || props.options.length === 0 
-            || (props.options.length > 0 
-              && props.options.includes(props.instructors.indexOf(inst)))) {
+      {props.instructors ?.map(inst => {
+        if (!props.options || props.options.length === 0
+          || (props.options.length > 0
+            && props.options.includes(props.instructors.indexOf(inst)))) {
           return (
             <MenuItem value={inst.iid} key={inst.iid}>
               {inst.name}
@@ -491,10 +491,10 @@ function SemesterSelect(props) {
       <MenuItem value={0} key={0}>
         All semesters
       </MenuItem>
-      {semesters?.map(sem => {
-        if (!props.options || props.options.length === 0 
-            || (props.options.length > 0
-                && props.options.includes(props.semesters.indexOf(sem)))) {
+      {semesters ?.map(sem => {
+        if (!props.options || props.options.length === 0
+          || (props.options.length > 0
+            && props.options.includes(props.semesters.indexOf(sem)))) {
           return (
             <MenuItem
               value={semesters.indexOf(sem) + 1}
@@ -566,8 +566,11 @@ export default function CourseView(props) {
    * derived from this data.
    */
   const loadSectionsAll = React.useCallback((courseId) => {
-    let url = "/coursesection/section/"
-      + courseId + "/inst_all/year_all/sem_all";
+    // FIXME: deprecated
+    // let url = "/coursesection/section/"
+    //   + courseId + "/inst_all/year_all/sem_all";
+
+    let url = `/coursesection?courseId=${courseId}`;
     axios.get(url)
       .then((res) => {
         let sects = processSections(res.data);
@@ -816,7 +819,7 @@ export default function CourseView(props) {
    */
   function sectionIsInSemester(sect, sem) {
     return (sem.year == String(sect.year) &&
-            sem.semester.toLowerCase() === sect.semester.toLowerCase());
+      sem.semester.toLowerCase() === sect.semester.toLowerCase());
   }
 
   // Set selectable semester options based on list of sections
@@ -872,15 +875,28 @@ export default function CourseView(props) {
    * SemesterSelect() for reason of doing so.
    */
   const loadSections = React.useCallback((courseId) => {
-    let url = "/coursesection/section/" + courseId + "/";
-    if (instAnchored && iid !== 0) {
-      url += String(iid) + "/year_all/sem_all";
-    } else if (!instAnchored && sem !== 0) {
-      url += "inst_all/" + String(semesters[sem - 1].year)
-                   + "/" + String(semesters[sem - 1].semester);
-    } else {
-      url += "inst_all/year_all/sem_all";
+    // FIXME: deprecated
+    // let url = "/coursesection/section/" + courseId + "/";
+    // if (instAnchored && iid !== 0) {
+    //   url += String(iid) + "/year_all/sem_all";
+    // } else if (!instAnchored && sem !== 0) {
+    //   url += "inst_all/" + String(semesters[sem - 1].year)
+    //                + "/" + String(semesters[sem - 1].semester);
+    // } else {
+    //   url += "inst_all/year_all/sem_all";
+    // }
+
+    let queryYear = "", querySem = "";
+    if (!instAnchored && sem !== 0) {
+      queryYear = String(semesters[sem - 1].year);
+      querySem = String(semesters[sem - 1].semester);
     }
+    let url = `/coursesection?`
+      + `courseId=${courseId}`
+      + `&instructorId=${iid == 0 ? "" : String(iid)}`
+      + `&year=${queryYear}`
+      + `&semester=${querySem}`;
+
     axios.get(url)
       .then((res) => {
         processSections(res.data);
@@ -889,12 +905,23 @@ export default function CourseView(props) {
         alert("Failed to fetch list of sections.");
       });
 
-    url = "/coursesection/section/"
-    + courseId + "/"
-    + (iid == 0 ? "instructor_all" : iid)
-    + (sem == 0 ? "/year_all/sem_all"
-      : "/" + semesters[sem - 1].year
-      + "/" + semesters[sem - 1].semester);
+
+    // FIXME: deprecated
+    // url = "/coursesection/section/"
+    // + courseId + "/"
+    // + (iid == 0 ? "instructor_all" : iid)
+    // + (sem == 0 ? "/year_all/sem_all"
+    //   : "/" + semesters[sem - 1].year
+    //   + "/" + semesters[sem - 1].semester);
+
+    // FIXME: necessary???
+    // url = "/coursesection?"
+    //   + `courseId=${courseId}`
+    //   + `&instructorId=${iid == 0 ? "" : String(iid)}`
+    //   + `&year=${queryYear}`
+    //   + `&semester=${querySem}`;
+
+
     axios.get(url)
       .then((res) => {
         let sects = res.data.sort(sectcomp);
@@ -911,12 +938,24 @@ export default function CourseView(props) {
 
   const loadComments = React.useCallback(() => {
     const courseId = Number(props.match.params.id);
-    let url = "/coursesection/scomment/"
-      + courseId + "/"
-      + (iid == 0 ? "instructor_all" : iid)
-      + (sem == 0 ? "/year_all/sem_all"
-        : "/" + semesters[sem - 1].year
-        + "/" + semesters[sem - 1].semester);
+
+    // FIXME: deprecated
+    // let url = "/coursesection/scomment/"
+    //   + courseId + "/"
+    //   + (iid == 0 ? "instructor_all" : iid)
+    //   + (sem == 0 ? "/year_all/sem_all"
+    //     : "/" + semesters[sem - 1].year
+    //     + "/" + semesters[sem - 1].semester);
+
+    let url = `/coursesection/scomment?`
+      + `courseId=${courseId}`
+      + (iid == 0 ? `` : `&instructorId=${String(iid)}`)
+      + (sem == 0 ? `` : (`&year=${String(semesters[sem - 1].year)}` +
+        `&semester=${String(semesters[sem - 1].semester)}`));
+    
+    // FIXME: debug comment fetching url
+    console.log("comment fetching url: " + url);
+
     axios.get(url)
       .then((res) => {
         setComments(res.data);
@@ -941,7 +980,7 @@ export default function CourseView(props) {
   }, [loadSemesters, loadSections, loadInstructors, loadCourse]);
 
   function createData(semester, section, instructor,
-                      a, ab, b, bc, c, d, f, gpa) {
+    a, ab, b, bc, c, d, f, gpa) {
     return {
       semester, section, instructor,
       a, ab, b, bc, c, d, f, gpa
@@ -992,19 +1031,19 @@ export default function CourseView(props) {
 
   return (
     <div className={classes.root}>
-      { redirect ? 
+      {redirect ?
         <Redirect
           to={{
             pathname: "/login",
             state: {
               redir: "/course_" + Number(props.match.params.id),
             },
-          }} 
+          }}
         /> : null
       }
       <div>
-        <NavBar 
-          atSerachPage={false} 
+        <NavBar
+          atSerachPage={false}
           logout={props.logout}
           loginStat={props.loginStat}
           user={props.user}
@@ -1029,7 +1068,7 @@ export default function CourseView(props) {
         <div className={classes.unit}>
           <Grid container spacing={2}>
             <Grid item md={6}>
-              <InstructorSelect 
+              <InstructorSelect
                 data={iid}
                 update={iidChange}
                 instructors={instructors}
@@ -1037,7 +1076,7 @@ export default function CourseView(props) {
               />
             </Grid>
             <Grid item md={6}>
-              <SemesterSelect 
+              <SemesterSelect
                 data={sem}
                 update={semChange}
                 semesters={semesters}
@@ -1048,8 +1087,8 @@ export default function CourseView(props) {
         </div>
 
         <hr />
-        <DataDisplay 
-          compileData={compileData} 
+        <DataDisplay
+          compileData={compileData}
           gradeDistData={gradeDistData}
           gpaTrendData={gpaTrendData}
           comments={comments}
@@ -1061,6 +1100,6 @@ export default function CourseView(props) {
           loadComments={loadComments}
         />
       </Paper>
-  </div>
+    </div>
   );
 }

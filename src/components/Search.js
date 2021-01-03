@@ -1,10 +1,10 @@
 import React from 'react';
 import axios from "axios";
-import { makeStyles } from "@material-ui/core/styles";
+import {makeStyles} from "@material-ui/core/styles";
 import {
   Typography, Paper, Button,
 } from "@material-ui/core/";
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import NavBar from "./NavBar";
 
 const useStyles = makeStyles(theme => ({
@@ -54,7 +54,7 @@ function DisplaySearch(props) {
 
   return (
     <div>
-      { props.results.map(resultItem => (
+      {props.results.map(resultItem => (
         <Link
           to={{
             pathname: addrConcat(resultItem[0]).toString(),
@@ -64,12 +64,12 @@ function DisplaySearch(props) {
               "keyInstructor": props.keyInstructor,
             },
           }}
-          style={{ textDecoration: 'none' }}
+          style={{textDecoration: 'none'}}
           key={props.results.indexOf(resultItem)}
         >
           <Paper
             className={classes.paper}
-            style={{ padding: 10, paddingLeft: 25 }}
+            style={{padding: 10, paddingLeft: 25}}
           >
             <Typography variant="h5">
               {resultItem[2]}
@@ -82,7 +82,7 @@ function DisplaySearch(props) {
       ))}
       <div
         className={classes.paper}
-        style={{ marginLeft: 30, marginTop: 20 }}
+        style={{marginLeft: 30, marginTop: 20}}
       >
         {props.noMore ? (
           <Typography variant="subtitle2">
@@ -92,7 +92,7 @@ function DisplaySearch(props) {
             <Button
               size="small"
               onClick={props.loadMore}
-              style={{ marginBottom: 500 }}
+              style={{marginBottom: 500}}
             >
               ({props.results.length}) Show more ...
             </Button>
@@ -106,16 +106,16 @@ function DisplaySearch(props) {
 export default function Search(props) {
   const classes = useStyles();
 
-  const [keyWord, setKeyWord] = 
+  const [keyWord, setKeyWord] =
     React.useState(props.location.state && props.location.state.keyWord ?
-                          props.location.state.keyWord : " ");
-  const [keySubject, setKeySubject] = 
+      props.location.state.keyWord : " ");
+  const [keySubject, setKeySubject] =
     React.useState(props.location.state && props.location.state.keySubject ?
-                          props.location.state.keySubject : " ")
-  const [keyInstructor, setKeyInstructor] = 
+      props.location.state.keySubject : " ")
+  const [keyInstructor, setKeyInstructor] =
     React.useState(props.location.state && props.location.state.keyInstructor ?
-                          props.location.state.keyInstructor :  " ");
-  
+      props.location.state.keyInstructor : " ");
+
   const [isLoading, setIsLoading] = React.useState(true);
   /* The current result list */
   const [results, saveResult] = React.useState([]);
@@ -123,10 +123,10 @@ export default function Search(props) {
   const [pageno, setPageno] = React.useState(0);
   /* If there are more results to be fetched. */
   const [noMore, setNoMore] = React.useState(false);
-  
+
   function TestResult(currResult) {
     return (<div></div>);
-  }    
+  }
   function TestKeyWord(currKeyWord) {
     return (<div></div>);
   }
@@ -137,11 +137,19 @@ export default function Search(props) {
     return (<div></div>);
   }
 
-  function search(keyword = " ", subj = " ", inst = " ",
+  function search(keyword = "", subj = "", inst = "",     // FIXME: testing
     page = 0, sz = 25, sort = "code") {
     setIsLoading(true);
-    const url = `/coursesearch/search/` +
-      `${keyword}/${subj}/${inst}/${sort}/${page}/${sz}`;
+    // const url = `/coursesearch/search/` +
+    //   `${keyword}/${subj}/${inst}/${sort}/${page}/${sz}`;
+
+    const url = `/coursesearch?keyword=${keyword}` +
+      `&pageNum=${page}` +
+      `&itemCount=${sz}` +
+      `&subjectFilter=${subj}` +
+      `&instructorFilter=${inst}` +
+      `&sortMethod=${sort}`;
+
     axios.get(url)
       .then((res) => {
         setIsLoading(false);
@@ -244,10 +252,10 @@ export default function Search(props) {
           />
         </div>
       </main>
-      <TestKeyWord value={keyWord}/>
-      <TestKeySubject value={keySubject}/>
-      <TestKeyInstructor value={keyInstructor}/>
-      <TestResult value={results}/>
+      <TestKeyWord value={keyWord} />
+      <TestKeySubject value={keySubject} />
+      <TestKeyInstructor value={keyInstructor} />
+      <TestResult value={results} />
     </div>
   )
 }
